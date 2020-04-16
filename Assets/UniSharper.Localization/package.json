@@ -1,0 +1,14 @@
+{
+	"name": "com.github.cosmos53076.unisharper.localization",
+	"displayName": "UniSharper.Localization",
+	"description": "UniSharper.Localization is a serialization data driven text localization for Unity application.",
+	"version": "1.0.0",
+	"unity": "2018.3",
+	"license": "MIT",
+	"dependencies": 
+	{
+		"com.github.cosmos53076.exceldatareader": "1.0.0",
+		"com.github.cosmos53076.unisharper.core": "1.1.1",
+		"com.github.cosmos53076.resharp.patterns": "1.0.2"
+	}
+}
