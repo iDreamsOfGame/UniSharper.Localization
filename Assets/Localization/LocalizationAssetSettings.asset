@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: LocalizationAssetSettings
   m_EditorClassIdentifier: 
   localizationAssetsPath: Assets/Localization/Locales
-  localizationScriptNamespace: UniSharper.Localization.Example
-  localizationScriptsStorePath: Assets/Example
+  localizationScriptNamespace: UniSharper.Localization.Examples
+  localizationScriptsStorePath: Assets/UniSharper.Localization/Examples
