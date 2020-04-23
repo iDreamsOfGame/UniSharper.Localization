@@ -1,5 +1,5 @@
-﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License. See LICENSE in the
-// project root for license information.
+﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
+// See LICENSE in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -325,12 +325,7 @@ namespace UniSharper.Localization
         /// </returns>
         public bool Equals(Locale other)
         {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return string.Equals(locale, other.locale);
+            return other != null && string.Equals(locale, other.locale);
         }
 
         /// <summary>
@@ -343,7 +338,7 @@ namespace UniSharper.Localization
         /// </returns>
         public bool GetConstantName(out string constantName)
         {
-            string definedConstantName = DefinedConstantName;
+            var definedConstantName = DefinedConstantName;
 
             if (string.IsNullOrEmpty(definedConstantName))
             {
@@ -409,16 +404,16 @@ namespace UniSharper.Localization
             }
 
             this.locale = locale.Replace("-", "_");
-            string[] segments = this.locale.Split('_');
+            var segments = this.locale.Split('_');
 
-            if (segments.Length > 0)
+            if (segments.Length <= 0) 
+                return;
+            
+            Language = segments[0];
+
+            if (segments.Length > 1)
             {
-                Language = segments[0];
-
-                if (segments.Length > 1)
-                {
-                    Country = segments[1];
-                }
+                Country = segments[1];
             }
         }
 

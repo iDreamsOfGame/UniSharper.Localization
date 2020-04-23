@@ -1,5 +1,5 @@
-﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License. See LICENSE in the
-// project root for license information.
+﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
+// See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
 using System.IO;
@@ -74,7 +74,7 @@ namespace UniSharperEditor.Localization
             }
 
             // Localization Scripts Store Path
-            string localizationScriptsStoreAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."), settings.LocalizationScriptsStorePath, "Localization Scripts Store Path", PathUtility.Combine(Directory.GetCurrentDirectory(), settings.LocalizationScriptsStorePath), string.Empty, LabelWidth));
+            string localizationScriptsStoreAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."), settings.LocalizationScriptsStorePath, "Localization Scripts Store Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationScriptsStorePath), string.Empty, LabelWidth));
 
             if (EditorPath.IsAssetPath(localizationScriptsStoreAbsolutePath))
             {

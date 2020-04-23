@@ -1,5 +1,5 @@
-﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License. See LICENSE in the
-// project root for license information.
+﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
+// See LICENSE in the project root for license information.
 
 using ReSharp.Patterns;
 using System;
@@ -26,8 +26,8 @@ namespace UniSharper.Localization
         public const string DefaultText = "NoString";
 
         private readonly Dictionary<Locale, Dictionary<string, string>> localeTranslationTextsMap;
+        
         private Locale currentLocale;
-        private EventHandler<LocaleChangedEventArgs> onLocaleChangedDelegate;
 
         #endregion Fields
 
@@ -46,15 +46,7 @@ namespace UniSharper.Localization
         /// <summary>
         /// Occurs when [locale changed].
         /// </summary>
-        public event EventHandler<LocaleChangedEventArgs> LocaleChanged
-        {
-            add => onLocaleChangedDelegate += value;
-            remove
-            {
-                if (onLocaleChangedDelegate != null)
-                    onLocaleChangedDelegate -= value;
-            }
-        }
+        public event EventHandler<LocaleChangedEventArgs> LocaleChanged;
 
         #endregion Events
 
@@ -72,7 +64,7 @@ namespace UniSharper.Localization
                 if (currentLocale != null && currentLocale.Equals(value))
                     return;
                 currentLocale = value;
-                onLocaleChangedDelegate?.Invoke(this, new LocaleChangedEventArgs(currentLocale));
+                OnLocaleChanged(new LocaleChangedEventArgs(currentLocale));
             }
         }
 
@@ -89,7 +81,7 @@ namespace UniSharper.Localization
         /// <exception cref="System.ArgumentNullException">locale or key</exception>
         public string GetTranslationText(Locale locale, string key)
         {
-            string text = DefaultText;
+            var text = DefaultText;
 
             if (locale == null)
             {
@@ -103,19 +95,19 @@ namespace UniSharper.Localization
 
             if (localeTranslationTextsMap.ContainsKey(locale))
             {
-                Dictionary<string, string> translationData = localeTranslationTextsMap[locale];
+                var translationData = localeTranslationTextsMap[locale];
                 if (translationData.ContainsKey(key))
                 {
                     text = translationData[key];
                 }
                 else
                 {
-                    Debug.LogWarningFormat("No translation text for key [{0}] of locale [{1}]!", key, locale);
+                    Debug.LogWarning($"No translation text for key [{key}] of locale [{locale}]!");
                 }
             }
             else
             {
-                Debug.LogWarningFormat("No translation texts for locale [{0}]!", locale);
+                Debug.LogWarning($"No translation texts for locale [{locale}]!");
             }
 
             return text;
@@ -129,7 +121,7 @@ namespace UniSharper.Localization
         /// <exception cref="System.ArgumentNullException">key</exception>
         public string GetTranslationText(string key)
         {
-            string text = DefaultText;
+            var text = DefaultText;
 
             if (string.IsNullOrEmpty(key))
             {
@@ -151,14 +143,19 @@ namespace UniSharper.Localization
         /// <param name="data">The localization asset data.</param>
         public void LoadLocalizationAssetData(Locale locale, byte[] data)
         {
-            using (MemoryStream stream = new MemoryStream(data))
+            using (var stream = new MemoryStream(data))
             {
-                BinaryFormatter reader = new BinaryFormatter();
-                Dictionary<string, string> translationData = reader.Deserialize(stream) as Dictionary<string, string>;
+                var reader = new BinaryFormatter();
+                var translationData = reader.Deserialize(stream) as Dictionary<string, string>;
                 localeTranslationTextsMap.AddUnique(locale, translationData);
             }
         }
 
         #endregion Methods
+
+        private void OnLocaleChanged(LocaleChangedEventArgs e)
+        {
+            LocaleChanged?.Invoke(this, e);
+        }
     }
 }
