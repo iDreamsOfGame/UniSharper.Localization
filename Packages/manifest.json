@@ -31,7 +31,7 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
-    "io.github.idreamsofgame.unisharper.core": "1.1.0",
+    "io.github.idreamsofgame.unisharper.core": "1.1.1",
     "com.github.exceldatareader.exceldatareader": "3.6.0"
   },
   "scopedRegistries": [
