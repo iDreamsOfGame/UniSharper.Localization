@@ -16,6 +16,12 @@ namespace UniSharperEditor.Localization
 {
     internal static class LocalizationAssetUtility
     {
+        #region Fields
+
+        private const string UnityPackageName = "io.github.idreamsofgame.unisharper.localization";
+
+        #endregion Fields
+
         #region Methods
 
         internal static bool BuildLocalizationAssets(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
@@ -55,7 +61,7 @@ namespace UniSharperEditor.Localization
                 // Generate Locales.cs
                 string scriptLocalesStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "Locales.cs");
                 string scriptLocalesAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
-                string scriptTextContent = AssetDatabaseUtility.LoadEditorResources<TextAsset>("NewLocalesScriptTemplate")[0].text;
+                string scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewLocalesScriptTemplate.txt", UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Fields, GenerateFieldsForScriptLocales(translationDataMap));
                 File.WriteAllText(scriptLocalesStorePath, scriptTextContent, new UTF8Encoding(true));
@@ -63,7 +69,7 @@ namespace UniSharperEditor.Localization
                 // Generate TranslationKey.cs
                 string scriptTranslationKeyStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "TranslationKey.cs");
                 string scriptTranslationKeyAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
-                scriptTextContent = AssetDatabaseUtility.LoadEditorResources<TextAsset>("NewTranlationKeyScriptTemplate")[0].text;
+                scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewTranlationKeyScriptTemplate.txt", UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Constants, GenerateConstantsForScriptTranslationKey(translationDataMap));
                 File.WriteAllText(scriptTranslationKeyStorePath, scriptTextContent, new UTF8Encoding(true));
