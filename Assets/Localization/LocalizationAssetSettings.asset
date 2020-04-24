@@ -15,3 +15,7 @@ MonoBehaviour:
   localizationAssetsPath: Assets/Localization/Locales
   localizationScriptNamespace: UniSharper.Localization.Examples
   localizationScriptsStorePath: Assets/UniSharper.Localization/Examples
+  localeRowIndex: 1
+  translationKeyColumnIndex: 1
+  translationTextsStartingRowIndex: 2
+  translationTextsStartingColumnIndex: 2
