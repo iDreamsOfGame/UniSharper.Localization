@@ -1,5 +1,4 @@
-﻿using UniSharper.Localization;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,6 +36,11 @@ namespace UniSharper.Localization.Examples
             LocalizationManager.Instance.CurrentLocale = Locales.TraditionalChinese;
         }
 
+        public void OnButton4Clicked()
+        {
+            LocalizationManager.Instance.CurrentLocale = Locales.BE;
+        }
+
         private void OnDestroy()
         {
             LocalizationManager.Instance.LocaleChanged -= OnLocaleChanged;
@@ -53,10 +57,12 @@ namespace UniSharper.Localization.Examples
             var enLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/en.bytes");
             var cnLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/zh_CN.bytes");
             var twLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/zh_TW.bytes");
+            var beLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/nl_be.bytes");
             LocalizationManager.Instance.LocaleChanged += OnLocaleChanged;
             LocalizationManager.Instance.LoadLocalizationAssetData(Locales.English, enLang.bytes);
             LocalizationManager.Instance.LoadLocalizationAssetData(Locales.SimplifiedChinese, cnLang.bytes);
             LocalizationManager.Instance.LoadLocalizationAssetData(Locales.TraditionalChinese, twLang.bytes);
+            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.BE, beLang.bytes);
             LocalizationManager.Instance.CurrentLocale = Locales.English;
             UpdateTexts();
         }

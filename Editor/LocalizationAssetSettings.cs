@@ -18,11 +18,11 @@ namespace UniSharperEditor.Localization
     {
         #region Fields
 
-        internal const string LocalizationAssetsFolderName = "Locales";
+        private const string LocalizationAssetsFolderName = "Locales";
 
-        internal const string LocalizationFolderName = "Localization";
+        private const string LocalizationFolderName = "Localization";
 
-        internal static readonly string LocalizationFolder = Path.Combine(EditorEnvironment.AssetsFolderName, LocalizationFolderName);
+        private static readonly string LocalizationFolder = Path.Combine(EditorEnvironment.AssetsFolderName, LocalizationFolderName);
 
         private static readonly string SettingsAssetPath = $"{LocalizationFolder}/{typeof(LocalizationAssetSettings).Name}.asset";
         private static readonly string TranslationFilePathPrefKeyFormat = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), false)}.{typeof(LocalizationAssetSettings).FullName}.translationFilePath";
@@ -39,9 +39,42 @@ namespace UniSharperEditor.Localization
         [SerializeField]
         private string localizationScriptsStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(EditorEnvironment.AssetsFolderName, EditorEnvironment.DefaultScriptsFolderName));
 
+        [ReadOnlyField]
+        [SerializeField]
+        private int localeRowIndex = 0;
+
+        [ReadOnlyField]
+        [SerializeField] 
+        private int translationKeyColumnIndex = 0;
+        
+        [ReadOnlyField]
+        [SerializeField] 
+        private int translationTextsStartingRowIndex = 1;
+
+        [ReadOnlyField]
+        [SerializeField]
+        private int translationTextsStartingColumnIndex = 1;
+
         #endregion Fields
 
         #region Properties
+        
+        internal static string TranslationFilePath
+        {
+            get
+            {
+                var key = string.Format(TranslationFilePathPrefKeyFormat, PlayerSettings.productName);
+                return EditorPrefs.GetString(key, string.Empty);
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || TranslationFilePath.Equals(value))
+                    return;
+
+                var key = string.Format(TranslationFilePathPrefKeyFormat, PlayerSettings.productName);
+                EditorPrefs.SetString(key, value);
+            }
+        }
 
         internal string LocalizationAssetsPath
         {
@@ -82,20 +115,51 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        internal string TranslationFilePath
+        internal int LocaleRowIndex
         {
-            get
-            {
-                string key = string.Format(TranslationFilePathPrefKeyFormat, PlayerSettings.productName);
-                return EditorPrefs.GetString(key, string.Empty);
-            }
+            get => localeRowIndex;
             set
             {
-                if (string.IsNullOrEmpty(value) || TranslationFilePath.Equals(value))
+                if (localeRowIndex.Equals(value))
                     return;
+                localeRowIndex = value;
+                Save();
+            }
+        }
 
-                string key = string.Format(TranslationFilePathPrefKeyFormat, PlayerSettings.productName);
-                EditorPrefs.SetString(key, value);
+        internal int TranslationKeyColumnIndex
+        {
+            get => translationKeyColumnIndex;
+            set
+            {
+                if (translationKeyColumnIndex.Equals(value))
+                    return;
+                translationKeyColumnIndex = value;
+                Save();
+            }
+        }
+
+        internal int TranslationTextsStartingRowIndex
+        {
+            get => translationTextsStartingRowIndex;
+            set
+            {
+                if (translationTextsStartingRowIndex.Equals(value))
+                    return;
+                translationTextsStartingRowIndex = value;
+                Save();
+            }
+        }
+
+        internal int TranslationTextsStartingColumnIndex
+        {
+            get => translationTextsStartingColumnIndex;
+            set
+            {
+                if (translationTextsStartingColumnIndex.Equals(value))
+                    return;
+                translationTextsStartingColumnIndex = value;
+                Save();
             }
         }
 

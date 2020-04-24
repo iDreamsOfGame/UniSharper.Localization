@@ -4,7 +4,6 @@
 using ExcelDataReader;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -26,49 +25,48 @@ namespace UniSharperEditor.Localization
 
         internal static bool BuildLocalizationAssets(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
-            if (translationDataMap.Count > 0)
+            if (translationDataMap.Count <= 0) 
+                return false;
+            
+            var settings = LocalizationAssetSettings.Load();
+            LocalizationAssetSettings.CreateLocalizationAssetsFolder(settings);
+
+            foreach (var locale in translationDataMap)
             {
-                LocalizationAssetSettings settings = LocalizationAssetSettings.Load();
-                LocalizationAssetSettings.CreateLocalizationAssetsFolder(settings);
+                var assetPath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(settings.LocalizationAssetsPath, $"{locale.Key}.bytes"));
+                var assetAbsolutePath = EditorPath.ConvertToAbsolutePath(assetPath);
 
-                foreach (KeyValuePair<Locale, Dictionary<string, string>> locale in translationDataMap)
+                using (var stream = File.Open(assetAbsolutePath, FileMode.Create))
                 {
-                    string assetPath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(settings.LocalizationAssetsPath, $"{locale.Key}.bytes"));
-                    string assetAbsolutePath = EditorPath.ConvertToAbsolutePath(assetPath);
-
-                    using (FileStream stream = File.Open(assetAbsolutePath, FileMode.Create))
-                    {
-                        BinaryFormatter writer = new BinaryFormatter();
-                        writer.Serialize(stream, locale.Value);
-                    }
-
-                    AssetDatabase.ImportAsset(assetPath);
+                    var writer = new BinaryFormatter();
+                    writer.Serialize(stream, locale.Value);
                 }
 
-                return true;
+                AssetDatabase.ImportAsset(assetPath);
             }
 
-            return false;
+            return true;
+
         }
 
         internal static bool GenerateScripts(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
             try
             {
-                LocalizationAssetSettings settings = LocalizationAssetSettings.Load();
+                var settings = LocalizationAssetSettings.Load();
                 LocalizationAssetSettings.CreateLocalizationScriptsStoreFolder(settings);
 
                 // Generate Locales.cs
-                string scriptLocalesStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "Locales.cs");
-                string scriptLocalesAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
-                string scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewLocalesScriptTemplate.txt", UnityPackageName);
+                var scriptLocalesStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "Locales.cs");
+                var scriptLocalesAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
+                var scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewLocalesScriptTemplate.txt", UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Fields, GenerateFieldsForScriptLocales(translationDataMap));
                 File.WriteAllText(scriptLocalesStorePath, scriptTextContent, new UTF8Encoding(true));
 
                 // Generate TranslationKey.cs
-                string scriptTranslationKeyStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "TranslationKey.cs");
-                string scriptTranslationKeyAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
+                var scriptTranslationKeyStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "TranslationKey.cs");
+                var scriptTranslationKeyAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
                 scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewTranlationKeyScriptTemplate.txt", UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Constants, GenerateConstantsForScriptTranslationKey(translationDataMap));
@@ -86,7 +84,7 @@ namespace UniSharperEditor.Localization
 
         internal static Dictionary<Locale, Dictionary<string, string>> LoadLocalizationAssets()
         {
-            LocalizationAssetSettings settings = LocalizationAssetSettings.Load();
+            var settings = LocalizationAssetSettings.Load();
 
             if (settings == null)
             {
@@ -101,22 +99,22 @@ namespace UniSharperEditor.Localization
             }
 
             Dictionary<Locale, Dictionary<string, string>> translationDataMap = null;
-            string dirPath = EditorPath.ConvertToAbsolutePath(settings.LocalizationAssetsPath);
-            string[] files = Directory.GetFiles(dirPath, "*.bytes");
+            var dirPath = EditorPath.ConvertToAbsolutePath(settings.LocalizationAssetsPath);
+            var files = Directory.GetFiles(dirPath, "*.bytes");
 
             if (files.Length <= 0)
                 return null;
 
             translationDataMap = new Dictionary<Locale, Dictionary<string, string>>();
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
-                string localeString = Path.GetFileNameWithoutExtension(file);
-                Locale locale = new Locale(localeString);
-                using (FileStream stream = File.Open(file, FileMode.Open, FileAccess.Read))
+                var localeString = Path.GetFileNameWithoutExtension(file);
+                var locale = new Locale(localeString);
+                using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
                 {
-                    BinaryFormatter reader = new BinaryFormatter();
-                    Dictionary<string, string> translationTexts = reader.Deserialize(stream) as Dictionary<string, string>;
+                    var reader = new BinaryFormatter();
+                    var translationTexts = reader.Deserialize(stream) as Dictionary<string, string>;
                     translationDataMap.AddUnique(locale, translationTexts);
                 }
             }
@@ -126,7 +124,7 @@ namespace UniSharperEditor.Localization
 
         internal static Dictionary<Locale, Dictionary<string, string>> LoadTranslationFile()
         {
-            LocalizationAssetSettings settings = LocalizationAssetSettings.Load();
+            var settings = LocalizationAssetSettings.Load();
 
             if (settings == null)
             {
@@ -134,52 +132,53 @@ namespace UniSharperEditor.Localization
                 return null;
             }
 
-            if (string.IsNullOrEmpty(settings.TranslationFilePath))
+            if (string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath))
             {
                 Debug.LogError("Translation File Path' should be non-empty!");
                 return null;
             }
 
             Dictionary<Locale, Dictionary<string, string>> dataMap = null;
-            string path = settings.TranslationFilePath;
-            string fileExtension = Path.GetExtension(path).ToLower();
-            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            var path = LocalizationAssetSettings.TranslationFilePath;
+            var fileExtension = Path.GetExtension(path).ToLower();
+            using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
             {
-                using (IExcelDataReader reader = fileExtension.Equals(".xlsx") ? ExcelReaderFactory.CreateOpenXmlReader(stream) : ExcelReaderFactory.CreateBinaryReader(stream))
+                using (var reader = fileExtension.Equals(".xlsx") ? 
+                    ExcelReaderFactory.CreateOpenXmlReader(stream) : ExcelReaderFactory.CreateBinaryReader(stream))
                 {
-                    DataSet dataSet = reader.AsDataSet();
+                    var dataSet = reader.AsDataSet();
 
                     if (dataSet.Tables.Count > 0)
                     {
-                        DataTable table = dataSet.Tables[0];
-                        DataColumnCollection columns = table.Columns;
-                        DataRowCollection rows = table.Rows;
+                        var table = dataSet.Tables[0];
+                        var columns = table.Columns;
+                        var rows = table.Rows;
 
                         if (columns.Count > 1 && rows.Count > 1)
                         {
                             dataMap = new Dictionary<Locale, Dictionary<string, string>>();
-                            Dictionary<Locale, int> localeColumnIndexMap = new Dictionary<Locale, int>();
+                            var localeColumnIndexMap = new Dictionary<Locale, int>();
 
                             // Record locales.
-                            for (int i = 1; i < columns.Count; i++)
+                            for (var i = settings.TranslationTextsStartingColumnIndex; i < columns.Count; i++)
                             {
-                                string localeString = rows[0][i].ToString().Trim();
+                                var localeString = rows[settings.LocaleRowIndex][i].ToString().Trim();
                                 if (string.IsNullOrEmpty(localeString))
                                     continue;
-                                Locale locale = new Locale(localeString);
+                                var locale = new Locale(localeString);
                                 localeColumnIndexMap.AddUnique(locale, i);
                                 dataMap.AddUnique(locale, new Dictionary<string, string>());
                             }
 
                             // Records translation data.
-                            for (int i = 1; i < rows.Count; i++)
+                            for (var i = settings.TranslationTextsStartingRowIndex; i < rows.Count; i++)
                             {
-                                foreach (KeyValuePair<Locale, int> kvp in localeColumnIndexMap)
+                                foreach (var kvp in localeColumnIndexMap)
                                 {
-                                    Locale locale = kvp.Key;
-                                    int columnIndex = kvp.Value;
-                                    string translationKey = rows[i][0].ToString().Trim();
-                                    string translationText = rows[i][columnIndex].ToString();
+                                    var locale = kvp.Key;
+                                    var columnIndex = kvp.Value;
+                                    var translationKey = rows[i][settings.TranslationKeyColumnIndex].ToString().Trim();
+                                    var translationText = rows[i][columnIndex].ToString();
 
                                     if (string.IsNullOrEmpty(translationKey))
                                         continue;
@@ -203,7 +202,7 @@ namespace UniSharperEditor.Localization
                         }
                         else
                         {
-                            Debug.LogError("Invalid translation data format!");
+                            Debug.LogError("Invalid translation file format!");
                         }
                     }
                     else
@@ -218,11 +217,11 @@ namespace UniSharperEditor.Localization
 
         private static string GenerateConstantsForScriptTranslationKey(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
-            foreach (Dictionary<string, string> item in translationDataMap.Values)
+            foreach (var item in translationDataMap.Values)
             {
-                int i = 0;
+                var i = 0;
                 foreach (var translationKey in item.Keys)
                 {
                     stringBuilder.AppendFormat("\t\tpublic const string {0} = \"{1}\";",
@@ -244,12 +243,12 @@ namespace UniSharperEditor.Localization
 
         private static string GenerateFieldsForScriptLocales(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
-            int i = 0;
-            foreach (Locale locale in translationDataMap.Keys)
+            var i = 0;
+            foreach (var locale in translationDataMap.Keys)
             {
-                bool hasDefinedConstantName = locale.GetConstantName(out var fieldName);
+                var hasDefinedConstantName = locale.GetConstantName(out var fieldName);
 
                 if (hasDefinedConstantName)
                 {
