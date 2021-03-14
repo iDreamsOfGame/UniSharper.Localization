@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddca8ea19c075405ea0ba8a72f062bd9, type: 3}
   m_Name: LocalizationAssetSettings
   m_EditorClassIdentifier: 
-  localizationAssetsPath: Assets/Localization/Locales
-  localizationScriptNamespace: UniSharper.Localization.Examples
-  localizationScriptsStorePath: Assets/UniSharper.Localization/Examples
   localeRowIndex: 1
+  localizationAssetsPath: Assets/Localization/Locales
+  localizationScriptNamespace: UniSharper.Localization.Samples
+  localizationScriptsStorePath: Assets/Samples
   translationKeyColumnIndex: 1
-  translationTextsStartingRowIndex: 2
   translationTextsStartingColumnIndex: 2
+  translationTextsStartingRowIndex: 2
