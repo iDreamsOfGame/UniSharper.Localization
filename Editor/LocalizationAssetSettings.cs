@@ -25,7 +25,12 @@ namespace UniSharperEditor.Localization
         private static readonly string LocalizationFolder = Path.Combine(EditorEnvironment.AssetsFolderName, LocalizationFolderName);
 
         private static readonly string SettingsAssetPath = $"{LocalizationFolder}/{typeof(LocalizationAssetSettings).Name}.asset";
+
         private static readonly string TranslationFilePathPrefKeyFormat = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), false)}.{typeof(LocalizationAssetSettings).FullName}.translationFilePath";
+
+        [ReadOnlyField]
+        [SerializeField]
+        private int localeRowIndex = 0;
 
         [ReadOnlyField]
         [SerializeField]
@@ -41,24 +46,20 @@ namespace UniSharperEditor.Localization
 
         [ReadOnlyField]
         [SerializeField]
-        private int localeRowIndex = 0;
-
-        [ReadOnlyField]
-        [SerializeField] 
         private int translationKeyColumnIndex = 0;
-        
-        [ReadOnlyField]
-        [SerializeField] 
-        private int translationTextsStartingRowIndex = 1;
 
         [ReadOnlyField]
         [SerializeField]
         private int translationTextsStartingColumnIndex = 1;
 
+        [ReadOnlyField]
+        [SerializeField]
+        private int translationTextsStartingRowIndex = 1;
+
         #endregion Fields
 
         #region Properties
-        
+
         internal static string TranslationFilePath
         {
             get
@@ -73,6 +74,18 @@ namespace UniSharperEditor.Localization
 
                 var key = string.Format(TranslationFilePathPrefKeyFormat, PlayerSettings.productName);
                 EditorPrefs.SetString(key, value);
+            }
+        }
+
+        internal int LocaleRowIndex
+        {
+            get => localeRowIndex;
+            set
+            {
+                if (localeRowIndex.Equals(value))
+                    return;
+                localeRowIndex = value;
+                Save();
             }
         }
 
@@ -115,18 +128,6 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        internal int LocaleRowIndex
-        {
-            get => localeRowIndex;
-            set
-            {
-                if (localeRowIndex.Equals(value))
-                    return;
-                localeRowIndex = value;
-                Save();
-            }
-        }
-
         internal int TranslationKeyColumnIndex
         {
             get => translationKeyColumnIndex;
@@ -139,18 +140,6 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        internal int TranslationTextsStartingRowIndex
-        {
-            get => translationTextsStartingRowIndex;
-            set
-            {
-                if (translationTextsStartingRowIndex.Equals(value))
-                    return;
-                translationTextsStartingRowIndex = value;
-                Save();
-            }
-        }
-
         internal int TranslationTextsStartingColumnIndex
         {
             get => translationTextsStartingColumnIndex;
@@ -159,6 +148,18 @@ namespace UniSharperEditor.Localization
                 if (translationTextsStartingColumnIndex.Equals(value))
                     return;
                 translationTextsStartingColumnIndex = value;
+                Save();
+            }
+        }
+
+        internal int TranslationTextsStartingRowIndex
+        {
+            get => translationTextsStartingRowIndex;
+            set
+            {
+                if (translationTextsStartingRowIndex.Equals(value))
+                    return;
+                translationTextsStartingRowIndex = value;
                 Save();
             }
         }
@@ -212,10 +213,7 @@ namespace UniSharperEditor.Localization
             AssetDatabase.ImportAsset(settings.LocalizationScriptsStorePath);
         }
 
-        internal static LocalizationAssetSettings Load()
-        {
-            return File.Exists(SettingsAssetPath) ? AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(SettingsAssetPath) : null;
-        }
+        internal static LocalizationAssetSettings Load() => File.Exists(SettingsAssetPath) ? AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(SettingsAssetPath) : null;
 
         [UsedImplicitly]
         private void OnEnable()

@@ -10,10 +10,7 @@ namespace UniSharperEditor.Localization
         #region Constructors
 
         public TranslationDataColumnHeader(MultiColumnHeaderState state)
-            : base(state)
-        {
-            ResizeToFit();
-        }
+            : base(state) => ResizeToFit();
 
         #endregion Constructors
     }

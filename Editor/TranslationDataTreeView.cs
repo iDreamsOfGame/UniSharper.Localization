@@ -13,6 +13,7 @@ namespace UniSharperEditor.Localization
         #region Fields
 
         private Dictionary<string, Dictionary<Locale, string>> convertedTranslationDataMap;
+
         private Dictionary<Locale, Dictionary<string, string>> translationDataMap;
 
         #endregion Fields
@@ -31,27 +32,22 @@ namespace UniSharperEditor.Localization
 
         #region Methods
 
-        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
-        {
-            return new MultiColumnHeaderState(GetColumns(translationDataMap));
-        }
+        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, string>> translationDataMap) => new MultiColumnHeaderState(GetColumns(translationDataMap));
 
         public Dictionary<Locale, Dictionary<string, string>> RestoreTranslationDataMap()
         {
-            Dictionary<Locale, Dictionary<string, string>> result = null;
+            var result = new Dictionary<Locale, Dictionary<string, string>>();
 
             if (convertedTranslationDataMap != null)
             {
-                result = new Dictionary<Locale, Dictionary<string, string>>();
-
-                foreach (KeyValuePair<string, Dictionary<Locale, string>> kvp in convertedTranslationDataMap)
+                foreach (var kvp in convertedTranslationDataMap)
                 {
-                    string key = kvp.Key;
+                    var key = kvp.Key;
 
-                    foreach (KeyValuePair<Locale, string> textMap in kvp.Value)
+                    foreach (var textMap in kvp.Value)
                     {
-                        Locale locale = textMap.Key;
-                        string text = textMap.Value;
+                        var locale = textMap.Key;
+                        var text = textMap.Value;
 
                         if (!result.ContainsKey(locale))
                         {
@@ -71,16 +67,16 @@ namespace UniSharperEditor.Localization
 
         protected override TreeViewItem BuildRoot()
         {
-            TreeViewItem root = new TreeViewItem(-1, -1); // dummy root node
+            var root = new TreeViewItem(-1, -1); // dummy root node
             convertedTranslationDataMap = ConvertTranslationDataMap();
 
             if (convertedTranslationDataMap != null && convertedTranslationDataMap.Count > 0)
             {
-                foreach (KeyValuePair<string, Dictionary<Locale, string>> kvp in convertedTranslationDataMap)
+                foreach (var kvp in convertedTranslationDataMap)
                 {
-                    IList<string> texts = new List<string>(kvp.Value.Count);
+                    var texts = new List<string>(kvp.Value.Count);
 
-                    foreach (string text in kvp.Value.Values)
+                    foreach (var text in kvp.Value.Values)
                     {
                         texts.Add(text);
                     }
@@ -94,7 +90,7 @@ namespace UniSharperEditor.Localization
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            TranslationDataTreeViewItem item = args.item as TranslationDataTreeViewItem;
+            var item = args.item as TranslationDataTreeViewItem;
             if (item == null)
             {
                 base.RowGUI(args);
@@ -103,39 +99,36 @@ namespace UniSharperEditor.Localization
 
             if (!args.isRenaming)
             {
-                for (int i = 0; i < args.GetNumVisibleColumns(); i++)
+                for (var i = 0; i < args.GetNumVisibleColumns(); i++)
                 {
                     CellGUI(args.GetCellRect(i), item, multiColumnHeader.state.visibleColumns[i], ref args);
                 }
             }
         }
 
-        private static MultiColumnHeaderState.Column CreateColumn(string label, bool canSort = false, bool allowToggleVisibility = false)
+        private static MultiColumnHeaderState.Column CreateColumn(string label, bool canSort = false, bool allowToggleVisibility = false) => new MultiColumnHeaderState.Column()
         {
-            return new MultiColumnHeaderState.Column()
-            {
-                headerContent = new GUIContent(label, label),
-                allowToggleVisibility = allowToggleVisibility,
-                canSort = canSort,
-                minWidth = 50,
-                width = 150,
-                maxWidth = 1000,
-                headerTextAlignment = TextAlignment.Left,
-                autoResize = false
-            };
-        }
+            headerContent = new GUIContent(label, label),
+            allowToggleVisibility = allowToggleVisibility,
+            canSort = canSort,
+            minWidth = 50,
+            width = 150,
+            maxWidth = 1000,
+            headerTextAlignment = TextAlignment.Left,
+            autoResize = false
+        };
 
         private static MultiColumnHeaderState.Column[] GetColumns(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
-            int columnCount = (translationDataMap != null && translationDataMap.Count > 0) ? translationDataMap.Count + 1 : 2;
-            MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[columnCount];
+            var columnCount = (translationDataMap != null && translationDataMap.Count > 0) ? translationDataMap.Count + 1 : 2;
+            var columns = new MultiColumnHeaderState.Column[columnCount];
             columns[0] = CreateColumn("Translation Key");
 
             if (translationDataMap != null && translationDataMap.Count > 0)
             {
-                int i = 0;
+                var i = 0;
 
-                foreach (Locale locale in translationDataMap.Keys)
+                foreach (var locale in translationDataMap.Keys)
                 {
                     locale.GetConstantName(out var label);
                     label += $" ({locale})";
@@ -149,7 +142,7 @@ namespace UniSharperEditor.Localization
 
         private void CellGUI(Rect cellRect, TranslationDataTreeViewItem viewItem, int columnIndex, ref RowGUIArgs args)
         {
-            GUIStyle labelStyle = GUI.skin.GetStyle("Label");
+            var labelStyle = GUI.skin.GetStyle("Label");
 
             if (Event.current.type == EventType.Repaint)
             {
@@ -166,16 +159,14 @@ namespace UniSharperEditor.Localization
 
         private Dictionary<string, Dictionary<Locale, string>> ConvertTranslationDataMap()
         {
-            Dictionary<string, Dictionary<Locale, string>> map = null;
+            var map = new Dictionary<string, Dictionary<Locale, string>>();
 
             if (translationDataMap != null && translationDataMap.Count > 0)
             {
-                map = new Dictionary<string, Dictionary<Locale, string>>();
-
-                foreach (KeyValuePair<Locale, Dictionary<string, string>> kvp in translationDataMap)
+                foreach (var kvp in translationDataMap)
                 {
-                    Locale locale = kvp.Key;
-                    foreach (KeyValuePair<string, string> texts in kvp.Value)
+                    var locale = kvp.Key;
+                    foreach (var texts in kvp.Value)
                     {
                         if (!map.ContainsKey(texts.Key))
                         {
@@ -198,20 +189,13 @@ namespace UniSharperEditor.Localization
         #region Constructors
 
         public TranslationDataTreeViewItem(string translationTextKey, IList<string> translationTexts)
-        : base(translationTextKey.GetHashCode(), 0, translationTextKey)
-        {
-            TranslationTexts = translationTexts;
-        }
+        : base(translationTextKey.GetHashCode(), 0, translationTextKey) => TranslationTexts = translationTexts;
 
         #endregion Constructors
 
         #region Properties
 
-        public IList<string> TranslationTexts
-        {
-            get;
-            set;
-        }
+        public IList<string> TranslationTexts { get; set; }
 
         #endregion Properties
     }

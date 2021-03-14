@@ -14,7 +14,7 @@ namespace UniSharperEditor.Localization
         #region Fields
 
         private const float LabelWidth = 275f;
-        
+
         private const int MaxIntValue = 10;
 
         private const string ScriptsGeneratedPrefKey = "UniSharperEditor.Localization.TranslationDataImporterscriptsGenerated";
@@ -25,10 +25,7 @@ namespace UniSharperEditor.Localization
 
         #region Constructors
 
-        internal TranslationDataImporter(LocalizationAssetSettings settings)
-        {
-            this.settings = settings;
-        }
+        internal TranslationDataImporter(LocalizationAssetSettings settings) => this.settings = settings;
 
         #endregion Constructors
 
@@ -84,30 +81,30 @@ namespace UniSharperEditor.Localization
             {
                 UnityEditorUtility.DisplayDialog("Invalid Path", "The 'Localization Scripts Store Path' you choose is invalid path, please select the folder in the project!", "OK");
             }
-            
+
             // Locale Row Index
             using (new EditorGUIFieldScope(LabelWidth))
             {
                 settings.LocaleRowIndex = EditorGUILayout.IntSlider(new GUIContent("Locale Row Index", "The row index of locale definition."), settings.LocaleRowIndex, 0, MaxIntValue);
             }
-            
+
             // Translation Key Column Index
             using (new EditorGUIFieldScope(LabelWidth))
             {
                 settings.TranslationKeyColumnIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Key Column Index", "The column index of translation key definition."), settings.TranslationKeyColumnIndex, 0, MaxIntValue);
             }
-            
+
             using (new EditorGUIFieldScope(LabelWidth))
             {
                 settings.TranslationTextsStartingRowIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Row Index", "The row index and after will be translation texts data."), settings.TranslationTextsStartingRowIndex, 0, MaxIntValue);
             }
-            
+
             // Translation Texts Starting Column Index
             using (new EditorGUIFieldScope(LabelWidth))
             {
                 settings.TranslationTextsStartingColumnIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Column Index", "The column index and after will be translation texts data."), settings.TranslationTextsStartingColumnIndex, 0, MaxIntValue);
             }
-            
+
             // If the texts starting row index less than or equals the locale row index, then fix it's value just by letting it equals locale row index + 1
             if (settings.TranslationTextsStartingRowIndex <= settings.LocaleRowIndex)
             {
@@ -141,7 +138,7 @@ namespace UniSharperEditor.Localization
             if (translationDataMap == null ||
                 !LocalizationAssetUtility.BuildLocalizationAssets(translationDataMap))
                 return;
-            
+
             var result = LocalizationAssetUtility.GenerateScripts(translationDataMap);
             EditorPrefs.SetBool(ScriptsGeneratedPrefKey, result);
 
@@ -159,9 +156,9 @@ namespace UniSharperEditor.Localization
         private static void OnScriptsReloaded()
         {
             var scriptsGenerated = EditorPrefs.GetBool(ScriptsGeneratedPrefKey);
-            if (!scriptsGenerated) 
+            if (!scriptsGenerated)
                 return;
-            
+
             UnityEditorUtility.ClearProgressBar();
             EditorPrefs.SetBool(ScriptsGeneratedPrefKey, false);
 

@@ -20,18 +20,6 @@ namespace UniSharperEditor.Localization
 
         #endregion Fields
 
-        #region Properties
-
-        private Rect displayAreaRect
-        {
-            get
-            {
-                return new Rect(0, 0, position.width, position.height);
-            }
-        }
-
-        #endregion Properties
-
         #region Methods
 
         [MenuItem("UniSharper/Localization Management/Localization Assets Viewer", false, 2)]

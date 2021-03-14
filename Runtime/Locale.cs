@@ -406,9 +406,9 @@ namespace UniSharper.Localization
             this.locale = locale.Replace("-", "_");
             var segments = this.locale.Split('_');
 
-            if (segments.Length <= 0) 
+            if (segments.Length <= 0)
                 return;
-            
+
             Language = segments[0];
 
             if (segments.Length > 1)

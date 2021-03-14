@@ -25,9 +25,9 @@ namespace UniSharperEditor.Localization
 
         internal static bool BuildLocalizationAssets(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
-            if (translationDataMap.Count <= 0) 
+            if (translationDataMap.Count <= 0)
                 return false;
-            
+
             var settings = LocalizationAssetSettings.Load();
             LocalizationAssetSettings.CreateLocalizationAssetsFolder(settings);
 
@@ -46,7 +46,6 @@ namespace UniSharperEditor.Localization
             }
 
             return true;
-
         }
 
         internal static bool GenerateScripts(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
@@ -98,14 +97,13 @@ namespace UniSharperEditor.Localization
                 return null;
             }
 
-            Dictionary<Locale, Dictionary<string, string>> translationDataMap = null;
             var dirPath = EditorPath.ConvertToAbsolutePath(settings.LocalizationAssetsPath);
             var files = Directory.GetFiles(dirPath, "*.bytes");
 
             if (files.Length <= 0)
                 return null;
 
-            translationDataMap = new Dictionary<Locale, Dictionary<string, string>>();
+            var translationDataMap = new Dictionary<Locale, Dictionary<string, string>>();
 
             foreach (var file in files)
             {
@@ -143,7 +141,7 @@ namespace UniSharperEditor.Localization
             var fileExtension = Path.GetExtension(path).ToLower();
             using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
             {
-                using (var reader = fileExtension.Equals(".xlsx") ? 
+                using (var reader = fileExtension.Equals(".xlsx") ?
                     ExcelReaderFactory.CreateOpenXmlReader(stream) : ExcelReaderFactory.CreateBinaryReader(stream))
                 {
                     var dataSet = reader.AsDataSet();

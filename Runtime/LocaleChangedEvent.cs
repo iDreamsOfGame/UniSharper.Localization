@@ -18,10 +18,7 @@ namespace UniSharper.Localization
         /// </summary>
         /// <param name="currentLocale">The current locale.</param>
         public LocaleChangedEventArgs(Locale currentLocale)
-            : base()
-        {
-            CurrentLocale = currentLocale;
-        }
+            : base() => CurrentLocale = currentLocale;
 
         #endregion Constructors
 

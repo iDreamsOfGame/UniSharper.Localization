@@ -26,7 +26,7 @@ namespace UniSharper.Localization
         public const string DefaultText = "NoString";
 
         private readonly Dictionary<Locale, Dictionary<string, string>> localeTranslationTextsMap;
-        
+
         private Locale currentLocale;
 
         #endregion Fields
@@ -34,10 +34,7 @@ namespace UniSharper.Localization
         #region Constructors
 
         [Preserve]
-        private LocalizationManager()
-        {
-            localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, string>>();
-        }
+        private LocalizationManager() => localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, string>>();
 
         #endregion Constructors
 
@@ -63,6 +60,7 @@ namespace UniSharper.Localization
             {
                 if (currentLocale != null && currentLocale.Equals(value))
                     return;
+
                 currentLocale = value;
                 OnLocaleChanged(new LocaleChangedEventArgs(currentLocale));
             }
@@ -153,9 +151,6 @@ namespace UniSharper.Localization
 
         #endregion Methods
 
-        private void OnLocaleChanged(LocaleChangedEventArgs e)
-        {
-            LocaleChanged?.Invoke(this, e);
-        }
+        private void OnLocaleChanged(LocaleChangedEventArgs e) => LocaleChanged?.Invoke(this, e);
     }
 }
