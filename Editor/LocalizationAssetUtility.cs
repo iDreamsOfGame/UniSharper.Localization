@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using UniSharper;
 using UniSharper.Localization;
 using UnityEditor;
 using UnityEngine;
@@ -66,7 +67,7 @@ namespace UniSharperEditor.Localization
                 // Generate TranslationKey.cs
                 var scriptTranslationKeyStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "TranslationKey.cs");
                 var scriptTranslationKeyAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
-                scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewTranlationKeyScriptTemplate.txt", UnityPackageName);
+                scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewTranslationKeyScriptTemplate.txt", UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Constants, GenerateConstantsForScriptTranslationKey(translationDataMap));
                 File.WriteAllText(scriptTranslationKeyStorePath, scriptTextContent, new UTF8Encoding(true));
@@ -227,8 +228,8 @@ namespace UniSharperEditor.Localization
 
                     if (i < item.Keys.Count - 1)
                     {
-                        stringBuilder.AppendWindowsNewLine()
-                            .AppendWindowsNewLine();
+                        stringBuilder.Append(PlayerEnvironment.WindowsNewLine)
+                            .Append(PlayerEnvironment.WindowsNewLine);
                     }
                     i++;
                 }
@@ -261,8 +262,8 @@ namespace UniSharperEditor.Localization
 
                 if (i < translationDataMap.Keys.Count - 1)
                 {
-                    stringBuilder.AppendWindowsNewLine()
-                        .AppendWindowsNewLine();
+                    stringBuilder.Append(PlayerEnvironment.WindowsNewLine)
+                        .Append(PlayerEnvironment.WindowsNewLine);
                 }
 
                 i++;
