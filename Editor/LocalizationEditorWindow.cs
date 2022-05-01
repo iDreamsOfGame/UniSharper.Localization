@@ -8,13 +8,7 @@ namespace UniSharperEditor.Localization
 {
     internal abstract class LocalizationEditorWindow : EditorWindow
     {
-        #region Fields
-
         private LocalizationAssetSettings settings;
-
-        #endregion Fields
-
-        #region Properties
 
         protected LocalizationAssetSettings Settings
         {
@@ -28,10 +22,6 @@ namespace UniSharperEditor.Localization
                 return settings;
             }
         }
-
-        #endregion Properties
-
-        #region Methods
 
         protected virtual void DrawGUIWithoutSettings()
         {
@@ -64,7 +54,5 @@ namespace UniSharperEditor.Localization
                 DrawGUIWithSettings();
             }
         }
-
-        #endregion Methods
     }
 }

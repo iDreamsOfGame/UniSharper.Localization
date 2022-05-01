@@ -18,8 +18,6 @@ namespace UniSharper.Localization
     /// <seealso cref="LocalizationManager"/>
     public sealed class LocalizationManager : Singleton<LocalizationManager>
     {
-        #region Fields
-
         /// <summary>
         /// The default translation text.
         /// </summary>
@@ -29,25 +27,13 @@ namespace UniSharper.Localization
 
         private Locale currentLocale;
 
-        #endregion Fields
-
-        #region Constructors
-
         [Preserve]
         private LocalizationManager() => localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, string>>();
-
-        #endregion Constructors
-
-        #region Events
 
         /// <summary>
         /// Occurs when [locale changed].
         /// </summary>
         public event EventHandler<LocaleChangedEventArgs> LocaleChanged;
-
-        #endregion Events
-
-        #region Properties
 
         /// <summary>
         /// Gets or sets the current locale.
@@ -65,10 +51,6 @@ namespace UniSharper.Localization
                 OnLocaleChanged(new LocaleChangedEventArgs(currentLocale));
             }
         }
-
-        #endregion Properties
-
-        #region Methods
 
         /// <summary>
         /// Gets the translation text of the target locale.
@@ -141,15 +123,11 @@ namespace UniSharper.Localization
         /// <param name="data">The localization asset data.</param>
         public void LoadLocalizationAssetData(Locale locale, byte[] data)
         {
-            using (var stream = new MemoryStream(data))
-            {
-                var reader = new BinaryFormatter();
-                var translationData = reader.Deserialize(stream) as Dictionary<string, string>;
-                localeTranslationTextsMap.AddUnique(locale, translationData);
-            }
+            using var stream = new MemoryStream(data);
+            var reader = new BinaryFormatter();
+            var translationData = reader.Deserialize(stream) as Dictionary<string, string>;
+            localeTranslationTextsMap.AddUnique(locale, translationData);
         }
-
-        #endregion Methods
 
         private void OnLocaleChanged(LocaleChangedEventArgs e) => LocaleChanged?.Invoke(this, e);
     }

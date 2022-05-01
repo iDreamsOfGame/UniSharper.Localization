@@ -16,21 +16,19 @@ namespace UniSharperEditor.Localization
     /// <seealso cref="UniSharperEditor.SettingsScriptableObject"/>
     public class LocalizationAssetSettings : SettingsScriptableObject
     {
-        #region Fields
-
         private const string LocalizationAssetsFolderName = "Locales";
 
         private const string LocalizationFolderName = "Localization";
 
         private static readonly string LocalizationFolder = Path.Combine(EditorEnvironment.AssetsFolderName, LocalizationFolderName);
 
-        private static readonly string SettingsAssetPath = $"{LocalizationFolder}/{typeof(LocalizationAssetSettings).Name}.asset";
+        private static readonly string SettingsAssetPath = $"{LocalizationFolder}/{nameof(LocalizationAssetSettings)}.asset";
 
         private static readonly string TranslationFilePathPrefKeyFormat = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), false)}.{typeof(LocalizationAssetSettings).FullName}.translationFilePath";
 
         [ReadOnlyField]
         [SerializeField]
-        private int localeRowIndex = 0;
+        private int localeRowIndex;
 
         [ReadOnlyField]
         [SerializeField]
@@ -46,7 +44,7 @@ namespace UniSharperEditor.Localization
 
         [ReadOnlyField]
         [SerializeField]
-        private int translationKeyColumnIndex = 0;
+        private int translationKeyColumnIndex;
 
         [ReadOnlyField]
         [SerializeField]
@@ -55,10 +53,6 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private int translationTextsStartingRowIndex = 1;
-
-        #endregion Fields
-
-        #region Properties
 
         internal static string TranslationFilePath
         {
@@ -164,10 +158,6 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
         internal static LocalizationAssetSettings Create()
         {
             LocalizationAssetSettings settings;
@@ -223,7 +213,5 @@ namespace UniSharperEditor.Localization
                 localizationScriptNamespace = $"{(string.IsNullOrEmpty(PlayerSettings.productName) ? "Project" : PlayerSettings.productName)}.Localization";
             }
         }
-
-        #endregion Methods
     }
 }

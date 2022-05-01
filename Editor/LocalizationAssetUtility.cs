@@ -16,13 +16,7 @@ namespace UniSharperEditor.Localization
 {
     internal static class LocalizationAssetUtility
     {
-        #region Fields
-
         private const string UnityPackageName = "io.github.idreamsofgame.unisharper.localization";
-
-        #endregion Fields
-
-        #region Methods
 
         internal static bool BuildLocalizationAssets(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
@@ -110,12 +104,10 @@ namespace UniSharperEditor.Localization
             {
                 var localeString = Path.GetFileNameWithoutExtension(file);
                 var locale = new Locale(localeString);
-                using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
-                {
-                    var reader = new BinaryFormatter();
-                    var translationTexts = reader.Deserialize(stream) as Dictionary<string, string>;
-                    translationDataMap.AddUnique(locale, translationTexts);
-                }
+                using var stream = File.Open(file, FileMode.Open, FileAccess.Read);
+                var reader = new BinaryFormatter();
+                var translationTexts = reader.Deserialize(stream) as Dictionary<string, string>;
+                translationDataMap.AddUnique(locale, translationTexts);
             }
 
             return translationDataMap;
@@ -140,75 +132,70 @@ namespace UniSharperEditor.Localization
             Dictionary<Locale, Dictionary<string, string>> dataMap = null;
             var path = LocalizationAssetSettings.TranslationFilePath;
             var fileExtension = Path.GetExtension(path).ToLower();
-            using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            using var stream = File.Open(path, FileMode.Open, FileAccess.Read);
+            using var reader = fileExtension.Equals(".xlsx") ? ExcelReaderFactory.CreateOpenXmlReader(stream) : ExcelReaderFactory.CreateBinaryReader(stream);
+            var dataSet = reader.AsDataSet();
+
+            if (dataSet.Tables.Count > 0)
             {
-                using (var reader = fileExtension.Equals(".xlsx") ?
-                    ExcelReaderFactory.CreateOpenXmlReader(stream) : ExcelReaderFactory.CreateBinaryReader(stream))
+                var table = dataSet.Tables[0];
+                var columns = table.Columns;
+                var rows = table.Rows;
+
+                if (columns.Count > 1 && rows.Count > 1)
                 {
-                    var dataSet = reader.AsDataSet();
+                    dataMap = new Dictionary<Locale, Dictionary<string, string>>();
+                    var localeColumnIndexMap = new Dictionary<Locale, int>();
 
-                    if (dataSet.Tables.Count > 0)
+                    // Record locales.
+                    for (var i = settings.TranslationTextsStartingColumnIndex; i < columns.Count; i++)
                     {
-                        var table = dataSet.Tables[0];
-                        var columns = table.Columns;
-                        var rows = table.Rows;
-
-                        if (columns.Count > 1 && rows.Count > 1)
-                        {
-                            dataMap = new Dictionary<Locale, Dictionary<string, string>>();
-                            var localeColumnIndexMap = new Dictionary<Locale, int>();
-
-                            // Record locales.
-                            for (var i = settings.TranslationTextsStartingColumnIndex; i < columns.Count; i++)
-                            {
-                                var localeString = rows[settings.LocaleRowIndex][i].ToString().Trim();
-                                if (string.IsNullOrEmpty(localeString))
-                                    continue;
-                                var locale = new Locale(localeString);
-                                localeColumnIndexMap.AddUnique(locale, i);
-                                dataMap.AddUnique(locale, new Dictionary<string, string>());
-                            }
-
-                            // Records translation data.
-                            for (var i = settings.TranslationTextsStartingRowIndex; i < rows.Count; i++)
-                            {
-                                foreach (var kvp in localeColumnIndexMap)
-                                {
-                                    var locale = kvp.Key;
-                                    var columnIndex = kvp.Value;
-                                    var translationKey = rows[i][settings.TranslationKeyColumnIndex].ToString().Trim();
-                                    var translationText = rows[i][columnIndex].ToString();
-
-                                    if (string.IsNullOrEmpty(translationKey))
-                                        continue;
-
-                                    if (string.IsNullOrEmpty(translationText))
-                                    {
-                                        translationText = LocalizationManager.DefaultText;
-                                    }
-
-                                    if (dataMap.ContainsKey(locale) && !dataMap[locale].ContainsKey(translationKey))
-                                    {
-                                        dataMap[locale].Add(translationKey, translationText);
-                                    }
-                                    else
-                                    {
-                                        Debug.LogErrorFormat("Found repeat translation key in cell 'A{0}'!", (i + 1).ToString());
-                                        return null;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogError("Invalid translation file format!");
-                        }
+                        var localeString = rows[settings.LocaleRowIndex][i].ToString().Trim();
+                        if (string.IsNullOrEmpty(localeString))
+                            continue;
+                        var locale = new Locale(localeString);
+                        localeColumnIndexMap.AddUnique(locale, i);
+                        dataMap.AddUnique(locale, new Dictionary<string, string>());
                     }
-                    else
+
+                    // Records translation data.
+                    for (var i = settings.TranslationTextsStartingRowIndex; i < rows.Count; i++)
                     {
-                        Debug.LogError("Invalid translation file!");
+                        foreach (var kvp in localeColumnIndexMap)
+                        {
+                            var locale = kvp.Key;
+                            var columnIndex = kvp.Value;
+                            var translationKey = rows[i][settings.TranslationKeyColumnIndex].ToString().Trim();
+                            var translationText = rows[i][columnIndex].ToString();
+
+                            if (string.IsNullOrEmpty(translationKey))
+                                continue;
+
+                            if (string.IsNullOrEmpty(translationText))
+                            {
+                                translationText = LocalizationManager.DefaultText;
+                            }
+
+                            if (dataMap.ContainsKey(locale) && !dataMap[locale].ContainsKey(translationKey))
+                            {
+                                dataMap[locale].Add(translationKey, translationText);
+                            }
+                            else
+                            {
+                                Debug.LogErrorFormat("Found repeat translation key in cell 'A{0}'!", (i + 1).ToString());
+                                return null;
+                            }
+                        }
                     }
                 }
+                else
+                {
+                    Debug.LogError("Invalid translation file format!");
+                }
+            }
+            else
+            {
+                Debug.LogError("Invalid translation file!");
             }
 
             return dataMap;
@@ -271,7 +258,5 @@ namespace UniSharperEditor.Localization
 
             return stringBuilder.ToString();
         }
-
-        #endregion Methods
     }
 }

@@ -8,13 +8,7 @@ namespace UniSharperEditor.Localization
 {
     internal class TranslationDataImporterWindow : LocalizationEditorWindow
     {
-        #region Fields
-
         private TranslationDataImporter importer;
-
-        #endregion Fields
-
-        #region Methods
 
         [MenuItem("UniSharper/Localization Management/Translation Data Importer", false, 1)]
         internal static void ShowWindow()
@@ -26,14 +20,8 @@ namespace UniSharperEditor.Localization
 
         protected override void DrawGUIWithSettings()
         {
-            if (importer == null)
-            {
-                importer = new TranslationDataImporter(Settings);
-            }
-
+            importer ??= new TranslationDataImporter(Settings);
             importer.DrawEditorGui();
         }
-
-        #endregion Methods
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Unity.UniSharper.Localization",
+    "rootNamespace": "UniSharper.Localization",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

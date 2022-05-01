@@ -10,15 +10,9 @@ namespace UniSharperEditor.Localization
 {
     internal class TranslationDataTreeView : TreeView
     {
-        #region Fields
-
         private Dictionary<string, Dictionary<Locale, string>> convertedTranslationDataMap;
 
-        private Dictionary<Locale, Dictionary<string, string>> translationDataMap;
-
-        #endregion Fields
-
-        #region Constructors
+        private readonly Dictionary<Locale, Dictionary<string, string>> translationDataMap;
 
         public TranslationDataTreeView(TreeViewState state, Dictionary<Locale, Dictionary<string, string>> translationDataMap)
             : base(state, new TranslationDataColumnHeader(CreateDefaultMultiColumnHeaderState(translationDataMap)))
@@ -27,10 +21,6 @@ namespace UniSharperEditor.Localization
             showAlternatingRowBackgrounds = true;
             Reload();
         }
-
-        #endregion Constructors
-
-        #region Methods
 
         public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, string>> translationDataMap) => new MultiColumnHeaderState(GetColumns(translationDataMap));
 
@@ -74,13 +64,7 @@ namespace UniSharperEditor.Localization
             {
                 foreach (var kvp in convertedTranslationDataMap)
                 {
-                    var texts = new List<string>(kvp.Value.Count);
-
-                    foreach (var text in kvp.Value.Values)
-                    {
-                        texts.Add(text);
-                    }
-
+                    var texts = new List<string>(kvp.Value.Values);
                     root.AddChild(new TranslationDataTreeViewItem(kvp.Key, texts));
                 }
             }
@@ -90,8 +74,7 @@ namespace UniSharperEditor.Localization
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            var item = args.item as TranslationDataTreeViewItem;
-            if (item == null)
+            if (!(args.item is TranslationDataTreeViewItem item))
             {
                 base.RowGUI(args);
                 return;
@@ -146,14 +129,9 @@ namespace UniSharperEditor.Localization
 
             if (Event.current.type == EventType.Repaint)
             {
-                if (columnIndex == 0)
-                {
-                    labelStyle.Draw(cellRect, viewItem.displayName, false, false, args.selected, args.focused);
-                }
-                else
-                {
-                    labelStyle.Draw(cellRect, viewItem.TranslationTexts[columnIndex - 1], false, false, args.selected, args.focused);
-                }
+                labelStyle.Draw(cellRect, columnIndex == 0 
+                    ? viewItem.displayName
+                    : viewItem.TranslationTexts[columnIndex - 1], false, false, args.selected, args.focused);
             }
         }
 
@@ -180,23 +158,13 @@ namespace UniSharperEditor.Localization
 
             return map;
         }
-
-        #endregion Methods
     }
 
     internal class TranslationDataTreeViewItem : TreeViewItem
     {
-        #region Constructors
-
         public TranslationDataTreeViewItem(string translationTextKey, IList<string> translationTexts)
         : base(translationTextKey.GetHashCode(), 0, translationTextKey) => TranslationTexts = translationTexts;
 
-        #endregion Constructors
-
-        #region Properties
-
-        public IList<string> TranslationTexts { get; set; }
-
-        #endregion Properties
+        public IList<string> TranslationTexts { get; }
     }
 }

@@ -12,15 +12,9 @@ namespace UniSharperEditor.Localization
 {
     internal class LocalizationAssetsViewerWindow : LocalizationEditorWindow
     {
-        #region Fields
-
         private static Dictionary<Locale, Dictionary<string, string>> translationDataMap;
 
         private TranslationDataTreeView translationDataTreeView;
-
-        #endregion Fields
-
-        #region Methods
 
         [MenuItem("UniSharper/Localization Management/Localization Assets Viewer", false, 2)]
         internal static void ShowWindow()
@@ -44,14 +38,8 @@ namespace UniSharperEditor.Localization
 
         private void DrawTranslationDataTreeView()
         {
-            if (translationDataTreeView == null)
-            {
-                translationDataTreeView = new TranslationDataTreeView(new TreeViewState(), translationDataMap);
-            }
-
+            translationDataTreeView ??= new TranslationDataTreeView(new TreeViewState(), translationDataMap);
             translationDataTreeView.OnGUI(new Rect(0, 0, position.width, position.height));
         }
-
-        #endregion Methods
     }
 }

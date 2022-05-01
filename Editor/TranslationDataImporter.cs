@@ -11,8 +11,6 @@ namespace UniSharperEditor.Localization
 {
     internal class TranslationDataImporter
     {
-        #region Fields
-
         private const float LabelWidth = 275f;
 
         private const int MaxIntValue = 10;
@@ -21,15 +19,7 @@ namespace UniSharperEditor.Localization
 
         private readonly LocalizationAssetSettings settings;
 
-        #endregion Fields
-
-        #region Constructors
-
         internal TranslationDataImporter(LocalizationAssetSettings settings) => this.settings = settings;
-
-        #endregion Constructors
-
-        #region Methods
 
         internal void DrawEditorGui()
         {
@@ -50,7 +40,7 @@ namespace UniSharperEditor.Localization
                 LocalizationAssetSettings.TranslationFilePath = string.Empty;
             }
 
-            LocalizationAssetSettings.TranslationFilePath = EditorGUILayoutUtility.FileField(new GUIContent("Translation File Path", "Where to locate translation excel file."), LocalizationAssetSettings.TranslationFilePath, "Select Translation Excel File", string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) ? Directory.GetCurrentDirectory() : new FileInfo(LocalizationAssetSettings.TranslationFilePath).DirectoryName, new string[] { "Excel Files", "xlsx,xls" }, LabelWidth);
+            LocalizationAssetSettings.TranslationFilePath = EditorGUILayoutUtility.FileField(new GUIContent("Translation File Path", "Where to locate translation excel file."), LocalizationAssetSettings.TranslationFilePath, "Select Translation Excel File", string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) ? Directory.GetCurrentDirectory() : new FileInfo(LocalizationAssetSettings.TranslationFilePath).DirectoryName, new[] { "Excel Files", "xlsx,xls" }, LabelWidth);
 
             // Localization Assets Path
             var localizationAssetsAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Assets Path", "Where to store localization assets."), settings.LocalizationAssetsPath, "Localization Assets Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationAssetsPath), string.Empty, LabelWidth));
@@ -135,8 +125,7 @@ namespace UniSharperEditor.Localization
         {
             var translationDataMap = LocalizationAssetUtility.LoadTranslationFile();
 
-            if (translationDataMap == null ||
-                !LocalizationAssetUtility.BuildLocalizationAssets(translationDataMap))
+            if (translationDataMap == null || !LocalizationAssetUtility.BuildLocalizationAssets(translationDataMap))
                 return;
 
             var result = LocalizationAssetUtility.GenerateScripts(translationDataMap);
@@ -171,7 +160,5 @@ namespace UniSharperEditor.Localization
                 UnityEditorUtility.DisplayDialog("Error", "Failed to compile scripts!", "OK");
             }
         }
-
-        #endregion Methods
     }
 }

@@ -2,8 +2,9 @@
 // See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace UniSharper.Localization
 {
@@ -16,8 +17,6 @@ namespace UniSharper.Localization
     [Serializable]
     public sealed partial class Locale : IEquatable<Locale>, ISerializable
     {
-        #region Fields
-
         /// <summary>
         /// Represents an instance of <see cref="UniSharper.Localization.Locale"/> that is useful
         /// for the Arabic language. This field is read-only.
@@ -188,10 +187,6 @@ namespace UniSharper.Localization
 
         private string locale;
 
-        #endregion Fields
-
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Locale"/> class.
         /// </summary>
@@ -217,10 +212,6 @@ namespace UniSharper.Localization
             ParseLocaleString(info.GetString("locale"));
         }
 
-        #endregion Constructors
-
-        #region Properties
-
         /// <summary>
         /// Gets the country code string.
         /// </summary>
@@ -235,11 +226,11 @@ namespace UniSharper.Localization
         {
             get
             {
-                Dictionary<string, object> dict = this.GetType().GetStaticFieldValuePairs();
+                var map = this.GetType().GetStaticFieldValuePairs();
 
-                foreach (KeyValuePair<string, object> kvp in dict)
+                foreach (var kvp in map)
                 {
-                    if (kvp.Value is Locale && (kvp.Value as Locale).ToString() == locale)
+                    if (kvp.Value is Locale value && value.ToString() == locale)
                     {
                         return kvp.Key;
                     }
@@ -256,10 +247,6 @@ namespace UniSharper.Localization
         /// An ISO 639 alpha-2 or alpha-3 language code, or a language subtag up to 8 characters in length.
         /// </value>
         public string Language { get; private set; } = string.Empty;
-
-        #endregion Properties
-
-        #region Methods
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Locale"/>.
@@ -366,10 +353,7 @@ namespace UniSharper.Localization
         /// A hash code for this instance, suitable for use in hashing algorithms and data
         /// structures like a hash table.
         /// </returns>
-        public override int GetHashCode()
-        {
-            return locale.GetHashCode();
-        }
+        public override int GetHashCode() => locale.GetHashCode();
 
         /// <summary>
         /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data
@@ -391,10 +375,7 @@ namespace UniSharper.Localization
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        public override string ToString()
-        {
-            return locale;
-        }
+        public override string ToString() => locale;
 
         private void ParseLocaleString(string locale)
         {
@@ -416,7 +397,5 @@ namespace UniSharper.Localization
                 Country = segments[1];
             }
         }
-
-        #endregion Methods
     }
 }

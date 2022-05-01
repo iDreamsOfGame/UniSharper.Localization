@@ -11,25 +11,19 @@ namespace UniSharper.Localization
     /// <seealso cref="System.EventArgs"/>
     public class LocaleChangedEventArgs : EventArgs
     {
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LocaleChangedEventArgs"/> class.
         /// </summary>
         /// <param name="currentLocale">The current locale.</param>
         public LocaleChangedEventArgs(Locale currentLocale)
-            : base() => CurrentLocale = currentLocale;
-
-        #endregion Constructors
-
-        #region Properties
+        {
+            CurrentLocale = currentLocale;
+        }
 
         /// <summary>
         /// Gets or sets the current locale.
         /// </summary>
         /// <value>The current locale.</value>
         public Locale CurrentLocale { get; }
-
-        #endregion Properties
     }
 }
