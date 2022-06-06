@@ -40,10 +40,15 @@ namespace UniSharperEditor.Localization
                 LocalizationAssetSettings.TranslationFilePath = string.Empty;
             }
 
-            LocalizationAssetSettings.TranslationFilePath = EditorGUILayoutUtility.FileField(new GUIContent("Translation File Path", "Where to locate translation excel file."), LocalizationAssetSettings.TranslationFilePath, "Select Translation Excel File", string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) ? Directory.GetCurrentDirectory() : new FileInfo(LocalizationAssetSettings.TranslationFilePath).DirectoryName, new[] { "Excel Files", "xlsx,xls" }, LabelWidth);
+            var directory = string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) 
+                ? Directory.GetCurrentDirectory()
+                : new FileInfo(LocalizationAssetSettings.TranslationFilePath).DirectoryName;
+            LocalizationAssetSettings.TranslationFilePath = EditorGUILayoutUtility.FileField(new GUIContent("Translation File Path", "Where to locate translation excel file."),
+                LocalizationAssetSettings.TranslationFilePath, "Select Translation Excel File", directory, new[] { "Excel Files", "xlsx,xls" }, LabelWidth);
 
             // Localization Assets Path
-            var localizationAssetsAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Assets Path", "Where to store localization assets."), settings.LocalizationAssetsPath, "Localization Assets Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationAssetsPath), string.Empty, LabelWidth));
+            var localizationAssetsAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Assets Path", "Where to store localization assets."), settings.LocalizationAssetsPath,
+                "Localization Assets Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationAssetsPath), string.Empty, LabelWidth));
 
             if (EditorPath.IsAssetPath(localizationAssetsAbsolutePath))
             {
@@ -61,7 +66,8 @@ namespace UniSharperEditor.Localization
             }
 
             // Localization Scripts Store Path
-            var localizationScriptsStoreAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."), settings.LocalizationScriptsStorePath, "Localization Scripts Store Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationScriptsStorePath), string.Empty, LabelWidth));
+            var localizationScriptsStoreAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."), settings.LocalizationScriptsStorePath,
+                "Localization Scripts Store Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationScriptsStorePath), string.Empty, LabelWidth));
 
             if (EditorPath.IsAssetPath(localizationScriptsStoreAbsolutePath))
             {
@@ -86,13 +92,15 @@ namespace UniSharperEditor.Localization
 
             using (new EditorGUIFieldScope(LabelWidth))
             {
-                settings.TranslationTextsStartingRowIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Row Index", "The row index and after will be translation texts data."), settings.TranslationTextsStartingRowIndex, 0, MaxIntValue);
+                settings.TranslationTextsStartingRowIndex =
+                    EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Row Index", "The row index and after will be translation texts data."), settings.TranslationTextsStartingRowIndex, 0, MaxIntValue);
             }
 
             // Translation Texts Starting Column Index
             using (new EditorGUIFieldScope(LabelWidth))
             {
-                settings.TranslationTextsStartingColumnIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Column Index", "The column index and after will be translation texts data."), settings.TranslationTextsStartingColumnIndex, 0, MaxIntValue);
+                settings.TranslationTextsStartingColumnIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Column Index", "The column index and after will be translation texts data."),
+                    settings.TranslationTextsStartingColumnIndex, 0, MaxIntValue);
             }
 
             // If the texts starting row index less than or equals the locale row index, then fix it's value just by letting it equals locale row index + 1
