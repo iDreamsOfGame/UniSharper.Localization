@@ -6,20 +6,14 @@ namespace UniSharper.Localization.Samples
 {
     public class LocalizationSample : MonoBehaviour
     {
-        #region Fields
+        [SerializeField]
+        private Text text1;
 
         [SerializeField]
-        private Text text1 = null;
+        private Text text2;
 
         [SerializeField]
-        private Text text2 = null;
-
-        [SerializeField]
-        private Text text3 = null;
-
-        #endregion Fields
-
-        #region Methods
+        private Text text3;
 
         public void OnButton1Clicked()
         {
@@ -73,7 +67,5 @@ namespace UniSharper.Localization.Samples
             text2.text = LocalizationManager.Instance.GetTranslationText(TranslationKey.Thanks);
             text3.text = LocalizationManager.Instance.GetTranslationText(TranslationKey.GoodBye);
         }
-
-        #endregion Methods
     }
 }
