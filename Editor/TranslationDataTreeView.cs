@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UniSharper.Localization;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -22,32 +23,28 @@ namespace UniSharperEditor.Localization
             Reload();
         }
 
-        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, string>> translationDataMap) => new MultiColumnHeaderState(GetColumns(translationDataMap));
+        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, string>> translationDataMap) => 
+            new(GetColumns(translationDataMap));
 
+        [UsedImplicitly]
         public Dictionary<Locale, Dictionary<string, string>> RestoreTranslationDataMap()
         {
             var result = new Dictionary<Locale, Dictionary<string, string>>();
-
-            if (convertedTranslationDataMap != null)
+            if (convertedTranslationDataMap == null) 
+                return result;
+            
+            foreach (var (key, value) in convertedTranslationDataMap)
             {
-                foreach (var kvp in convertedTranslationDataMap)
+                foreach (var (locale, text) in value)
                 {
-                    var key = kvp.Key;
-
-                    foreach (var textMap in kvp.Value)
+                    if (!result.ContainsKey(locale))
                     {
-                        var locale = textMap.Key;
-                        var text = textMap.Value;
+                        result.Add(locale, new Dictionary<string, string>());
+                    }
 
-                        if (!result.ContainsKey(locale))
-                        {
-                            result.Add(locale, new Dictionary<string, string>());
-                        }
-
-                        if (!result[locale].ContainsKey(key))
-                        {
-                            result[locale].Add(key, text);
-                        }
+                    if (!result[locale].ContainsKey(key))
+                    {
+                        result[locale].Add(key, text);
                     }
                 }
             }
@@ -60,13 +57,13 @@ namespace UniSharperEditor.Localization
             var root = new TreeViewItem(-1, -1); // dummy root node
             convertedTranslationDataMap = ConvertTranslationDataMap();
 
-            if (convertedTranslationDataMap != null && convertedTranslationDataMap.Count > 0)
+            if (convertedTranslationDataMap is not { Count: > 0 }) 
+                return root;
+            
+            foreach (var (key, value) in convertedTranslationDataMap)
             {
-                foreach (var kvp in convertedTranslationDataMap)
-                {
-                    var texts = new List<string>(kvp.Value.Values);
-                    root.AddChild(new TranslationDataTreeViewItem(kvp.Key, texts));
-                }
+                var texts = new List<string>(value.Values);
+                root.AddChild(new TranslationDataTreeViewItem(key, texts));
             }
 
             return root;
@@ -74,22 +71,22 @@ namespace UniSharperEditor.Localization
 
         protected override void RowGUI(RowGUIArgs args)
         {
-            if (!(args.item is TranslationDataTreeViewItem item))
+            if (args.item is not TranslationDataTreeViewItem item)
             {
                 base.RowGUI(args);
                 return;
             }
 
-            if (!args.isRenaming)
+            if (args.isRenaming) 
+                return;
+            
+            for (var i = 0; i < args.GetNumVisibleColumns(); i++)
             {
-                for (var i = 0; i < args.GetNumVisibleColumns(); i++)
-                {
-                    CellGUI(args.GetCellRect(i), item, multiColumnHeader.state.visibleColumns[i], ref args);
-                }
+                CellGUI(args.GetCellRect(i), item, multiColumnHeader.state.visibleColumns[i], ref args);
             }
         }
 
-        private static MultiColumnHeaderState.Column CreateColumn(string label, bool canSort = false, bool allowToggleVisibility = false) => new MultiColumnHeaderState.Column()
+        private static MultiColumnHeaderState.Column CreateColumn(string label, bool canSort = false, bool allowToggleVisibility = false) => new()
         {
             headerContent = new GUIContent(label, label),
             allowToggleVisibility = allowToggleVisibility,
@@ -103,21 +100,21 @@ namespace UniSharperEditor.Localization
 
         private static MultiColumnHeaderState.Column[] GetColumns(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
         {
-            var columnCount = (translationDataMap != null && translationDataMap.Count > 0) ? translationDataMap.Count + 1 : 2;
+            var columnCount = translationDataMap is { Count: > 0 } ? translationDataMap.Count + 1 : 2;
             var columns = new MultiColumnHeaderState.Column[columnCount];
             columns[0] = CreateColumn("Translation Key");
 
-            if (translationDataMap != null && translationDataMap.Count > 0)
-            {
-                var i = 0;
+            if (translationDataMap is not { Count: > 0 })
+                return columns;
+            
+            var i = 0;
 
-                foreach (var locale in translationDataMap.Keys)
-                {
-                    locale.GetConstantName(out var label);
-                    label += $" ({locale})";
-                    columns[i + 1] = CreateColumn(label);
-                    i++;
-                }
+            foreach (var locale in translationDataMap.Keys)
+            {
+                locale.GetConstantName(out var label);
+                label += $" ({locale})";
+                columns[i + 1] = CreateColumn(label);
+                i++;
             }
 
             return columns;
@@ -138,21 +135,19 @@ namespace UniSharperEditor.Localization
         private Dictionary<string, Dictionary<Locale, string>> ConvertTranslationDataMap()
         {
             var map = new Dictionary<string, Dictionary<Locale, string>>();
-
-            if (translationDataMap != null && translationDataMap.Count > 0)
+            if (translationDataMap is not { Count: > 0 })
+                return map;
+            
+            foreach (var (locale, value) in translationDataMap)
             {
-                foreach (var kvp in translationDataMap)
+                foreach (var texts in value)
                 {
-                    var locale = kvp.Key;
-                    foreach (var texts in kvp.Value)
+                    if (!map.ContainsKey(texts.Key))
                     {
-                        if (!map.ContainsKey(texts.Key))
-                        {
-                            map.Add(texts.Key, new Dictionary<Locale, string>());
-                        }
-
-                        map[texts.Key].Add(locale, texts.Value);
+                        map.Add(texts.Key, new Dictionary<Locale, string>());
                     }
+
+                    map[texts.Key].Add(locale, texts.Value);
                 }
             }
 

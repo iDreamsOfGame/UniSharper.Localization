@@ -161,11 +161,13 @@ namespace UniSharperEditor.Localization
 
             if (!UnityEditorUtility.scriptCompilationFailed)
             {
-                UnityEditorUtility.DisplayDialog("Success", "Build success!", "OK");
+                if (UnityEditorUtility.DisplayDialog("Success", "Build success!", "OK"))
+                    UnityEditorUtility.ClearProgressBar();
             }
             else
             {
-                UnityEditorUtility.DisplayDialog("Error", "Failed to compile scripts!", "OK");
+                if (UnityEditorUtility.DisplayDialog("Error", "Failed to compile scripts!", "OK"))
+                    UnityEditorUtility.ClearProgressBar();
             }
         }
     }
