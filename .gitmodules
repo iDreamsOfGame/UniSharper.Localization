@@ -1,4 +1,4 @@
 [submodule "upm"]
 	path = Assets/UniSharper.Localization
 	url = https://github.com/iDreamsOfGame/UniSharper.Localization.git
-	branch = upm
+	branch = upm-v2
