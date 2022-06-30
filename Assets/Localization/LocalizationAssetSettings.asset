@@ -17,5 +17,7 @@ MonoBehaviour:
   localizationScriptNamespace: UniSharper.Localization.Samples
   localizationScriptsStorePath: Assets/Samples
   translationKeyColumnIndex: 1
-  translationTextsStartingColumnIndex: 2
-  translationTextsStartingRowIndex: 2
+  translationTextRowStartIndex: 2
+  translationTextColumnIndexRange: {x: 2, y: 5}
+  fontColumnIndexRange: {x: 6, y: 9}
+  styleColumnIndexRange: {x: 10, y: 13}
