@@ -53,6 +53,8 @@ namespace UniSharperEditor.Localization
             {
                 DrawGUIWithSettings();
             }
+            
+            GUIUtility.ExitGUI();
         }
     }
 }

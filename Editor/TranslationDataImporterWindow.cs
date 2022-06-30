@@ -14,7 +14,7 @@ namespace UniSharperEditor.Localization
         internal static void ShowWindow()
         {
             var window = GetWindow<TranslationDataImporterWindow>("Translation Data Importer", true);
-            window.minSize = new Vector2(850, 235);
+            window.minSize = new Vector2(850, 335);
             window.Show();
         }
 

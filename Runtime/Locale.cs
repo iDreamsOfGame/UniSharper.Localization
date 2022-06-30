@@ -15,7 +15,7 @@ namespace UniSharper.Localization
     /// <seealso cref="Locale"/>
     /// <seealso cref="System.Runtime.Serialization.ISerializable"/>
     [Serializable]
-    public sealed partial class Locale : IEquatable<Locale>, ISerializable
+    public sealed class Locale : IEquatable<Locale>, ISerializable
     {
         /// <summary>
         /// Represents an instance of <see cref="UniSharper.Localization.Locale"/> that is useful

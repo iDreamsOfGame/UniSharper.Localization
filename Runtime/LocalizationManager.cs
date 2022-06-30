@@ -23,12 +23,15 @@ namespace UniSharper.Localization
         /// </summary>
         public const string DefaultText = "NoString";
 
-        private readonly Dictionary<Locale, Dictionary<string, string>> localeTranslationTextsMap;
+        private readonly Dictionary<Locale, Dictionary<string, TranslationData>> localeTranslationTextsMap;
 
         private Locale currentLocale;
 
         [Preserve]
-        private LocalizationManager() => localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, string>>();
+        private LocalizationManager()
+        {
+            localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, TranslationData>>();
+        }
 
         /// <summary>
         /// Occurs when [locale changed].
@@ -53,68 +56,94 @@ namespace UniSharper.Localization
         }
 
         /// <summary>
-        /// Gets the translation text of the target locale.
+        /// Gets the translation data for target locale.
         /// </summary>
-        /// <param name="locale">The target locale.</param>
-        /// <param name="key">The key of translation text.</param>
-        /// <returns>The translation text.</returns>
-        /// <exception cref="System.ArgumentNullException">locale or key</exception>
-        public string GetTranslationText(Locale locale, string key)
+        /// <param name="locale">The target locale. </param>
+        /// <param name="key">The key of translation data. </param>
+        /// <returns>The translation data. </returns>
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public TranslationData GetTranslationData(Locale locale, string key)
         {
-            var text = DefaultText;
-
             if (locale == null)
-            {
                 throw new ArgumentNullException(nameof(locale));
-            }
 
             if (string.IsNullOrEmpty(key))
-            {
                 throw new ArgumentNullException(nameof(key));
-            }
-
+            
             if (localeTranslationTextsMap.ContainsKey(locale))
             {
-                var translationData = localeTranslationTextsMap[locale];
-                if (translationData.ContainsKey(key))
-                {
-                    text = translationData[key];
-                }
-                else
-                {
-                    Debug.LogWarning($"No translation text for key [{key}] of locale [{locale}]!");
-                }
+                var dataMap = localeTranslationTextsMap[locale];
+                if(dataMap.TryGetValue(key, out var translationData))
+                    return translationData;
+
+                Debug.LogWarning($"No translation text for key [{key}] of locale [{locale}]!");
             }
             else
             {
                 Debug.LogWarning($"No translation texts for locale [{locale}]!");
             }
 
-            return text;
+            return null;
         }
+        
+        /// <summary>
+        /// Gets the translation data for target locale.
+        /// </summary>
+        /// <param name="key">The key of translation data. </param>
+        /// <returns>The translation data. </returns>
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public TranslationData GetTranslationData(string key) => CurrentLocale != null ? GetTranslationData(CurrentLocale, key) : null;
 
         /// <summary>
-        /// Gets the translation text of current locale.
+        /// Gets the translation text for target locale.
+        /// </summary>
+        /// <param name="locale">The target locale.</param>
+        /// <param name="key">The key of translation text.</param>
+        /// <returns>The translation text.</returns>
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public string GetTranslationText(Locale locale, string key) => GetTranslationData(locale, key)?.Text ?? DefaultText;
+
+        /// <summary>
+        /// Gets the translation text for current locale.
         /// </summary>
         /// <param name="key">The key of translation text.</param>
         /// <returns>The translation text.</returns>
-        /// <exception cref="System.ArgumentNullException">key</exception>
-        public string GetTranslationText(string key)
-        {
-            var text = DefaultText;
-
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            if (CurrentLocale != null)
-            {
-                text = GetTranslationText(CurrentLocale, key);
-            }
-
-            return text;
-        }
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public string GetTranslationText(string key) => CurrentLocale != null ? GetTranslationText(CurrentLocale, key) : DefaultText;
+        
+        /// <summary>
+        /// Gets the font for target locale.
+        /// </summary>
+        /// <param name="locale">The target locale.</param>
+        /// <param name="key">The key of translation text.</param>
+        /// <returns>The translation text.</returns>
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public string GetFont(Locale locale, string key) => GetTranslationData(locale, key)?.Font;
+        
+        /// <summary>
+        /// Gets the font for target locale.
+        /// </summary>
+        /// <param name="key">The key of translation text.</param>
+        /// <returns>The translation text.</returns>
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public string GetFont(string key) => CurrentLocale != null ? GetFont(CurrentLocale, key) : null;
+        
+        /// <summary>
+        /// Gets the style for target locale.
+        /// </summary>
+        /// <param name="locale">The target locale.</param>
+        /// <param name="key">The key of translation text.</param>
+        /// <returns>The translation text.</returns>
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public string[] GetStyle(Locale locale, string key) => GetTranslationData(locale, key)?.Style;
+        
+        /// <summary>
+        /// Gets the style for target locale.
+        /// </summary>
+        /// <param name="key">The key of translation text.</param>
+        /// <returns>The translation text.</returns>
+        /// <exception cref="ArgumentNullException">locale or key</exception>
+        public string[] GetStyle(string key) => CurrentLocale != null ? GetStyle(CurrentLocale, key) : null;
 
         /// <summary>
         /// Loads the localization asset data.
@@ -125,8 +154,8 @@ namespace UniSharper.Localization
         {
             using var stream = new MemoryStream(data);
             var reader = new BinaryFormatter();
-            var translationData = reader.Deserialize(stream) as Dictionary<string, string>;
-            localeTranslationTextsMap.AddUnique(locale, translationData);
+            var translationDataMap = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
+            localeTranslationTextsMap.AddUnique(locale, translationDataMap);
         }
 
         private void OnLocaleChanged(LocaleChangedEventArgs e) => LocaleChanged?.Invoke(this, e);

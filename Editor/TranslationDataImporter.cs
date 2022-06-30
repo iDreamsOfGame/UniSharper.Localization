@@ -24,9 +24,7 @@ namespace UniSharperEditor.Localization
         internal void DrawEditorGui()
         {
             if (settings == null)
-            {
                 return;
-            }
 
             GUILayout.BeginVertical();
             GUILayout.Label("Import Settings", EditorStyles.boldLabel);
@@ -36,9 +34,7 @@ namespace UniSharperEditor.Localization
 
             // Translation File Path
             if (!string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) && !File.Exists(LocalizationAssetSettings.TranslationFilePath))
-            {
                 LocalizationAssetSettings.TranslationFilePath = string.Empty;
-            }
 
             var directory = string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) 
                 ? Directory.GetCurrentDirectory()
@@ -90,37 +86,64 @@ namespace UniSharperEditor.Localization
                 settings.TranslationKeyColumnIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Key Column Index", "The column index of translation key definition."), settings.TranslationKeyColumnIndex, 0, MaxIntValue);
             }
 
+            // Translation Text Row Start Index
             using (new EditorGUIFieldScope(LabelWidth))
             {
-                settings.TranslationTextsStartingRowIndex =
-                    EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Row Index", "The row index and after will be translation texts data."), settings.TranslationTextsStartingRowIndex, 0, MaxIntValue);
+                settings.TranslationTextRowStartIndex =
+                    EditorGUILayout.IntSlider(new GUIContent("Translation Text Row Start Index", "The row index and after will be translation texts data."), settings.TranslationTextRowStartIndex, 0, MaxIntValue);
             }
 
-            // Translation Texts Starting Column Index
+            // Translation Text Column Index Range
             using (new EditorGUIFieldScope(LabelWidth))
             {
-                settings.TranslationTextsStartingColumnIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Texts Starting Column Index", "The column index and after will be translation texts data."),
-                    settings.TranslationTextsStartingColumnIndex, 0, MaxIntValue);
+                settings.TranslationTextColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Translation Text Column Index Range", "The column start index and till end index will be translation texts data."),
+                    settings.TranslationTextColumnIndexRange);
+            }
+            
+            // Font Column Index Range
+            using (new EditorGUIFieldScope(LabelWidth))
+            {
+                settings.FontColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Font Column Index Range", "The column start index and till end index will be font information of text."),
+                    settings.FontColumnIndexRange);
+            }
+            
+            // Style Column Index Range
+            using (new EditorGUIFieldScope(LabelWidth))
+            {
+                settings.StyleColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Style Column Index Range", "The style start index and till end index will be style information of text."),
+                    settings.StyleColumnIndexRange);
             }
 
-            // If the texts starting row index less than or equals the locale row index, then fix it's value just by letting it equals locale row index + 1
-            if (settings.TranslationTextsStartingRowIndex <= settings.LocaleRowIndex)
-            {
-                settings.TranslationTextsStartingRowIndex = settings.LocaleRowIndex + 1;
-            }
+            // Limit the value of TranslationTextRowStartIndex
+            if (settings.TranslationTextRowStartIndex <= settings.LocaleRowIndex)
+                settings.TranslationTextRowStartIndex = settings.LocaleRowIndex + 1;
+            
+            // Limit the value of TranslationTextColumnIndexRange
+            if (settings.TranslationTextColumnIndexRange.x <= settings.TranslationKeyColumnIndex)
+                settings.TranslationTextColumnIndexRange = new Vector2Int(settings.TranslationKeyColumnIndex + 1, settings.TranslationTextColumnIndexRange.y);
 
-            // If the texts starting column index less than or equals the key column index, then fix it's value just by letting it equals key column index + 1
-            if (settings.TranslationTextsStartingColumnIndex <= settings.TranslationKeyColumnIndex)
-            {
-                settings.TranslationTextsStartingColumnIndex = settings.TranslationKeyColumnIndex + 1;
-            }
+            if (settings.TranslationTextColumnIndexRange.y < settings.TranslationTextColumnIndexRange.x)
+                settings.TranslationTextColumnIndexRange = new Vector2Int(settings.TranslationTextColumnIndexRange.x, settings.TranslationTextColumnIndexRange.x);
+            
+            // Limit the value of FontColumnIndexRange
+            if (settings.FontColumnIndexRange.x <= settings.TranslationTextColumnIndexRange.y)
+                settings.FontColumnIndexRange = new Vector2Int(settings.TranslationTextColumnIndexRange.y + 1, settings.FontColumnIndexRange.y);
+
+            if (settings.FontColumnIndexRange.y < settings.FontColumnIndexRange.x)
+                settings.FontColumnIndexRange = new Vector2Int(settings.FontColumnIndexRange.x, settings.FontColumnIndexRange.x);
+            
+            // Limit the value of StyleColumnIndexRange
+            if (settings.StyleColumnIndexRange.x <= settings.FontColumnIndexRange.y)
+                settings.StyleColumnIndexRange = new Vector2Int(settings.FontColumnIndexRange.y + 1, settings.StyleColumnIndexRange.y);
+
+            if (settings.StyleColumnIndexRange.y < settings.StyleColumnIndexRange.x)
+                settings.StyleColumnIndexRange = new Vector2Int(settings.StyleColumnIndexRange.x, settings.StyleColumnIndexRange.x);
 
             GUILayout.Space(20);
 
             if (GUILayout.Button("Build Localization Assets"))
             {
                 BuildAssets();
-                GUIUtility.ExitGUI();
             }
 
             GUILayout.EndVertical();
@@ -131,8 +154,7 @@ namespace UniSharperEditor.Localization
 
         private static void BuildAssets()
         {
-            var translationDataMap = LocalizationAssetUtility.LoadTranslationFile();
-
+            var translationDataMap = LocalizationAssetUtility.ParseTranslationDataFile();
             if (translationDataMap == null || !LocalizationAssetUtility.BuildLocalizationAssets(translationDataMap))
                 return;
 
