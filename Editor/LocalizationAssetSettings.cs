@@ -5,6 +5,7 @@ using System;
 using JetBrains.Annotations;
 using ReSharp.Security.Cryptography;
 using System.IO;
+using System.Linq;
 using UniSharper;
 using UnityEditor;
 using UnityEngine;
@@ -62,8 +63,10 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private Vector2Int styleColumnIndexRange = Vector2Int.one * 3;
-
-        [ReadOnlyField]
+        
+        [SerializeField]
+        private string[] targetLocales = Array.Empty<string>();
+        
         [SerializeField]
         private string[] excludedLocales = Array.Empty<string>();
 
@@ -249,6 +252,17 @@ namespace UniSharperEditor.Localization
 
         internal static LocalizationAssetSettings Load() => 
             File.Exists(SettingsAssetPath) ? AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(SettingsAssetPath) : null;
+
+        internal bool CanBuildLocaleAssets(string localeString)
+        {
+            if (targetLocales is { Length: > 0 })
+                return targetLocales.Contains(localeString);
+
+            if (excludedLocales is { Length: > 0 })
+                return !excludedLocales.Contains(localeString);
+
+            return true;
+        }
 
         [UsedImplicitly]
         private void OnEnable()

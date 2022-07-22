@@ -19,7 +19,11 @@ namespace UniSharperEditor.Localization
 
         private readonly LocalizationAssetSettings settings;
 
+        private SerializedObject settingsSerializedObject;
+
         internal TranslationDataImporter(LocalizationAssetSettings settings) => this.settings = settings;
+
+        private SerializedObject SettingsSerializedObject => settingsSerializedObject ??= new SerializedObject(settings);
 
         internal void DrawEditorGui()
         {
@@ -114,6 +118,20 @@ namespace UniSharperEditor.Localization
                     settings.StyleColumnIndexRange);
             }
 
+            // Target Locales
+            using (new EditorGUIFieldScope(LabelWidth))
+            {
+                var targetLocalesProperty = SettingsSerializedObject.FindProperty("targetLocales");
+                EditorGUILayout.PropertyField(targetLocalesProperty, new GUIContent("Target Locales", "The list of Locales that only need to be built."));
+            }
+            
+            // Excluded Locales
+            using (new EditorGUIFieldScope(LabelWidth))
+            {
+                var excludedLocalesProperty = SettingsSerializedObject.FindProperty("excludedLocales");
+                EditorGUILayout.PropertyField(excludedLocalesProperty, new GUIContent("Excluded Locales", "The list of Locales that should be excluded in the build."));
+            }
+
             // Limit the value of TranslationTextRowStartIndex
             if (settings.TranslationTextRowStartIndex <= settings.LocaleRowIndex)
                 settings.TranslationTextRowStartIndex = settings.LocaleRowIndex + 1;
@@ -138,6 +156,8 @@ namespace UniSharperEditor.Localization
 
             if (settings.StyleColumnIndexRange.y < settings.StyleColumnIndexRange.x)
                 settings.StyleColumnIndexRange = new Vector2Int(settings.StyleColumnIndexRange.x, settings.StyleColumnIndexRange.x);
+
+            SettingsSerializedObject.ApplyModifiedProperties();
 
             GUILayout.Space(20);
 

@@ -161,7 +161,7 @@ namespace UniSharperEditor.Localization
                             for (var i = settings.TranslationTextColumnIndexRange.x; i <= settings.TranslationTextColumnIndexRange.y; i++)
                             {
                                 var localeString = rows[settings.LocaleRowIndex][i].ToString().Trim();
-                                if (string.IsNullOrEmpty(localeString))
+                                if (string.IsNullOrEmpty(localeString) || !settings.CanBuildLocaleAssets(localeString))
                                     continue;
                                 
                                 localeTextColumnIndexMap.AddUnique(localeString, i, false);
