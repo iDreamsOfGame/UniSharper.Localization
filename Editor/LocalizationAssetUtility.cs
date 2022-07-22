@@ -82,7 +82,7 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        internal static Dictionary<Locale, Dictionary<string, string>> LoadLocalizationAssets()
+        internal static Dictionary<Locale, Dictionary<string, TranslationData>> LoadLocalizationAssets()
         {
             var settings = LocalizationAssetSettings.Load();
 
@@ -104,7 +104,7 @@ namespace UniSharperEditor.Localization
             if (files.Length <= 0)
                 return null;
 
-            var translationDataMap = new Dictionary<Locale, Dictionary<string, string>>();
+            var translationDataMap = new Dictionary<Locale, Dictionary<string, TranslationData>>();
 
             foreach (var file in files)
             {
@@ -112,7 +112,7 @@ namespace UniSharperEditor.Localization
                 var locale = new Locale(localeString);
                 using var stream = File.Open(file, FileMode.Open, FileAccess.Read);
                 var reader = new BinaryFormatter();
-                var translationTexts = reader.Deserialize(stream) as Dictionary<string, string>;
+                var translationTexts = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
                 translationDataMap.AddUnique(locale, translationTexts);
             }
 

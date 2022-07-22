@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
 // See LICENSE in the project root for license information.
 
+using System;
 using JetBrains.Annotations;
 using ReSharp.Security.Cryptography;
 using System.IO;
@@ -61,6 +62,10 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private Vector2Int styleColumnIndexRange = Vector2Int.one * 3;
+
+        [ReadOnlyField]
+        [SerializeField]
+        private string[] excludedLocales = Array.Empty<string>();
 
         internal static string TranslationFilePath
         {

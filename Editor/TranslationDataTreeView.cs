@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UniSharper.Localization;
 using UnityEditor.IMGUI.Controls;
@@ -11,11 +12,11 @@ namespace UniSharperEditor.Localization
 {
     internal class TranslationDataTreeView : TreeView
     {
-        private Dictionary<string, Dictionary<Locale, string>> convertedTranslationDataMap;
+        private Dictionary<string, Dictionary<Locale, TranslationData>> convertedTranslationDataMap;
 
-        private readonly Dictionary<Locale, Dictionary<string, string>> translationDataMap;
+        private readonly Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap;
 
-        public TranslationDataTreeView(TreeViewState state, Dictionary<Locale, Dictionary<string, string>> translationDataMap)
+        public TranslationDataTreeView(TreeViewState state, Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap)
             : base(state, new TranslationDataColumnHeader(CreateDefaultMultiColumnHeaderState(translationDataMap)))
         {
             this.translationDataMap = translationDataMap;
@@ -23,28 +24,28 @@ namespace UniSharperEditor.Localization
             Reload();
         }
 
-        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, string>> translationDataMap) => 
+        public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap) => 
             new(GetColumns(translationDataMap));
 
         [UsedImplicitly]
-        public Dictionary<Locale, Dictionary<string, string>> RestoreTranslationDataMap()
+        public Dictionary<Locale, Dictionary<string, TranslationData>> RestoreTranslationDataMap()
         {
-            var result = new Dictionary<Locale, Dictionary<string, string>>();
+            var result = new Dictionary<Locale, Dictionary<string, TranslationData>>();
             if (convertedTranslationDataMap == null) 
                 return result;
             
             foreach (var (key, value) in convertedTranslationDataMap)
             {
-                foreach (var (locale, text) in value)
+                foreach (var (locale, translationData) in value)
                 {
                     if (!result.ContainsKey(locale))
                     {
-                        result.Add(locale, new Dictionary<string, string>());
+                        result.Add(locale, new Dictionary<string, TranslationData>());
                     }
 
                     if (!result[locale].ContainsKey(key))
                     {
-                        result[locale].Add(key, text);
+                        result[locale].Add(key, translationData);
                     }
                 }
             }
@@ -62,7 +63,7 @@ namespace UniSharperEditor.Localization
             
             foreach (var (key, value) in convertedTranslationDataMap)
             {
-                var texts = new List<string>(value.Values);
+                var texts = value.Values.Select(translationData => translationData.Text).ToList();
                 root.AddChild(new TranslationDataTreeViewItem(key, texts));
             }
 
@@ -98,7 +99,7 @@ namespace UniSharperEditor.Localization
             autoResize = false
         };
 
-        private static MultiColumnHeaderState.Column[] GetColumns(Dictionary<Locale, Dictionary<string, string>> translationDataMap)
+        private static MultiColumnHeaderState.Column[] GetColumns(Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap)
         {
             var columnCount = translationDataMap is { Count: > 0 } ? translationDataMap.Count + 1 : 2;
             var columns = new MultiColumnHeaderState.Column[columnCount];
@@ -132,22 +133,22 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        private Dictionary<string, Dictionary<Locale, string>> ConvertTranslationDataMap()
+        private Dictionary<string, Dictionary<Locale, TranslationData>> ConvertTranslationDataMap()
         {
-            var map = new Dictionary<string, Dictionary<Locale, string>>();
+            var map = new Dictionary<string, Dictionary<Locale, TranslationData>>();
             if (translationDataMap is not { Count: > 0 })
                 return map;
             
             foreach (var (locale, value) in translationDataMap)
             {
-                foreach (var texts in value)
+                foreach (var (translationKey, translationData) in value)
                 {
-                    if (!map.ContainsKey(texts.Key))
+                    if (!map.ContainsKey(translationKey))
                     {
-                        map.Add(texts.Key, new Dictionary<Locale, string>());
+                        map.Add(translationKey, new Dictionary<Locale, TranslationData>());
                     }
 
-                    map[texts.Key].Add(locale, texts.Value);
+                    map[translationKey].Add(locale, translationData);
                 }
             }
 

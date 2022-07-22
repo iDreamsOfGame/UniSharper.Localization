@@ -12,7 +12,7 @@ namespace UniSharperEditor.Localization
 {
     internal class LocalizationAssetsViewerWindow : LocalizationEditorWindow
     {
-        private static Dictionary<Locale, Dictionary<string, string>> translationDataMap;
+        private static Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap;
 
         private TranslationDataTreeView translationDataTreeView;
 
@@ -27,7 +27,8 @@ namespace UniSharperEditor.Localization
             }
             else
             {
-                UnityEditorUtility.DisplayDialog("Error", "Attempting to open Localization Assets Viewer window, but no Localization Asset exists.  \n\nOpen 'UniSharper/Localization Management/Translation Data Importer' to import translation data first.", "Ok");
+                UnityEditorUtility.DisplayDialog("Error", "Attempting to open Localization Assets Viewer window, but no Localization Asset exists. " +
+                                                          " \n\nOpen 'UniSharper/Localization Management/Translation Data Importer' to import translation data first.", "Ok");
             }
         }
 
