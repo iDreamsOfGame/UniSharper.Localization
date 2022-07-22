@@ -126,6 +126,9 @@ namespace UniSharper.Localization.Samples
 
         private void UpdateText(TextMeshProUGUI textField, TranslationData translationData)
         {
+            if (translationData == null)
+                return;
+            
             var fontAsset = GetFontAsset(translationData.Font);
             if (fontAsset)
                 textField.font = fontAsset;

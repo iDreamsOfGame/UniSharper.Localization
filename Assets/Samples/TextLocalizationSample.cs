@@ -74,6 +74,9 @@ namespace UniSharper.Localization.Samples
 
         private void UpdateText(Text textField, TranslationData translationData)
         {
+            if (translationData == null)
+                return;
+            
             if (translationData.Style is { Length: > 2 })
             {
                 if (int.TryParse(translationData.Style[2], out var fontSize))
