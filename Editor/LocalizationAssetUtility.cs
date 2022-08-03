@@ -171,6 +171,9 @@ namespace UniSharperEditor.Localization
                             // Locate locale font column.
                             for (var i = settings.FontColumnIndexRange.x; i <= settings.FontColumnIndexRange.y; i++)
                             {
+                                if (i >= columns.Count)
+                                    continue;
+                                    
                                 var cellValue = rows[settings.LocaleRowIndex][i].ToString().Trim();
                                 if (string.IsNullOrEmpty(cellValue))
                                     continue;
@@ -186,6 +189,9 @@ namespace UniSharperEditor.Localization
                             // Locate locale style column.
                             for (var i = settings.StyleColumnIndexRange.x; i < settings.StyleColumnIndexRange.y; i++)
                             {
+                                if (i >= columns.Count)
+                                    continue;
+                                
                                 var cellValue = rows[settings.LocaleRowIndex][i].ToString().Trim();
                                 if (string.IsNullOrEmpty(cellValue))
                                     continue;
