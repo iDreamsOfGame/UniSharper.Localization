@@ -16,6 +16,6 @@ namespace UniSharper.Localization.Samples
 
 		public static readonly Locale TraditionalChinese = Locale.TraditionalChinese;
 
-		public static readonly Locale Spain = Locale.Spain;
+		public static readonly Locale Spanish = Locale.Spanish;
 	}
 }

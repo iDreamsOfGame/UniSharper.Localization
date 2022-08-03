@@ -1,6 +1,5 @@
 using System.Linq;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +7,9 @@ namespace UniSharper.Localization.Samples
 {
     public class TMPTextLocalizationSample : MonoBehaviour
     {
+        [SerializeField]
+        private TextAsset[] localeTextAssets;
+        
         [SerializeField]
         private TextMeshProUGUI text1;
         
@@ -43,16 +45,11 @@ namespace UniSharper.Localization.Samples
 
         private void Start()
         {
-            var enLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/en.bytes");
-            var cnLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/zh_CN.bytes");
-            var twLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/zh_TW.bytes");
-            var esLang = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Localization/Locales/es_ES.bytes");
-            
             LocalizationManager.Instance.LocaleChanged += OnLocaleChanged;
-            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.English, enLang.bytes);
-            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.SimplifiedChinese, cnLang.bytes);
-            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.TraditionalChinese, twLang.bytes);
-            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.Spain, esLang.bytes);
+            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.English, localeTextAssets[0].bytes);
+            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.SimplifiedChinese, localeTextAssets[1].bytes);
+            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.TraditionalChinese, localeTextAssets[2].bytes);
+            LocalizationManager.Instance.LoadLocalizationAssetData(Locales.Spanish, localeTextAssets[3].bytes);
             LocalizationManager.Instance.CurrentLocale = Locales.English;
             UpdateTexts();
             
@@ -108,7 +105,7 @@ namespace UniSharper.Localization.Samples
 
         private void OnButton4Clicked()
         {
-            LocalizationManager.Instance.CurrentLocale = Locales.Spain;
+            LocalizationManager.Instance.CurrentLocale = Locales.Spanish;
         }
         
         private void UpdateTexts()

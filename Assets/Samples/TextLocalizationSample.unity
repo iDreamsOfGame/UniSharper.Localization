@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311915, g: 0.3807396, b: 0.35872662, a: 1}
+  m_IndirectSpecularColor: {r: 0.3708625, g: 0.37838694, b: 0.35726872, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1239,6 +1239,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c390a9d7f911ad947a96ee7d4aa1b398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localeTextAssets:
+  - {fileID: 4900000, guid: 10b3dca776482904185038cb7bf9f8b7, type: 3}
+  - {fileID: 4900000, guid: a1126e6e0b9db9d4897193fe3d9f91f5, type: 3}
+  - {fileID: 4900000, guid: 9888b711be5950341a6509847853ac06, type: 3}
+  - {fileID: 4900000, guid: c290ee28476ef40ebb0a3c4ecca80ccf, type: 3}
   text1: {fileID: 711854542}
   text2: {fileID: 443389890}
   text3: {fileID: 88978939}
