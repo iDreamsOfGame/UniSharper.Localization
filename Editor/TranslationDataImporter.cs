@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
 // See LICENSE in the project root for license information.
 
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -161,9 +162,14 @@ namespace UniSharperEditor.Localization
 
             GUILayout.Space(20);
 
-            if (GUILayout.Button("Build Localization Assets"))
+            try
             {
-                BuildAssets();
+                if (GUILayout.Button("Build Localization Assets"))
+                    BuildAssets();
+            }
+            catch (Exception)
+            {
+                // ignored
             }
 
             GUILayout.EndVertical();

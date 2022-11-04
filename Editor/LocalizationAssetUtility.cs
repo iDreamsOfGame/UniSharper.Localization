@@ -31,11 +31,9 @@ namespace UniSharperEditor.Localization
                 var assetPath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(settings.LocalizationAssetsPath, $"{locale}.bytes"));
                 var assetAbsolutePath = EditorPath.ConvertToAbsolutePath(assetPath);
 
-                using (var stream = File.Open(assetAbsolutePath, FileMode.Create))
-                {
-                    var writer = new BinaryFormatter();
-                    writer.Serialize(stream, dataMap);
-                }
+                using var stream = File.Open(assetAbsolutePath, FileMode.Create);
+                var writer = new BinaryFormatter();
+                writer.Serialize(stream, dataMap);
 
                 AssetDatabase.ImportAsset(assetPath);
             }
