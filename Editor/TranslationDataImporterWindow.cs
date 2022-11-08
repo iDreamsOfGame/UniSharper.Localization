@@ -14,14 +14,14 @@ namespace UniSharperEditor.Localization
         internal static void ShowWindow()
         {
             var window = GetWindow<TranslationDataImporterWindow>("Translation Data Importer", true);
-            window.minSize = new Vector2(850, 375);
+            window.minSize = new Vector2(850, 425);
             window.Show();
         }
 
         protected override void DrawGUIWithSettings()
         {
             importer ??= new TranslationDataImporter(Settings);
-            importer.DrawEditorGui();
+            importer.DrawEditorGui(this);
         }
     }
 }
