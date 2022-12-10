@@ -8,13 +8,18 @@ namespace UniSharperEditor.Localization
 {
     internal class TranslationDataImporterWindow : LocalizationEditorWindow
     {
+        private static readonly Vector2Int Size = new(850, 460);
+        
         private TranslationDataImporter importer;
 
         [MenuItem("UniSharper/Localization Management/Translation Data Importer", false, 1)]
         internal static void ShowWindow()
         {
-            var window = GetWindow<TranslationDataImporterWindow>("Translation Data Importer", true);
-            window.minSize = new Vector2(850, 425);
+            const string title = "Metadata Importer";
+            var position = new Vector2((Screen.width - Size.x) * 0.5f, (Screen.height - Size.y) * 0.5f);
+            var rect = new Rect(position, Size);
+            var window = GetWindowWithRect<TranslationDataImporterWindow>(rect, true, title);
+            window.minSize = window.maxSize = Size;
             window.Show();
         }
 

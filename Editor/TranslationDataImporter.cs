@@ -1,33 +1,53 @@
 ﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
 // See LICENSE in the project root for license information.
 
-using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-using UnityEditorUtility = UnityEditor.EditorUtility;
 
 namespace UniSharperEditor.Localization
 {
     internal class TranslationDataImporter
     {
+        private const float Padding = 10;
+        
         private const float LabelWidth = 275f;
 
         private const int MaxIntValue = 10;
 
         private const string ScriptsGeneratedPrefKey = "UniSharperEditor.Localization.TranslationDataImporterscriptsGenerated";
         
-        private static readonly GUIStyle TitleLabelStyle = new()
+        private static GUIStyle titleBoxGUIStyle;
+        
+        private static readonly GUILayoutOption TitleBoxHeight = GUILayout.Height(30);
+        
+        private static GUIStyle BoxGUIStyle
         {
-            stretchHeight = true, 
-            fontSize = 14, 
-            fontStyle = FontStyle.Bold, 
-            normal = new GUIStyleState
+            get
             {
-                textColor = Color.white
+                if (titleBoxGUIStyle == null)
+                {
+                    titleBoxGUIStyle = new GUIStyle(EditorStyles.helpBox)
+                    {
+                        alignment = TextAnchor.MiddleLeft,
+                        margin = new RectOffset { top = 8, bottom = 8 },
+                        padding = new RectOffset { left = 10, right = 10 },
+                        font = EditorStyles.label.font,
+                        fontSize = 14,
+                        richText = true
+                    };
+
+                    var textColor = GUI.skin.button.normal.textColor;
+                    titleBoxGUIStyle.normal.textColor = textColor;
+                    titleBoxGUIStyle.hover.textColor = textColor;
+                    titleBoxGUIStyle.focused.textColor = textColor;
+                    titleBoxGUIStyle.active.textColor = textColor;
+                }
+
+                return titleBoxGUIStyle;
             }
-        };
+        }
 
         private readonly LocalizationAssetSettings settings;
 
@@ -45,29 +65,20 @@ namespace UniSharperEditor.Localization
             var scriptsGenerated = EditorPrefs.GetBool(ScriptsGeneratedPrefKey);
             if (!scriptsGenerated)
                 return;
-
-            UnityEditorUtility.ClearProgressBar();
+            
+            EditorUtility.ClearProgressBar();
             EditorPrefs.SetBool(ScriptsGeneratedPrefKey, false);
-
-            if (!UnityEditorUtility.scriptCompilationFailed)
+            
+            if (!EditorUtility.scriptCompilationFailed)
             {
-                if (UnityEditorUtility.DisplayDialog("Success", "Build success!", "OK"))
-                    UnityEditorUtility.ClearProgressBar();
+                if (EditorUtility.DisplayDialog("Success", "Build success!", "OK"))
+                    EditorUtility.ClearProgressBar();
             }
             else
             {
-                if (UnityEditorUtility.DisplayDialog("Error", "Failed to compile scripts!", "OK"))
-                    UnityEditorUtility.ClearProgressBar();
+                if (EditorUtility.DisplayDialog("Error", "Failed to compile scripts!", "OK"))
+                    EditorUtility.ClearProgressBar();
             }
-        }
-
-        private static void DrawTitleLabel(string text, float space = 0)
-        {
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.Space(space);
-            EditorGUILayout.LabelField(text, TitleLabelStyle);
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
         }
 
         private static void BuildAssets()
@@ -81,11 +92,11 @@ namespace UniSharperEditor.Localization
 
             if (result)
             {
-                UnityEditorUtility.DisplayProgressBar("Hold on...", "Compiling scripts...", 0f);
+                EditorUtility.DisplayProgressBar("Hold on...", "Compiling scripts...", 0f);
             }
             else
             {
-                UnityEditorUtility.DisplayDialog("Error", "Failed to generate scripts!", "OK");
+                EditorUtility.DisplayDialog("Error", "Failed to generate scripts!", "OK");
             }
         }
 
@@ -95,45 +106,30 @@ namespace UniSharperEditor.Localization
                 return;
             
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, false, false, GUILayout.Width(window.position.width), GUILayout.Height(window.position.height));
-
+            
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.Space(15);
-            
-            // Contents
-            EditorGUILayout.BeginVertical();
-            
-            // Import Settings
-            DrawImportSettingsFields();
-            
-            EditorGUILayout.Space(10);
-
-            // Other Settings
-            DrawOtherSettingsFields();
-            
-            EditorGUILayout.Space(20);
-
-            // Build Button
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            
-            try
             {
-                if (GUILayout.Button("Build Localization Assets", GUILayout.Width(LabelWidth), GUILayout.Height(25)))
-                    BuildAssets();
+                EditorGUILayout.Space(Padding);
+
+                EditorGUILayout.BeginVertical();
+                {
+                    // Import Settings
+                    DrawImportSettingsFields();
+
+                    EditorGUILayout.Space(5);
+
+                    // Other Settings
+                    DrawOtherSettingsFields();
+
+                    EditorGUILayout.Space(10);
+
+                    // Build Assets Button
+                    DrawBuildAssetsButton();
+                }
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.Space(Padding);
             }
-            catch (Exception)
-            {
-                // ignored
-            }
-            
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-            
-            EditorGUILayout.Space(15);
-            
-            EditorGUILayout.EndVertical();
-            
-            EditorGUILayout.Space(15);
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.EndScrollView();
@@ -141,10 +137,8 @@ namespace UniSharperEditor.Localization
 
         private void DrawImportSettingsFields()
         {
-            const string importSettingsTitle = "Import Settings";
-            DrawTitleLabel(importSettingsTitle);
-            
-            EditorGUILayout.Space(5);
+            const string title = "Import Settings";
+            DrawTitleLabel(title);
             
             // Translation File Path
             if (!string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) && !File.Exists(LocalizationAssetSettings.TranslationFilePath))
@@ -153,11 +147,11 @@ namespace UniSharperEditor.Localization
             var directory = string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) 
                 ? Directory.GetCurrentDirectory()
                 : new FileInfo(LocalizationAssetSettings.TranslationFilePath).DirectoryName;
-            LocalizationAssetSettings.TranslationFilePath = EditorGUILayoutUtility.FileField(new GUIContent("Translation File Path", "Where to locate translation excel file."),
+            LocalizationAssetSettings.TranslationFilePath = UniEditorGUILayout.FileField(new GUIContent("Translation File Path", "Where to locate translation excel file."),
                 LocalizationAssetSettings.TranslationFilePath, "Select Translation Excel File", directory, new[] { "Excel Files", "xlsx,xls" }, LabelWidth);
-            
+
             // Localization Assets Path
-            var localizationAssetsAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Assets Path", "Where to store localization assets."), settings.LocalizationAssetsPath,
+            var localizationAssetsAbsolutePath = EditorPath.ConvertToAssetPath(UniEditorGUILayout.FolderField(new GUIContent("Localization Assets Path", "Where to store localization assets."), settings.LocalizationAssetsPath,
                 "Localization Assets Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationAssetsPath), string.Empty, LabelWidth));
             
             if (EditorPath.IsAssetPath(localizationAssetsAbsolutePath))
@@ -166,17 +160,17 @@ namespace UniSharperEditor.Localization
             }
             else
             {
-                UnityEditorUtility.DisplayDialog("Invalid Path", "The 'Localization Assets Path' you choose is invalid path, please select the folder in the project!", "OK");
+                EditorUtility.DisplayDialog("Invalid Path", "The 'Localization Assets Path' you choose is invalid path, please select the folder in the project!", "OK");
             }
             
             // Localization Script Namespace
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 settings.LocalizationScriptNamespace = EditorGUILayout.TextField(new GUIContent("Localization Script Namespace", "The namespace of scripts 'Locales.cs' and 'TranslationKey.cs'."), settings.LocalizationScriptNamespace);
             }
             
             // Localization Scripts Store Path
-            var localizationScriptsStoreAbsolutePath = EditorPath.ConvertToAssetPath(EditorGUILayoutUtility.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."), settings.LocalizationScriptsStorePath,
+            var localizationScriptsStoreAbsolutePath = EditorPath.ConvertToAssetPath(UniEditorGUILayout.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."), settings.LocalizationScriptsStorePath,
                 "Localization Scripts Store Path", Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationScriptsStorePath), string.Empty, LabelWidth));
             
             if (EditorPath.IsAssetPath(localizationScriptsStoreAbsolutePath))
@@ -185,44 +179,44 @@ namespace UniSharperEditor.Localization
             }
             else
             {
-                UnityEditorUtility.DisplayDialog("Invalid Path", "The 'Localization Scripts Store Path' you choose is invalid path, please select the folder in the project!", "OK");
+                EditorUtility.DisplayDialog("Invalid Path", "The 'Localization Scripts Store Path' you choose is invalid path, please select the folder in the project!", "OK");
             }
             
             // Locale Row Index
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 settings.LocaleRowIndex = EditorGUILayout.IntSlider(new GUIContent("Locale Row Index", "The row index of locale definition."), settings.LocaleRowIndex, 0, MaxIntValue);
             }
             
             // Translation Key Column Index
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 settings.TranslationKeyColumnIndex = EditorGUILayout.IntSlider(new GUIContent("Translation Key Column Index", "The column index of translation key definition."), settings.TranslationKeyColumnIndex, 0, MaxIntValue);
             }
             
             // Translation Text Row Start Index
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 settings.TranslationTextRowStartIndex =
                     EditorGUILayout.IntSlider(new GUIContent("Translation Text Row Start Index", "The row index and after will be translation texts data."), settings.TranslationTextRowStartIndex, 0, MaxIntValue);
             }
             
             // Translation Text Column Index Range
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 settings.TranslationTextColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Translation Text Column Index Range", "The column start index and till end index will be translation texts data."),
                     settings.TranslationTextColumnIndexRange);
             }
             
             // Font Column Index Range
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 settings.FontColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Font Column Index Range", "The column start index and till end index will be font information of text."),
                     settings.FontColumnIndexRange);
             }
             
             // Style Column Index Range
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 settings.StyleColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Style Column Index Range", "The style start index and till end index will be style information of text."),
                     settings.StyleColumnIndexRange);
@@ -258,24 +252,41 @@ namespace UniSharperEditor.Localization
 
         private void DrawOtherSettingsFields()
         {
-            const string otherSettingsTitle = "Other Settings";
-            DrawTitleLabel(otherSettingsTitle);
-            
-            EditorGUILayout.Space(5);
+            const string title = "Other Settings";
+            DrawTitleLabel(title);
             
             // Target Locales
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 var targetLocalesProperty = SettingsSerializedObject.FindProperty("targetLocales");
                 EditorGUILayout.PropertyField(targetLocalesProperty, new GUIContent("Target Locales", "The list of Locales that only need to be built."));
             }
             
+            EditorGUILayout.Space(2);
+            
             // Excluded Locales
-            using (new EditorGUIFieldScope(LabelWidth))
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
                 var excludedLocalesProperty = SettingsSerializedObject.FindProperty("excludedLocales");
                 EditorGUILayout.PropertyField(excludedLocalesProperty, new GUIContent("Excluded Locales", "The list of Locales that should be excluded in the build."));
             }
+        }
+        
+        private void DrawBuildAssetsButton()
+        {
+            EditorGUILayout.BeginHorizontal();
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Build Localization Assets", GUILayout.Width(LabelWidth), GUILayout.Height(25)))
+                    BuildAssets();
+                GUILayout.FlexibleSpace();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+        
+        private static void DrawTitleLabel(string text)
+        {
+            GUILayout.Box(text, BoxGUIStyle, TitleBoxHeight);
         }
     }
 }
