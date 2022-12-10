@@ -15,7 +15,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.16",
+      "version": "3.0.17",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -53,19 +53,19 @@
       }
     },
     "io.github.idreamsofgame.resharp.core": {
-      "version": "1.0.2",
+      "version": "1.1.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
     "io.github.idreamsofgame.unisharper.core": {
-      "version": "1.11.7",
+      "version": "1.12.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "jillejr.newtonsoft.json-for-unity": "13.0.102",
-        "io.github.idreamsofgame.resharp.core": "1.0.2"
+        "io.github.idreamsofgame.resharp.core": "1.1.0"
       },
       "url": "https://package.openupm.com"
     },
