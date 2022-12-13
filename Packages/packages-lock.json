@@ -53,19 +53,19 @@
       }
     },
     "io.github.idreamsofgame.resharp.core": {
-      "version": "1.1.0",
+      "version": "1.2.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
     "io.github.idreamsofgame.unisharper.core": {
-      "version": "1.12.0",
+      "version": "1.12.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "jillejr.newtonsoft.json-for-unity": "13.0.102",
-        "io.github.idreamsofgame.resharp.core": "1.1.0"
+        "io.github.idreamsofgame.resharp.core": "1.2.2"
       },
       "url": "https://package.openupm.com"
     },
@@ -148,21 +148,6 @@
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.imageconversion": "1.0.0"
-      }
-    },
-    "com.unity.modules.terrain": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {}
-    },
-    "com.unity.modules.terrainphysics": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.physics": "1.0.0",
-        "com.unity.modules.terrain": "1.0.0"
       }
     },
     "com.unity.modules.ui": {

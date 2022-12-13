@@ -717,6 +717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -1279,7 +1280,7 @@ MonoBehaviour:
   fontMaterials:
   - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   - {fileID: 3929873742332144930, guid: a1a91d012b2554d6cbbce9ab352af32e, type: 2}
-  colorGradients:
+  colorGradientPresets:
   - {fileID: 11400000, guid: 479a66fa4b094512a62b0a8e553ad95a, type: 2}
   - {fileID: 11400000, guid: 4c86a3366cd840348ebe8dc438570ee4, type: 2}
   - {fileID: 11400000, guid: 5cf8ae092ca54931b443bec5148f3c59, type: 2}

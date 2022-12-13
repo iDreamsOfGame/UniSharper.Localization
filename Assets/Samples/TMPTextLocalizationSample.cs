@@ -29,7 +29,7 @@ namespace UniSharper.Localization.Samples
         private Material[] fontMaterials;
 
         [SerializeField]
-        private TMP_ColorGradient[] colorGradients;
+        private TMP_ColorGradient[] colorGradientPresets;
 
         [SerializeField]
         private Button button1;
@@ -125,34 +125,41 @@ namespace UniSharper.Localization.Samples
         {
             if (translationData == null)
                 return;
-            
-            var fontAsset = GetFontAsset(translationData.Font);
-            if (fontAsset)
-                textField.font = fontAsset;
 
-            if (translationData.Style is { Length: > 0 })
+            if (translationData.TryGetStyleParameter("font", out var font) && !string.IsNullOrEmpty(font))
             {
-                var fontMaterial = GetFontMaterial(translationData.Style[0]);
-                if (fontMaterial)
-                    textField.fontSharedMaterial = fontMaterial;
-            }
-
-            if (translationData.Style is { Length: > 1 })
-            {
-                var colorGradient = GetColorGradient(translationData.Style[1]);
-                if (colorGradient)
+                // font
+                var fontAsset = GetFontAsset(font);
+                if (fontAsset)
+                    textField.font = fontAsset;
+                
+                // fontSize
+                if (translationData.TryGetStyleParameter("fontSize", out var fontSizeString))
                 {
-                    textField.enableVertexGradient = true;
-                    textField.colorGradientPreset = colorGradient;
+                    if (int.TryParse(fontSizeString, out var fontSize)) 
+                        textField.fontSize = fontSize;
+                }
+
+                // fontMaterial
+                if (translationData.TryGetStyleParameter("fontMaterial", out var fontMaterialString))
+                {
+                    var fontMaterial = GetFontMaterial(fontMaterialString);
+                    if (fontMaterial) 
+                        textField.fontSharedMaterial = fontMaterial;
+                }
+                
+                // colorGradientPreset
+                if (translationData.TryGetStyleParameter("colorGradientPreset", out var colorGradientPresetString))
+                {
+                    var colorGradientPreset = GetColorGradientPreset(colorGradientPresetString);
+                    if (colorGradientPreset)
+                    {
+                        textField.enableVertexGradient = true;
+                        textField.colorGradientPreset = colorGradientPreset;
+                    }
                 }
             }
 
-            if (translationData.Style is { Length: > 2 })
-            {
-                if (int.TryParse(translationData.Style[2], out var fontSize))
-                    textField.fontSize = fontSize;
-            }
-            
             textField.text = translationData.Text;
         }
 
@@ -172,12 +179,12 @@ namespace UniSharper.Localization.Samples
             return fontMaterials.FirstOrDefault(fontMaterial => fontMaterial.name == name);
         }
 
-        private TMP_ColorGradient GetColorGradient(string name)
+        private TMP_ColorGradient GetColorGradientPreset(string name)
         {
-            if (string.IsNullOrEmpty(name) || colorGradients == null || colorGradients.Length == 0)
+            if (string.IsNullOrEmpty(name) || colorGradientPresets == null || colorGradientPresets.Length == 0)
                 return null;
             
-            return colorGradients.FirstOrDefault(colorGradient => colorGradient.name == name);
+            return colorGradientPresets.FirstOrDefault(colorGradient => colorGradient.name == name);
         }
     }
 }

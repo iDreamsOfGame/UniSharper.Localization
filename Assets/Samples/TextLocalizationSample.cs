@@ -74,13 +74,11 @@ namespace UniSharper.Localization.Samples
         {
             if (translationData == null)
                 return;
-            
-            if (translationData.Style is { Length: > 2 })
-            {
-                if (int.TryParse(translationData.Style[2], out var fontSize))
-                    textField.fontSize = fontSize;
-            }
-            
+
+            translationData.TryGetStyleParameter("fontSize", out var fontSizeString);
+            if (!string.IsNullOrEmpty(fontSizeString) && int.TryParse(fontSizeString, out var fontSize))
+                textField.fontSize = fontSize;
+
             textField.text = translationData.Text;
         }
     }

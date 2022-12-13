@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddca8ea19c075405ea0ba8a72f062bd9, type: 3}
   m_Name: LocalizationAssetSettings
   m_EditorClassIdentifier: 
-  localeRowIndex: 1
+  localeRowIndex: 0
   localizationAssetsPath: Assets/Localization/Locales
   localizationScriptNamespace: UniSharper.Localization.Samples
   localizationScriptsStorePath: Assets/Samples
   translationKeyColumnIndex: 1
-  translationTextRowStartIndex: 2
+  translationTextRowStartIndex: 1
   translationTextColumnIndexRange: {x: 2, y: 5}
-  fontColumnIndexRange: {x: 6, y: 9}
-  styleColumnIndexRange: {x: 10, y: 13}
+  styleColumnIndexRange: {x: 6, y: 9}
   targetLocales: []
   excludedLocales: []
