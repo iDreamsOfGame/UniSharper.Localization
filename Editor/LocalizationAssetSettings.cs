@@ -2,10 +2,11 @@
 // See LICENSE in the project root for license information.
 
 using System;
-using JetBrains.Annotations;
-using ReSharp.Security.Cryptography;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
+using ReSharp.Extensions;
+using ReSharp.Security.Cryptography;
 using UniSharper;
 using UnityEditor;
 using UnityEngine;
@@ -55,11 +56,7 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private Vector2Int translationTextColumnIndexRange = Vector2Int.one;
-        
-        [ReadOnlyField]
-        [SerializeField]
-        private Vector2Int fontColumnIndexRange = Vector2Int.one * 2;
-        
+
         [ReadOnlyField]
         [SerializeField]
         private Vector2Int styleColumnIndexRange = Vector2Int.one * 3;
@@ -86,20 +83,7 @@ namespace UniSharperEditor.Localization
                 EditorPrefs.SetString(key, value);
             }
         }
-
-        internal int LocaleRowIndex
-        {
-            get => localeRowIndex;
-            set
-            {
-                if (localeRowIndex.Equals(value))
-                    return;
-                
-                localeRowIndex = value;
-                Save();
-            }
-        }
-
+        
         internal string LocalizationAssetsPath
         {
             get => localizationAssetsPath;
@@ -112,7 +96,7 @@ namespace UniSharperEditor.Localization
                 Save();
             }
         }
-
+        
         internal string LocalizationScriptNamespace
         {
             get => localizationScriptNamespace;
@@ -135,6 +119,19 @@ namespace UniSharperEditor.Localization
                     return;
 
                 localizationScriptsStorePath = value;
+                Save();
+            }
+        }
+
+        internal int LocaleRowIndex
+        {
+            get => localeRowIndex;
+            set
+            {
+                if (localeRowIndex.Equals(value))
+                    return;
+                
+                localeRowIndex = value;
                 Save();
             }
         }
@@ -174,19 +171,6 @@ namespace UniSharperEditor.Localization
                     return;
                 
                 translationTextColumnIndexRange = value;
-                Save();
-            }
-        }
-
-        internal Vector2Int FontColumnIndexRange
-        {
-            get => fontColumnIndexRange;
-            set
-            {
-                if (fontColumnIndexRange.Equals(value))
-                    return;
-                
-                fontColumnIndexRange = value;
                 Save();
             }
         }

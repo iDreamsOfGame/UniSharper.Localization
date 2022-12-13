@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
 // See LICENSE in the project root for license information.
 
-using ReSharp.Patterns;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using ReSharp.Extensions;
+using ReSharp.Patterns;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -110,40 +111,6 @@ namespace UniSharper.Localization
         /// <returns>The translation text.</returns>
         /// <exception cref="ArgumentNullException">locale or key</exception>
         public string GetTranslationText(string key) => CurrentLocale != null ? GetTranslationText(CurrentLocale, key) : DefaultText;
-        
-        /// <summary>
-        /// Gets the font for target locale.
-        /// </summary>
-        /// <param name="locale">The target locale.</param>
-        /// <param name="key">The key of translation text.</param>
-        /// <returns>The translation text.</returns>
-        /// <exception cref="ArgumentNullException">locale or key</exception>
-        public string GetFont(Locale locale, string key) => GetTranslationData(locale, key)?.Font;
-        
-        /// <summary>
-        /// Gets the font for target locale.
-        /// </summary>
-        /// <param name="key">The key of translation text.</param>
-        /// <returns>The translation text.</returns>
-        /// <exception cref="ArgumentNullException">locale or key</exception>
-        public string GetFont(string key) => CurrentLocale != null ? GetFont(CurrentLocale, key) : null;
-        
-        /// <summary>
-        /// Gets the style for target locale.
-        /// </summary>
-        /// <param name="locale">The target locale.</param>
-        /// <param name="key">The key of translation text.</param>
-        /// <returns>The translation text.</returns>
-        /// <exception cref="ArgumentNullException">locale or key</exception>
-        public string[] GetStyle(Locale locale, string key) => GetTranslationData(locale, key)?.Style;
-        
-        /// <summary>
-        /// Gets the style for target locale.
-        /// </summary>
-        /// <param name="key">The key of translation text.</param>
-        /// <returns>The translation text.</returns>
-        /// <exception cref="ArgumentNullException">locale or key</exception>
-        public string[] GetStyle(string key) => CurrentLocale != null ? GetStyle(CurrentLocale, key) : null;
 
         /// <summary>
         /// Loads the localization asset data.

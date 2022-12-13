@@ -3,6 +3,9 @@
 
 using System;
 using System.Runtime.Serialization;
+using ReSharp.Extensions;
+// ReSharper disable InconsistentNaming
+
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable NonReadonlyMemberInGetHashCode
 

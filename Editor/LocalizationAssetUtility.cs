@@ -1,13 +1,15 @@
 ﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
 // See LICENSE in the project root for license information.
 
-using ExcelDataReader;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using ExcelDataReader;
+using ReSharp.Extensions;
 using UniSharper;
+using UniSharper.Extensions;
 using UniSharper.Localization;
 using UnityEditor;
 using UnityEngine;
@@ -135,7 +137,6 @@ namespace UniSharperEditor.Localization
 
             var translationDataMap = new Dictionary<string, Dictionary<string, TranslationData>>();
             var localeTextColumnIndexMap = new Dictionary<string, int>();
-            var localeFontColumnIndexMap = new Dictionary<string, int>();
             var localeStyleColumnIndexMap = new Dictionary<string, int>();
             var path = LocalizationAssetSettings.TranslationFilePath;
             var fileExtension = Path.GetExtension(path).ToLower();
@@ -165,25 +166,7 @@ namespace UniSharperEditor.Localization
                                 localeTextColumnIndexMap.AddUnique(localeString, i, false);
                                 translationDataMap.AddUnique(localeString, new Dictionary<string, TranslationData>(), false);
                             }
-                            
-                            // Locate locale font column.
-                            for (var i = settings.FontColumnIndexRange.x; i <= settings.FontColumnIndexRange.y; i++)
-                            {
-                                if (i >= columns.Count)
-                                    continue;
-                                    
-                                var cellValue = rows[settings.LocaleRowIndex][i].ToString().Trim();
-                                if (string.IsNullOrEmpty(cellValue))
-                                    continue;
 
-                                var values = cellValue.Split('.');
-                                if (values.Length < 2)
-                                    continue;
-
-                                var localeString = values[0];
-                                localeFontColumnIndexMap.AddUnique(localeString, i, false);
-                            }
-                            
                             // Locate locale style column.
                             for (var i = settings.StyleColumnIndexRange.x; i < settings.StyleColumnIndexRange.y; i++)
                             {
@@ -229,21 +212,7 @@ namespace UniSharperEditor.Localization
                                     return null;
                                 }
                             }
-                            
-                            // Parse font.
-                            foreach (var (localeString, columnIndex) in localeFontColumnIndexMap)
-                            {
-                                if (columnIndex >= columns.Count)
-                                    continue;
-                                
-                                var font = rows[i][columnIndex].ToString().Trim();
-                                if (string.IsNullOrEmpty(font))
-                                    continue;
-                                
-                                if (translationDataMap.TryGetValue(localeString, out var dataMap) && dataMap.TryGetValue(translationKey, out var translationData))
-                                    translationData.Font = font;
-                            }
-                            
+
                             // Parse style.
                             foreach (var (localeString, columnIndex) in localeStyleColumnIndexMap)
                             {
@@ -254,8 +223,8 @@ namespace UniSharperEditor.Localization
                                 if (string.IsNullOrEmpty(cellValue))
                                     continue;
 
-                                var style = cellValue.Split('|');
-                                if(style == null)
+                                var style = StringUtility.GetKeyValueStringPairsInBrackets(cellValue);
+                                if (style.Count == 0)
                                     continue;
                                 
                                 if (translationDataMap.TryGetValue(localeString, out var dataMap) && dataMap.TryGetValue(translationKey, out var translationData))

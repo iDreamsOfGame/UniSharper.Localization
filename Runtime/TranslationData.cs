@@ -2,7 +2,9 @@
 // See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+// ReSharper disable InvertIf
 
 namespace UniSharper.Localization
 {
@@ -18,10 +20,9 @@ namespace UniSharper.Localization
         /// <param name="text">The translation text. </param>
         /// <param name="font">The font of translation text. </param>
         /// <param name="style">Styling information for text. </param>
-        public TranslationData(string text, string font = null, string[] style = null)
+        public TranslationData(string text, Dictionary<string, string> style = null)
         {
             Text = text;
-            Font = font;
             Style = style;
         }
 
@@ -33,10 +34,7 @@ namespace UniSharper.Localization
         public TranslationData(SerializationInfo info, StreamingContext context)
         {
             Text = info.GetString("t");
-            Font = info.GetString("f");
-
-            var style = Array.Empty<string>();
-            Style = info.GetValue("s", style.GetType()) as string[];
+            Style = info.GetValue("s", typeof(Dictionary<string, string>)) as Dictionary<string, string>;
         }
         
         /// <summary>
@@ -45,14 +43,39 @@ namespace UniSharper.Localization
         public string Text { get; set; }
 
         /// <summary>
-        /// The font of translation text.
-        /// </summary>
-        public string Font { get; set; }
-
-        /// <summary>
         /// Styling information for text.
         /// </summary>
-        public string[] Style { get; set; }
+        public Dictionary<string, string> Style { get; set; }
+
+        /// <summary>
+        /// Get the parameter value of style.
+        /// </summary>
+        /// <param name="key">The name of parameter of style. </param>
+        /// <returns>The parameter value of style. </returns>
+        public string GetStyleParameter(string key)
+        {
+            if (Style == null || string.IsNullOrEmpty(key))
+                return string.Empty;
+
+            return Style.TryGetValue(key, out var value) ? value : string.Empty;
+        }
+
+        /// <summary>
+        /// Tries to get the parameter value of style.
+        /// </summary>
+        /// <param name="key">The name of parameter of style. </param>
+        /// <param name="value">The parameter value of style. </param>
+        /// <returns><c>true</c> if the style parameters contains an element with the specified key; otherwise, <c>false</c>. </returns>
+        public bool TryGetStyleParameter(string key, out string value)
+        {
+            if (Style == null || string.IsNullOrEmpty(key))
+            {
+                value = string.Empty;
+                return false;
+            }
+
+            return Style.TryGetValue(key, out value);
+        }
 
         /// <summary>
         /// Populates a SerializationInfo with the data needed to serialize the target object.
@@ -62,7 +85,6 @@ namespace UniSharper.Localization
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("t", Text);
-            info.AddValue("f", Font);
             info.AddValue("s", Style);
         }
     }

@@ -207,14 +207,7 @@ namespace UniSharperEditor.Localization
                 settings.TranslationTextColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Translation Text Column Index Range", "The column start index and till end index will be translation texts data."),
                     settings.TranslationTextColumnIndexRange);
             }
-            
-            // Font Column Index Range
-            using (new UniEditorGUILayout.FieldScope(LabelWidth))
-            {
-                settings.FontColumnIndexRange = EditorGUILayout.Vector2IntField(new GUIContent("Font Column Index Range", "The column start index and till end index will be font information of text."),
-                    settings.FontColumnIndexRange);
-            }
-            
+
             // Style Column Index Range
             using (new UniEditorGUILayout.FieldScope(LabelWidth))
             {
@@ -232,17 +225,10 @@ namespace UniSharperEditor.Localization
             
             if (settings.TranslationTextColumnIndexRange.y < settings.TranslationTextColumnIndexRange.x)
                 settings.TranslationTextColumnIndexRange = new Vector2Int(settings.TranslationTextColumnIndexRange.x, settings.TranslationTextColumnIndexRange.x);
-            
-            // Limit the value of FontColumnIndexRange
-            if (settings.FontColumnIndexRange.x <= settings.TranslationTextColumnIndexRange.y)
-                settings.FontColumnIndexRange = new Vector2Int(settings.TranslationTextColumnIndexRange.y + 1, settings.FontColumnIndexRange.y);
-            
-            if (settings.FontColumnIndexRange.y < settings.FontColumnIndexRange.x)
-                settings.FontColumnIndexRange = new Vector2Int(settings.FontColumnIndexRange.x, settings.FontColumnIndexRange.x);
-            
+
             // Limit the value of StyleColumnIndexRange
-            if (settings.StyleColumnIndexRange.x <= settings.FontColumnIndexRange.y)
-                settings.StyleColumnIndexRange = new Vector2Int(settings.FontColumnIndexRange.y + 1, settings.StyleColumnIndexRange.y);
+            if (settings.StyleColumnIndexRange.x <= settings.TranslationTextColumnIndexRange.y)
+                settings.StyleColumnIndexRange = new Vector2Int(settings.TranslationTextColumnIndexRange.y + 1, settings.StyleColumnIndexRange.y);
             
             if (settings.StyleColumnIndexRange.y < settings.StyleColumnIndexRange.x)
                 settings.StyleColumnIndexRange = new Vector2Int(settings.StyleColumnIndexRange.x, settings.StyleColumnIndexRange.x);
