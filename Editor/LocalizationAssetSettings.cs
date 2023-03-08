@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using ReSharp.Extensions;
 using ReSharp.Security.Cryptography;
 using UniSharper;
+using UniSharperEditor.Extensions;
 using UnityEditor;
 using UnityEngine;
 
@@ -72,7 +73,7 @@ namespace UniSharperEditor.Localization
             get
             {
                 var key = string.Format(TranslationFilePathPrefKeyFormat, PlayerSettings.productName);
-                return EditorPrefs.GetString(key, string.Empty);
+                return EditorPrefsUtility.GetString(key, string.Empty);
             }
             set
             {
@@ -80,7 +81,7 @@ namespace UniSharperEditor.Localization
                     return;
 
                 var key = string.Format(TranslationFilePathPrefKeyFormat, PlayerSettings.productName);
-                EditorPrefs.SetString(key, value);
+                EditorPrefsUtility.SetString(key, value);
             }
         }
         
