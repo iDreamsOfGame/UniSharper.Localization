@@ -28,7 +28,7 @@ namespace UniSharperEditor.Localization
 
         private static readonly string SettingsAssetPath = $"{LocalizationFolder}/{nameof(LocalizationAssetSettings)}.asset";
 
-        private static readonly string TranslationFilePathPrefKeyFormat = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), false)}.{typeof(LocalizationAssetSettings).FullName}.translationFilePath";
+        private static readonly string TranslationFilePathPrefKeyFormat = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), null, false)}.{typeof(LocalizationAssetSettings).FullName}.translationFilePath";
 
         [ReadOnlyField]
         [SerializeField]
