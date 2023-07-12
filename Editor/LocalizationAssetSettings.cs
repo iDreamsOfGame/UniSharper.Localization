@@ -18,7 +18,7 @@ namespace UniSharperEditor.Localization
     /// Class used to get and set the localization settings object. Implements the <see cref="UniSharperEditor.SettingsScriptableObject"/>
     /// </summary>
     /// <seealso cref="UniSharperEditor.SettingsScriptableObject"/>
-    public class LocalizationAssetSettings : SettingsScriptableObject
+    public class LocalizationAssetSettings : SettingsScriptableObject<LocalizationAssetSettings>
     {
         private const string LocalizationAssetsFolderName = "Locales";
 
