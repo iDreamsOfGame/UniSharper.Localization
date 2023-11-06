@@ -12,7 +12,7 @@ namespace UniSharperEditor.Localization
         
         private TranslationDataImporter importer;
 
-        [MenuItem("UniSharper/Localization Management/Translation Data Importer", false, 1)]
+        [MenuItem("UniSharper/Localization Management/Import Translation Data...", false, 1)]
         internal static void ShowWindow()
         {
             const string title = "Metadata Importer";
