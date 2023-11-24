@@ -170,9 +170,9 @@ namespace UniSharperEditor.Localization
                 string.Empty,
                 LabelWidth));
 
-            if (EditorPath.IsAssetPath(localizationAssetsAbsolutePath))
+            if (EditorPath.TryGetAssetPath(localizationAssetsAbsolutePath, out var tempLocalizationAssetsPath))
             {
-                settings.LocalizationAssetsPath = EditorPath.GetAssetPath(localizationAssetsAbsolutePath);
+                settings.LocalizationAssetsPath = tempLocalizationAssetsPath;
             }
             else
             {
@@ -193,9 +193,9 @@ namespace UniSharperEditor.Localization
                 string.Empty,
                 LabelWidth));
 
-            if (EditorPath.IsAssetPath(localizationScriptsStoreAbsolutePath))
+            if (EditorPath.TryGetAssetPath(localizationScriptsStoreAbsolutePath, out var tempLocalizationScriptsStorePath))
             {
-                settings.LocalizationScriptsStorePath = EditorPath.GetAssetPath(localizationScriptsStoreAbsolutePath);
+                settings.LocalizationScriptsStorePath = tempLocalizationScriptsStorePath;
             }
             else
             {
