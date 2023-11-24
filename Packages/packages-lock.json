@@ -53,19 +53,19 @@
       }
     },
     "io.github.idreamsofgame.resharp.core": {
-      "version": "1.3.1",
+      "version": "1.3.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
     "io.github.idreamsofgame.unisharper.core": {
-      "version": "1.14.9",
+      "version": "1.14.14",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "jillejr.newtonsoft.json-for-unity": "13.0.102",
-        "io.github.idreamsofgame.resharp.core": "1.3.1"
+        "io.github.idreamsofgame.resharp.core": "1.3.3"
       },
       "url": "https://package.openupm.com"
     },
