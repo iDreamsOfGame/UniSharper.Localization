@@ -8,7 +8,6 @@ using JetBrains.Annotations;
 using ReSharp.Extensions;
 using ReSharp.Security.Cryptography;
 using UniSharper;
-using UniSharper.UniSharper.Core.Runtime;
 using UniSharperEditor.Extensions;
 using UnityEditor;
 using UnityEngine;
@@ -16,9 +15,9 @@ using UnityEngine;
 namespace UniSharperEditor.Localization
 {
     /// <summary>
-    /// Class used to get and set the localization settings object. Implements the <see cref="UniSharperEditor.SettingsScriptableObject"/>
+    /// Class used to get and set the localization settings object. Implements the <see cref="SettingsScriptableObject{T}"/>
     /// </summary>
-    /// <seealso cref="UniSharperEditor.SettingsScriptableObject"/>
+    /// <seealso cref="SettingsScriptableObject{T}"/>
     public class LocalizationAssetSettings : SettingsScriptableObject<LocalizationAssetSettings>
     {
         private const string LocalizationAssetsFolderName = "Locales";
