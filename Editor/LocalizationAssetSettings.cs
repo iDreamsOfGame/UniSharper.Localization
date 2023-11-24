@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using ReSharp.Extensions;
 using ReSharp.Security.Cryptography;
 using UniSharper;
+using UniSharper.UniSharper.Core.Runtime;
 using UniSharperEditor.Extensions;
 using UnityEditor;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace UniSharperEditor.Localization
 
         private const string LocalizationFolderName = "Localization";
 
-        private static readonly string LocalizationFolder = Path.Combine(EditorEnvironment.AssetsFolderName, LocalizationFolderName);
+        private static readonly string LocalizationFolder = PlayerPath.GetAssetPath(LocalizationFolderName);
 
         private static readonly string SettingsAssetPath = $"{LocalizationFolder}/{nameof(LocalizationAssetSettings)}.asset";
 
@@ -44,7 +45,7 @@ namespace UniSharperEditor.Localization
 
         [ReadOnlyField]
         [SerializeField]
-        private string localizationScriptsStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(EditorEnvironment.AssetsFolderName, EditorEnvironment.DefaultScriptsFolderName));
+        private string localizationScriptsStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(PlayerPath.GetAssetPath(EditorEnvironment.DefaultScriptsFolderName));
 
         [ReadOnlyField]
         [SerializeField]
@@ -223,7 +224,7 @@ namespace UniSharperEditor.Localization
             if (Directory.Exists(LocalizationFolder))
                 return;
             
-            AssetDatabase.CreateFolder(EditorEnvironment.AssetsFolderName, LocalizationFolderName);
+            AssetDatabase.CreateFolder(PlayerEnvironment.AssetsFolderName, LocalizationFolderName);
         }
 
         internal static void CreateLocalizationScriptsStoreFolder(LocalizationAssetSettings settings)
