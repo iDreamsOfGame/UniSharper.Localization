@@ -16,7 +16,7 @@ namespace UniSharperEditor.Localization
 
         private TranslationDataTreeView translationDataTreeView;
 
-        [MenuItem("UniSharper/Localization Management/Localization Assets Viewer...", false, 2)]
+        [MenuItem("UniSharper/Localization Management/View Localization Assets...", false, 2)]
         internal static void ShowWindow()
         {
             translationDataMap = LocalizationAssetUtility.LoadLocalizationAssets();

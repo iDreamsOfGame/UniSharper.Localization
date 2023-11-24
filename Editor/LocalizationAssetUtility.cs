@@ -31,7 +31,7 @@ namespace UniSharperEditor.Localization
             foreach (var (locale, dataMap) in translationDataMap)
             {
                 var assetPath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(settings.LocalizationAssetsPath, $"{locale}.bytes"));
-                var assetAbsolutePath = EditorPath.ConvertToAbsolutePath(assetPath);
+                var assetAbsolutePath = EditorPath.GetFullPath(assetPath);
 
                 using var stream = File.Open(assetAbsolutePath, FileMode.Create);
                 var writer = new BinaryFormatter();
@@ -57,16 +57,16 @@ namespace UniSharperEditor.Localization
                 LocalizationAssetSettings.CreateLocalizationScriptsStoreFolder(settings);
 
                 // Generate Locales.cs
-                var scriptLocalesStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "Locales.cs");
-                var scriptLocalesAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
+                var scriptLocalesStorePath = EditorPath.GetFullPath(settings.LocalizationScriptsStorePath, "Locales.cs");
+                var scriptLocalesAssetPath = EditorPath.GetAssetPath(scriptLocalesStorePath);
                 var scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewLocalesScriptTemplate.txt", UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Fields, GenerateFieldsForScriptLocales(translationDataMap));
                 File.WriteAllText(scriptLocalesStorePath, scriptTextContent, new UTF8Encoding(true));
 
                 // Generate TranslationKey.cs
-                var scriptTranslationKeyStorePath = EditorPath.ConvertToAbsolutePath(settings.LocalizationScriptsStorePath, "TranslationKey.cs");
-                var scriptTranslationKeyAssetPath = EditorPath.ConvertToAssetPath(scriptLocalesStorePath);
+                var scriptTranslationKeyStorePath = EditorPath.GetFullPath(settings.LocalizationScriptsStorePath, "TranslationKey.cs");
+                var scriptTranslationKeyAssetPath = EditorPath.GetAssetPath(scriptLocalesStorePath);
                 scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewTranslationKeyScriptTemplate.txt", UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Constants, GenerateConstantsForScriptTranslationKey(translationDataMap));
@@ -98,7 +98,7 @@ namespace UniSharperEditor.Localization
                 return null;
             }
 
-            var dirPath = EditorPath.ConvertToAbsolutePath(settings.LocalizationAssetsPath);
+            var dirPath = EditorPath.GetFullPath(settings.LocalizationAssetsPath);
             var files = Directory.GetFiles(dirPath, "*.bytes");
 
             if (files.Length <= 0)

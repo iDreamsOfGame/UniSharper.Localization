@@ -163,20 +163,20 @@ namespace UniSharperEditor.Localization
                 LabelWidth);
 
             // Localization Assets Path
-            var localizationAssetsAbsolutePath = EditorPath.ConvertToAssetPath(UniEditorGUILayout.FolderField(new GUIContent("Localization Assets Path", "Where to store localization assets."),
+            var localizationAssetsAbsolutePath = EditorPath.GetAssetPath(UniEditorGUILayout.FolderField(new GUIContent("Localization Assets Path", "Where to store localization assets."),
                 settings.LocalizationAssetsPath,
                 "Localization Assets Path",
-                Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationAssetsPath),
+                EditorPath.GetFullPath(settings.LocalizationAssetsPath),
                 string.Empty,
                 LabelWidth));
 
             if (EditorPath.IsAssetPath(localizationAssetsAbsolutePath))
             {
-                settings.LocalizationAssetsPath = EditorPath.ConvertToAssetPath(localizationAssetsAbsolutePath);
+                settings.LocalizationAssetsPath = EditorPath.GetAssetPath(localizationAssetsAbsolutePath);
             }
             else
             {
-                EditorUtility.DisplayDialog("Invalid Path", "The 'Localization Assets Path' you choose is invalid path, please select the folder in the project!", "OK");
+                Debug.LogError("The 'Localization Assets Path' you choose is invalid path, please select the folder in the project!");
             }
 
             // Localization Script Namespace
@@ -186,20 +186,20 @@ namespace UniSharperEditor.Localization
             }
 
             // Localization Scripts Store Path
-            var localizationScriptsStoreAbsolutePath = EditorPath.ConvertToAssetPath(UniEditorGUILayout.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."),
+            var localizationScriptsStoreAbsolutePath = EditorPath.GetAssetPath(UniEditorGUILayout.FolderField(new GUIContent("Localization Scripts Store Path", "Where to store localization scripts."),
                 settings.LocalizationScriptsStorePath,
                 "Localization Scripts Store Path",
-                Path.Combine(Directory.GetCurrentDirectory(), settings.LocalizationScriptsStorePath),
+                Path.Combine(settings.LocalizationScriptsStorePath),
                 string.Empty,
                 LabelWidth));
 
             if (EditorPath.IsAssetPath(localizationScriptsStoreAbsolutePath))
             {
-                settings.LocalizationScriptsStorePath = EditorPath.ConvertToAssetPath(localizationScriptsStoreAbsolutePath);
+                settings.LocalizationScriptsStorePath = EditorPath.GetAssetPath(localizationScriptsStoreAbsolutePath);
             }
             else
             {
-                EditorUtility.DisplayDialog("Invalid Path", "The 'Localization Scripts Store Path' you choose is invalid path, please select the folder in the project!", "OK");
+                Debug.LogError("The 'Localization Scripts Store Path' you choose is invalid path, please select the folder in the project!");
             }
 
             // Locale Row Index

@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [2.4.0] - 2023-11-24
+
+### Added
+
+- **Localization Assets Path** supports package path, e.g. **Packages/com.xxx.xxx**.
+
+- **Localization Scripts Store Path** supports package path, e.g. **Packages/com.xxx.xxx**.
+
+
+
 ## [2.2.0] - 2021-07-22
 
 ### Added
