@@ -99,7 +99,7 @@ namespace UniSharperEditor.Localization
             }
 
             var dirPath = EditorPath.GetFullPath(settings.LocalizationAssetsPath);
-            var files = Directory.GetFiles(dirPath, SearchPattern.BinaryFiles);
+            var files = Directory.GetFiles(dirPath, SearchPattern.UnityBinaryFiles);
 
             if (files.Length <= 0)
                 return null;
