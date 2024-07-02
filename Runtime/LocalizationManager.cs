@@ -119,10 +119,12 @@ namespace UniSharper.Localization
         /// <param name="data">The localization asset data.</param>
         public void LoadLocalizationAssetData(Locale locale, byte[] data)
         {
-            using var stream = new MemoryStream(data);
-            var reader = new BinaryFormatter();
-            var translationDataMap = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
-            localeTranslationTextsMap.AddUnique(locale, translationDataMap);
+            using (var stream = new MemoryStream(data))
+            {
+                var reader = new BinaryFormatter();
+                var translationDataMap = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
+                localeTranslationTextsMap.AddUnique(locale, translationDataMap);
+            }
         }
 
         private void OnLocaleChanged(LocaleChangedEventArgs e) => LocaleChanged?.Invoke(this, e);

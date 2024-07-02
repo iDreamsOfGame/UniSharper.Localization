@@ -8,7 +8,7 @@ namespace UniSharperEditor.Localization
 {
     internal class TranslationDataImporterWindow : LocalizationEditorWindow
     {
-        private static readonly Vector2Int Size = new(850, 420);
+        private static readonly Vector2Int Size = new Vector2Int(850, 420);
         
         private TranslationDataImporter importer;
 
@@ -25,7 +25,9 @@ namespace UniSharperEditor.Localization
 
         protected override void DrawGUIWithSettings()
         {
-            importer ??= new TranslationDataImporter(Settings);
+            if (importer == null)
+                importer = new TranslationDataImporter(Settings);
+            
             importer.DrawEditorGui(this);
         }
     }

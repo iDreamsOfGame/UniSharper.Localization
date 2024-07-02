@@ -7,6 +7,8 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
+// ReSharper disable ConvertIfStatementToNullCoalescingExpression
+
 namespace UniSharperEditor.Localization
 {
     internal class TranslationDataImporter
@@ -64,7 +66,16 @@ namespace UniSharperEditor.Localization
 
         internal TranslationDataImporter(LocalizationAssetSettings settings) => this.settings = settings;
 
-        private SerializedObject SettingsSerializedObject => settingsSerializedObject ??= new SerializedObject(settings);
+        private SerializedObject SettingsSerializedObject
+        {
+            get
+            {
+                if (settingsSerializedObject == null)
+                    settingsSerializedObject = new SerializedObject(settings);
+
+                return settingsSerializedObject;
+            }
+        }
 
         [DidReloadScripts]
         private static void OnScriptsReloaded()
