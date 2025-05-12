@@ -15,7 +15,7 @@ namespace UniSharperEditor.Localization
         [MenuItem("UniSharper/Localization Management/Import Translation Data...", false, 1)]
         internal static void ShowWindow()
         {
-            const string title = "Metadata Importer";
+            const string title = "Translation Data Importer";
             var position = new Vector2((Screen.width - Size.x) * 0.5f, (Screen.height - Size.y) * 0.5f);
             var rect = new Rect(position, Size);
             var window = GetWindowWithRect<TranslationDataImporterWindow>(rect, true, title);
@@ -25,9 +25,7 @@ namespace UniSharperEditor.Localization
 
         protected override void DrawGUIWithSettings()
         {
-            if (importer == null)
-                importer = new TranslationDataImporter(Settings);
-            
+            importer ??= new TranslationDataImporter(Settings);
             importer.DrawEditorGui(this);
         }
     }

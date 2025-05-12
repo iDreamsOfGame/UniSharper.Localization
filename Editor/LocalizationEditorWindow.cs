@@ -15,10 +15,8 @@ namespace UniSharperEditor.Localization
         {
             get
             {
-                if (settings == null)
-                {
+                if (!settings)
                     settings = LocalizationAssetSettings.Load();
-                }
 
                 return settings;
             }
@@ -53,7 +51,7 @@ namespace UniSharperEditor.Localization
 
         private void OnGUI()
         {
-            if (Settings == null)
+            if (!Settings)
             {
                 DrawGUIWithoutSettings();
             }

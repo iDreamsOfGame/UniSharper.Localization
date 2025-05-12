@@ -240,10 +240,10 @@ namespace UniSharperEditor.Localization
 
         internal bool CanBuildLocaleAssets(string localeString)
         {
-            if (targetLocales != null && targetLocales.Length > 0)
+            if (targetLocales is { Length: > 0 })
                 return targetLocales.Contains(localeString);
 
-            if (excludedLocales != null && excludedLocales.Length > 0)
+            if (excludedLocales is { Length: > 0 })
                 return !excludedLocales.Contains(localeString);
 
             return true;

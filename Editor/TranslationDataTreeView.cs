@@ -36,10 +36,8 @@ namespace UniSharperEditor.Localization
             if (convertedTranslationDataMap == null) 
                 return result;
             
-            foreach (var pair in convertedTranslationDataMap)
+            foreach (var (key, value) in convertedTranslationDataMap)
             {
-                var key = pair.Key;
-                var value = pair.Value;
                 foreach (var kvp in value)
                 {
                     var locale = kvp.Key;
@@ -110,7 +108,7 @@ namespace UniSharperEditor.Localization
 
         private static MultiColumnHeaderState.Column[] GetColumns(Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap)
         {
-            var columnCount = translationDataMap != null && translationDataMap.Count > 0 ? translationDataMap.Count + 1 : 2;
+            var columnCount = translationDataMap is { Count: > 0 } ? translationDataMap.Count + 1 : 2;
             var columns = new MultiColumnHeaderState.Column[columnCount];
             columns[0] = CreateColumn("Translation Key");
 

@@ -28,20 +28,16 @@ namespace UniSharperEditor.Localization
             var settings = LocalizationAssetSettings.Load();
             LocalizationAssetSettings.CreateLocalizationAssetsFolder(settings);
 
-            foreach (var pair in translationDataMap)
+            foreach (var (locale, dataMap) in translationDataMap)
             {
-                var locale = pair.Key;
-                var dataMap = pair.Value;
                 var assetPath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(settings.LocalizationAssetsPath, $"{locale}.bytes"));
                 var assetAbsolutePath = EditorPath.GetFullPath(assetPath);
 
-                using (var stream = File.Open(assetAbsolutePath, FileMode.Create))
-                {
-                    var writer = new BinaryFormatter();
-                    writer.Serialize(stream, dataMap);
+                using var stream = File.Open(assetAbsolutePath, FileMode.Create);
+                var writer = new BinaryFormatter();
+                writer.Serialize(stream, dataMap);
 
-                    AssetDatabase.ImportAsset(assetPath);
-                }
+                AssetDatabase.ImportAsset(assetPath);
             }
 
             return true;
@@ -92,7 +88,7 @@ namespace UniSharperEditor.Localization
         {
             var settings = LocalizationAssetSettings.Load();
 
-            if (settings == null)
+            if (!settings)
             {
                 Debug.LogError("No Localization Settings file exists!");
                 return null;
@@ -116,12 +112,10 @@ namespace UniSharperEditor.Localization
             {
                 var localeString = Path.GetFileNameWithoutExtension(file);
                 var locale = new Locale(localeString);
-                using (var stream = File.OpenRead(file))
-                {
-                    var reader = new BinaryFormatter();
-                    var translationTexts = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
-                    translationDataMap.AddUnique(locale, translationTexts);
-                }
+                using var stream = File.OpenRead(file);
+                var reader = new BinaryFormatter();
+                var translationTexts = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
+                translationDataMap.AddUnique(locale, translationTexts);
             }
 
             return translationDataMap;
@@ -131,7 +125,7 @@ namespace UniSharperEditor.Localization
         {
             var settings = LocalizationAssetSettings.Load();
 
-            if (settings == null)
+            if (!settings)
             {
                 Debug.LogError("No Localization Settings file exists!");
                 return null;
@@ -147,129 +141,125 @@ namespace UniSharperEditor.Localization
             var localeTextColumnIndexMap = new Dictionary<string, int>();
             var localeStyleColumnIndexMap = new Dictionary<string, int>();
             var path = LocalizationAssetSettings.TranslationFilePath;
-            using (var stream = File.OpenRead(path))
+            using var stream = File.OpenRead(path);
+            try
             {
-                try
+                using var reader = ExcelReaderFactory.CreateReader(stream);
+                if (reader != null)
                 {
-                    using (var reader = ExcelReaderFactory.CreateReader(stream))
+                    var dataSet = reader.AsDataSet();
+                    if (dataSet is { Tables: { Count: > 0 } })
                     {
-                        if (reader != null)
+                        for (var index = 0; index < dataSet.Tables.Count; index++)
                         {
-                            var dataSet = reader.AsDataSet();
-                            if (dataSet != null && dataSet.Tables.Count > 0)
+                            var table = dataSet.Tables[index];
+                            var columns = table.Columns;
+                            var rows = table.Rows;
+
+                            if (columns.Count > 1 && rows.Count > 1)
                             {
-                                for (var index = 0; index < dataSet.Tables.Count; index++)
+                                if (index == 0)
                                 {
-                                    var table = dataSet.Tables[index];
-                                    var columns = table.Columns;
-                                    var rows = table.Rows;
-
-                                    if (columns.Count > 1 && rows.Count > 1)
+                                    // Locate locale translation text column.
+                                    for (var i = settings.TranslationTextColumnIndexRange.x; i <= settings.TranslationTextColumnIndexRange.y; i++)
                                     {
-                                        if (index == 0)
+                                        var localeString = rows[settings.LocaleRowIndex][i].ToString().Trim();
+                                        if (string.IsNullOrEmpty(localeString) || !settings.CanBuildLocaleAssets(localeString))
+                                            continue;
+
+                                        localeTextColumnIndexMap.AddUnique(localeString, i, false);
+                                        translationDataMap.AddUnique(localeString, new Dictionary<string, TranslationData>(), false);
+                                    }
+
+                                    // Locate locale style column.
+                                    for (var i = settings.StyleColumnIndexRange.x; i < settings.StyleColumnIndexRange.y; i++)
+                                    {
+                                        if (i >= columns.Count)
+                                            continue;
+
+                                        var cellValue = rows[settings.LocaleRowIndex][i].ToString().Trim();
+                                        if (string.IsNullOrEmpty(cellValue))
+                                            continue;
+
+                                        var values = cellValue.Split('.');
+                                        if (values.Length < 2)
+                                            continue;
+
+                                        var localeString = values[0];
+                                        localeStyleColumnIndexMap.AddUnique(localeString, i, false);
+                                    }
+                                }
+
+                                for (var i = settings.TranslationTextRowStartIndex; i < rows.Count; i++)
+                                {
+                                    var translationKey = rows[i][settings.TranslationKeyColumnIndex].ToString().Trim();
+                                    if (string.IsNullOrEmpty(translationKey))
+                                        continue;
+
+                                    // Parse translation text.
+                                    foreach (var pair in localeTextColumnIndexMap)
+                                    {
+                                        var localeString = pair.Key;
+                                        var columnIndex = pair.Value;
+                                        if (columnIndex >= columns.Count)
+                                            continue;
+
+                                        var translationText = rows[i][columnIndex].ToString();
+                                        if (string.IsNullOrEmpty(translationText))
+                                            translationText = LocalizationManager.DefaultText;
+
+                                        if (translationDataMap.ContainsKey(localeString) && !translationDataMap[localeString].ContainsKey(translationKey))
                                         {
-                                            // Locate locale translation text column.
-                                            for (var i = settings.TranslationTextColumnIndexRange.x; i <= settings.TranslationTextColumnIndexRange.y; i++)
-                                            {
-                                                var localeString = rows[settings.LocaleRowIndex][i].ToString().Trim();
-                                                if (string.IsNullOrEmpty(localeString) || !settings.CanBuildLocaleAssets(localeString))
-                                                    continue;
-
-                                                localeTextColumnIndexMap.AddUnique(localeString, i, false);
-                                                translationDataMap.AddUnique(localeString, new Dictionary<string, TranslationData>(), false);
-                                            }
-
-                                            // Locate locale style column.
-                                            for (var i = settings.StyleColumnIndexRange.x; i < settings.StyleColumnIndexRange.y; i++)
-                                            {
-                                                if (i >= columns.Count)
-                                                    continue;
-
-                                                var cellValue = rows[settings.LocaleRowIndex][i].ToString().Trim();
-                                                if (string.IsNullOrEmpty(cellValue))
-                                                    continue;
-
-                                                var values = cellValue.Split('.');
-                                                if (values.Length < 2)
-                                                    continue;
-
-                                                var localeString = values[0];
-                                                localeStyleColumnIndexMap.AddUnique(localeString, i, false);
-                                            }
+                                            translationDataMap[localeString].Add(translationKey, new TranslationData(translationText));
                                         }
-
-                                        for (var i = settings.TranslationTextRowStartIndex; i < rows.Count; i++)
+                                        else
                                         {
-                                            var translationKey = rows[i][settings.TranslationKeyColumnIndex].ToString().Trim();
-                                            if (string.IsNullOrEmpty(translationKey))
-                                                continue;
-
-                                            // Parse translation text.
-                                            foreach (var pair in localeTextColumnIndexMap)
-                                            {
-                                                var localeString = pair.Key;
-                                                var columnIndex = pair.Value;
-                                                if (columnIndex >= columns.Count)
-                                                    continue;
-
-                                                var translationText = rows[i][columnIndex].ToString();
-                                                if (string.IsNullOrEmpty(translationText))
-                                                    translationText = LocalizationManager.DefaultText;
-
-                                                if (translationDataMap.ContainsKey(localeString) && !translationDataMap[localeString].ContainsKey(translationKey))
-                                                {
-                                                    translationDataMap[localeString].Add(translationKey, new TranslationData(translationText));
-                                                }
-                                                else
-                                                {
-                                                    Debug.LogErrorFormat("Found repeat translation key in cell 'A{0}'!", (i + 1).ToString());
-                                                    return null;
-                                                }
-                                            }
-
-                                            // Parse style.
-                                            foreach (var pair in localeStyleColumnIndexMap)
-                                            {
-                                                var localeString = pair.Key;
-                                                var columnIndex = pair.Value;
-                                                if (columnIndex >= columns.Count)
-                                                    continue;
-
-                                                var cellValue = rows[i][columnIndex].ToString().Trim();
-                                                if (string.IsNullOrEmpty(cellValue))
-                                                    continue;
-
-                                                var style = StringUtility.GetKeyValueStringPairsInBrackets(cellValue);
-                                                if (style.Count == 0)
-                                                    continue;
-
-                                                if (translationDataMap.TryGetValue(localeString, out var dataMap) && dataMap.TryGetValue(translationKey, out var translationData))
-                                                    translationData.Style = style;
-                                            }
+                                            Debug.LogErrorFormat("Found repeat translation key in cell 'A{0}'!", (i + 1).ToString());
+                                            return null;
                                         }
                                     }
-                                    else
+
+                                    // Parse style.
+                                    foreach (var pair in localeStyleColumnIndexMap)
                                     {
-                                        Debug.LogError("Invalid translation file format!");
+                                        var localeString = pair.Key;
+                                        var columnIndex = pair.Value;
+                                        if (columnIndex >= columns.Count)
+                                            continue;
+
+                                        var cellValue = rows[i][columnIndex].ToString().Trim();
+                                        if (string.IsNullOrEmpty(cellValue))
+                                            continue;
+
+                                        var style = StringUtility.GetKeyValueStringPairsInBrackets(cellValue);
+                                        if (style.Count == 0)
+                                            continue;
+
+                                        if (translationDataMap.TryGetValue(localeString, out var dataMap) && dataMap.TryGetValue(translationKey, out var translationData))
+                                            translationData.Style = style;
                                     }
                                 }
                             }
                             else
                             {
-                                Debug.LogError("Invalid translation file!");
+                                Debug.LogError("Invalid translation file format!");
                             }
                         }
                     }
+                    else
+                    {
+                        Debug.LogError("Invalid translation file!");
+                    }
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError($"fileName: {Path.GetFileName(path)}, error: {e}");
-                    EditorUtility.ClearProgressBar();
-                    throw;
-                }
-
-                return translationDataMap;
             }
+            catch (Exception e)
+            {
+                Debug.LogError($"fileName: {Path.GetFileName(path)}, error: {e}");
+                EditorUtility.ClearProgressBar();
+                throw;
+            }
+
+            return translationDataMap;
         }
 
         private static string GenerateConstantsForScriptTranslationKey(Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap)

@@ -21,7 +21,7 @@ namespace UniSharperEditor.Localization
         {
             translationDataMap = LocalizationAssetUtility.LoadLocalizationAssets();
 
-            if (translationDataMap != null && translationDataMap.Count > 0)
+            if (translationDataMap is { Count: > 0 })
             {
                 GetWindow<LocalizationAssetsViewerWindow>("Localization Assets Viewer").Show();
             }
@@ -39,9 +39,7 @@ namespace UniSharperEditor.Localization
 
         private void DrawTranslationDataTreeView()
         {
-            if (translationDataTreeView == null)
-                translationDataTreeView = new TranslationDataTreeView(new TreeViewState(), translationDataMap);
-            
+            translationDataTreeView ??= new TranslationDataTreeView(new TreeViewState(), translationDataMap);
             translationDataTreeView.OnGUI(new Rect(0, 0, position.width, position.height));
         }
     }

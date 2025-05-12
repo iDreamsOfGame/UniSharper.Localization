@@ -121,7 +121,7 @@ namespace UniSharperEditor.Localization
 
         internal void DrawEditorGui(EditorWindow window)
         {
-            if (settings == null)
+            if (!settings)
                 return;
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, false, false, GUILayout.Width(window.position.width), GUILayout.Height(window.position.height));
