@@ -27,7 +27,7 @@ namespace UniSharperEditor.Localization
         }
 
         public static MultiColumnHeaderState CreateDefaultMultiColumnHeaderState(Dictionary<Locale, Dictionary<string, TranslationData>> translationDataMap) => 
-            new MultiColumnHeaderState(GetColumns(translationDataMap));
+            new(GetColumns(translationDataMap));
 
         [UsedImplicitly]
         public Dictionary<Locale, Dictionary<string, TranslationData>> RestoreTranslationDataMap()
@@ -94,7 +94,7 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        private static MultiColumnHeaderState.Column CreateColumn(string label, bool canSort = false, bool allowToggleVisibility = false) => new MultiColumnHeaderState.Column()
+        private static MultiColumnHeaderState.Column CreateColumn(string label, bool canSort = false, bool allowToggleVisibility = false) => new()
         {
             headerContent = new GUIContent(label, label),
             allowToggleVisibility = allowToggleVisibility,

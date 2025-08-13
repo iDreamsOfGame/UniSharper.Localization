@@ -26,7 +26,7 @@ namespace UniSharperEditor.Localization
 
         private static readonly string LocalizationFolder = PlayerPath.GetAssetPath(LocalizationFolderName);
 
-        private static readonly string SettingsAssetPath = $"{LocalizationFolder}/{nameof(LocalizationAssetSettings)}.asset";
+        private static readonly string DefaultSettingsAssetPath = $"{LocalizationFolder}/{nameof(LocalizationAssetSettings)}.asset";
 
         private static readonly string TranslationFilePathPrefKeyFormat = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), null, false)}.{typeof(LocalizationAssetSettings).FullName}.translationFilePath";
 
@@ -49,7 +49,7 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private int translationKeyColumnIndex;
-        
+
         [ReadOnlyField]
         [SerializeField]
         private int translationTextRowStartIndex = 1;
@@ -61,10 +61,10 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private Vector2Int styleColumnIndexRange = Vector2Int.one * 3;
-        
+
         [SerializeField]
         private string[] targetLocales = Array.Empty<string>();
-        
+
         [SerializeField]
         private string[] excludedLocales = Array.Empty<string>();
 
@@ -84,7 +84,7 @@ namespace UniSharperEditor.Localization
                 EditorPrefsUtility.SetString(key, value);
             }
         }
-        
+
         internal string LocalizationAssetsPath
         {
             get => localizationAssetsPath;
@@ -97,7 +97,7 @@ namespace UniSharperEditor.Localization
                 Save();
             }
         }
-        
+
         internal string LocalizationScriptNamespace
         {
             get => localizationScriptNamespace;
@@ -131,7 +131,7 @@ namespace UniSharperEditor.Localization
             {
                 if (localeRowIndex.Equals(value))
                     return;
-                
+
                 localeRowIndex = value;
                 Save();
             }
@@ -144,12 +144,12 @@ namespace UniSharperEditor.Localization
             {
                 if (translationKeyColumnIndex.Equals(value))
                     return;
-                
+
                 translationKeyColumnIndex = value;
                 Save();
             }
         }
-        
+
         internal int TranslationTextRowStartIndex
         {
             get => translationTextRowStartIndex;
@@ -157,7 +157,7 @@ namespace UniSharperEditor.Localization
             {
                 if (translationTextRowStartIndex.Equals(value))
                     return;
-                
+
                 translationTextRowStartIndex = value;
                 Save();
             }
@@ -170,7 +170,7 @@ namespace UniSharperEditor.Localization
             {
                 if (translationTextColumnIndexRange.Equals(value))
                     return;
-                
+
                 translationTextColumnIndexRange = value;
                 Save();
             }
@@ -183,7 +183,7 @@ namespace UniSharperEditor.Localization
             {
                 if (styleColumnIndexRange.Equals(value))
                     return;
-                
+
                 styleColumnIndexRange = value;
                 Save();
             }
@@ -193,7 +193,7 @@ namespace UniSharperEditor.Localization
         {
             LocalizationAssetSettings settings;
 
-            if (File.Exists(SettingsAssetPath))
+            if (File.Exists(DefaultSettingsAssetPath))
             {
                 settings = Load();
             }
@@ -203,7 +203,7 @@ namespace UniSharperEditor.Localization
                 CreateLocalizationAssetsRootFolder();
                 CreateLocalizationAssetsFolder(settings);
                 CreateLocalizationScriptsStoreFolder(settings);
-                AssetDatabase.CreateAsset(settings, SettingsAssetPath);
+                AssetDatabase.CreateAsset(settings, DefaultSettingsAssetPath);
             }
 
             return settings;
@@ -222,7 +222,7 @@ namespace UniSharperEditor.Localization
         {
             if (Directory.Exists(LocalizationFolder))
                 return;
-            
+
             AssetDatabase.CreateFolder(PlayerEnvironment.AssetsFolderName, LocalizationFolderName);
         }
 
@@ -230,13 +230,29 @@ namespace UniSharperEditor.Localization
         {
             if (Directory.Exists(settings.LocalizationScriptsStorePath))
                 return;
-            
+
             Directory.CreateDirectory(settings.LocalizationScriptsStorePath);
             AssetDatabase.ImportAsset(settings.LocalizationScriptsStorePath);
         }
 
-        internal static LocalizationAssetSettings Load() => 
-            File.Exists(SettingsAssetPath) ? AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(SettingsAssetPath) : null;
+        internal static LocalizationAssetSettings Load()
+        {
+            if (File.Exists(DefaultSettingsAssetPath))
+                return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(DefaultSettingsAssetPath);
+
+            var guids = AssetDatabase.FindAssets($"t: {nameof(LocalizationAssetSettings)}");
+            if (guids.Length > 0)
+            {
+                var guid = guids[0];
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(path);
+            }
+
+            // Find nothing, create new and load it.
+            var settings = CreateInstance<LocalizationAssetSettings>();
+            AssetDatabase.CreateAsset(settings, DefaultSettingsAssetPath);
+            return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(DefaultSettingsAssetPath);
+        }
 
         internal bool CanBuildLocaleAssets(string localeString)
         {
@@ -252,9 +268,9 @@ namespace UniSharperEditor.Localization
         [UsedImplicitly]
         private void OnEnable()
         {
-            if (!string.IsNullOrEmpty(localizationScriptNamespace)) 
+            if (!string.IsNullOrEmpty(localizationScriptNamespace))
                 return;
-            
+
             localizationScriptNamespace = $"{(string.IsNullOrEmpty(PlayerSettings.productName) ? "Project" : PlayerSettings.productName)}.Localization";
         }
     }

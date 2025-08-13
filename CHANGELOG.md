@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [2.4.12] - 2025-08-13
+
+### Changed
+
+- The settings file **LocalizationAssetSettings** can be placed anywhere in project.
+
+
+
 ## [2.4.9] - 2024-07-02
 
 ### Fixed
