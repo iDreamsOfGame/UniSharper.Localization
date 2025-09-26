@@ -1,0 +1,20 @@
+{
+    "name": "Unity.UniSharper.Localization.Editor",
+    "rootNamespace": "UniSharperEditor.Localization",
+    "references": [
+        "Unity.UniSharper",
+        "Unity.UniSharper.Editor",
+        "Unity.UniSharper.Localization"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
