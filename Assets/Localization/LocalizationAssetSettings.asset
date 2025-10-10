@@ -20,5 +20,7 @@ MonoBehaviour:
   translationTextRowStartIndex: 1
   translationTextColumnIndexRange: {x: 2, y: 5}
   styleColumnIndexRange: {x: 6, y: 9}
+  shouldExportCharactersTextFile: 1
+  charactersTextFileExportFolderPath: Assets/Localization
   targetLocales: []
   excludedLocales: []
