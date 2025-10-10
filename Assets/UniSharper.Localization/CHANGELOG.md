@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [2.5.0] - 2025-10-10
+
+### Added
+
+- Supports exporting characters text file.
+
+
+
 ## [2.4.12] - 2025-08-13
 
 ### Changed

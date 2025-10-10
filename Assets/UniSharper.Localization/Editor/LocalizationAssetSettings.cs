@@ -24,6 +24,8 @@ namespace UniSharperEditor.Localization
 
         private const string LocalizationFolderName = "Localization";
 
+        private const string CharactersTextFileName = "Characters.txt";
+
         private static readonly string LocalizationFolder = PlayerPath.GetAssetPath(LocalizationFolderName);
 
         private static readonly string DefaultSettingsAssetPath = $"{LocalizationFolder}/{nameof(LocalizationAssetSettings)}.asset";
@@ -61,6 +63,12 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private Vector2Int styleColumnIndexRange = Vector2Int.one * 3;
+
+        [SerializeField]
+        private bool shouldExportCharactersTextFile;
+
+        [SerializeField]
+        private string charactersTextFileExportFolderPath;
 
         [SerializeField]
         private string[] targetLocales = Array.Empty<string>();
@@ -189,6 +197,34 @@ namespace UniSharperEditor.Localization
             }
         }
 
+        internal bool ShouldExportCharactersTextFile
+        {
+            get => shouldExportCharactersTextFile;
+            set
+            {
+                if (shouldExportCharactersTextFile == value)
+                    return;
+
+                shouldExportCharactersTextFile = value;
+                Save();
+            }
+        }
+        
+        internal string CharactersTextFileExportFolderPath
+        {
+            get => charactersTextFileExportFolderPath;
+            set
+            {
+                if (string.IsNullOrEmpty(value) || charactersTextFileExportFolderPath.Equals(value))
+                    return;
+
+                charactersTextFileExportFolderPath = value;
+                Save();
+            }
+        }
+
+        internal string CharactersTextFileExportPath => Path.Combine(CharactersTextFileExportFolderPath, CharactersTextFileName);
+
         internal static LocalizationAssetSettings Create()
         {
             LocalizationAssetSettings settings;
@@ -201,7 +237,7 @@ namespace UniSharperEditor.Localization
             {
                 settings = CreateInstance<LocalizationAssetSettings>();
                 CreateLocalizationAssetsRootFolder();
-                CreateLocalizationAssetsFolder(settings);
+                TryCreateLocalizationAssetsFolder(settings);
                 CreateLocalizationScriptsStoreFolder(settings);
                 AssetDatabase.CreateAsset(settings, DefaultSettingsAssetPath);
             }
@@ -209,7 +245,7 @@ namespace UniSharperEditor.Localization
             return settings;
         }
 
-        internal static void CreateLocalizationAssetsFolder(LocalizationAssetSettings settings)
+        internal static void TryCreateLocalizationAssetsFolder(LocalizationAssetSettings settings)
         {
             if (Directory.Exists(settings.LocalizationAssetsPath))
                 return;

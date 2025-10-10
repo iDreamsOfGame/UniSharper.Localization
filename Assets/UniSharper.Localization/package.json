@@ -2,8 +2,8 @@
   "name": "io.github.idreamsofgame.unisharper.localization",
   "displayName": "UniSharper.Localization",
   "description": "UniSharper.Localization is a serialization data driven text localization tool for Unity application.",
-  "version": "2.4.12",
-  "unity": "2018.4",
+  "version": "2.5.0",
+  "unity": "2021.3",
   "author": {
     "name": "iDreamsOfGame",
     "url": "https://github.com/iDreamsOfGame"
@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": 
   {
-    "io.github.idreamsofgame.unisharper.core": "1.25.8",
+    "io.github.idreamsofgame.unisharper.core": "1.25.13",
     "com.github.exceldatareader.exceldatareader": "3.6.0"
   },
   "publishConfig": {

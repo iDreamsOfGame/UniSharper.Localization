@@ -70,9 +70,7 @@ namespace UniSharperEditor.Localization
         {
             get
             {
-                if (settingsSerializedObject == null)
-                    settingsSerializedObject = new SerializedObject(settings);
-
+                settingsSerializedObject ??= new SerializedObject(settings);
                 return settingsSerializedObject;
             }
         }
@@ -287,6 +285,20 @@ namespace UniSharperEditor.Localization
                 var excludedLocalesProperty = SettingsSerializedObject.FindProperty("excludedLocales");
                 EditorGUILayout.PropertyField(excludedLocalesProperty, new GUIContent("Excluded Locales", "The list of Locales that should be excluded in the build."));
             }
+            
+            EditorGUILayout.Space(2);
+            
+            // Characters Text File Export Path
+            var label = new GUIContent("Should Export Characters Text File?", "Should export characters text file with all characters in translation text content?");
+            settings.ShouldExportCharactersTextFile = EditorGUILayout.BeginToggleGroup(label, settings.ShouldExportCharactersTextFile);
+            label = new GUIContent("Characters Text File Export Folder Path", "The folder path to store file Characters.txt.");
+            settings.CharactersTextFileExportFolderPath = EditorPath.GetAssetPath(UniEditorGUILayout.FolderField(label,
+                settings.CharactersTextFileExportFolderPath,
+                label.text,
+                EditorPath.GetFullPath(settings.CharactersTextFileExportFolderPath),
+                string.Empty,
+                LabelWidth));
+            EditorGUILayout.EndToggleGroup();
         }
 
         private void DrawBuildAssetsButton()

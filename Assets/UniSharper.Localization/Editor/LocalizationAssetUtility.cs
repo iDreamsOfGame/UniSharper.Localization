@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using ExcelDataReader;
@@ -20,13 +21,17 @@ namespace UniSharperEditor.Localization
     {
         private const string UnityPackageName = "io.github.idreamsofgame.unisharper.localization";
 
+        private static HashSet<char> charactersSet = new();
+
         internal static bool BuildLocalizationAssets(Dictionary<string, Dictionary<string, TranslationData>> translationDataMap)
         {
             if (translationDataMap.Count <= 0)
                 return false;
 
+            charactersSet ??= new HashSet<char>();
+
             var settings = LocalizationAssetSettings.Load();
-            LocalizationAssetSettings.CreateLocalizationAssetsFolder(settings);
+            LocalizationAssetSettings.TryCreateLocalizationAssetsFolder(settings);
 
             foreach (var (locale, dataMap) in translationDataMap)
             {
@@ -37,7 +42,22 @@ namespace UniSharperEditor.Localization
                 var writer = new BinaryFormatter();
                 writer.Serialize(stream, dataMap);
 
+                if (settings.ShouldExportCharactersTextFile)
+                {
+                    foreach (var ch in dataMap.Values.Select(translationData => translationData.Text.ToCharArray()).SelectMany(chars => chars))
+                    {
+                        charactersSet.Add(ch);
+                    }
+                }
+
                 AssetDatabase.ImportAsset(assetPath);
+            }
+
+            if (settings.ShouldExportCharactersTextFile)
+            {
+                var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersTextFileExportPath);
+                File.WriteAllText(charactersTextFilePath, new string(charactersSet.ToArray()), Encoding.UTF8);
+                AssetDatabase.ImportAsset(settings.CharactersTextFileExportPath);
             }
 
             return true;
