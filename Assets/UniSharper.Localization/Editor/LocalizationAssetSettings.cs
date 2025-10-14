@@ -68,7 +68,7 @@ namespace UniSharperEditor.Localization
         private bool shouldExportCharactersTextFile;
 
         [SerializeField]
-        private string charactersTextFileExportFolderPath;
+        private string charactersTextFileExportFolderPath = string.Empty;
 
         [SerializeField]
         private string[] targetLocales = Array.Empty<string>();
