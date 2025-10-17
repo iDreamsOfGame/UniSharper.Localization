@@ -15,42 +15,11 @@ namespace UniSharperEditor.Localization
     {
         private const float Padding = 10;
 
-        private const float LabelWidth = 275f;
-
+        private const float LabelWidth = 250f;
+        
         private const int MaxIntValue = 10;
 
         private static readonly string ScriptsGeneratedPrefKey = $"{typeof(TranslationDataImporter).FullName}.sgpk";
-
-        private static GUIStyle titleBoxGUIStyle;
-
-        private static readonly GUILayoutOption TitleBoxHeight = GUILayout.Height(30);
-
-        private static GUIStyle BoxGUIStyle
-        {
-            get
-            {
-                if (titleBoxGUIStyle == null)
-                {
-                    titleBoxGUIStyle = new GUIStyle(EditorStyles.helpBox)
-                    {
-                        alignment = TextAnchor.MiddleLeft,
-                        margin = new RectOffset { top = 8, bottom = 8 },
-                        padding = new RectOffset { left = 10, right = 10 },
-                        font = EditorStyles.label.font,
-                        fontSize = 14,
-                        richText = true
-                    };
-
-                    var textColor = GUI.skin.button.normal.textColor;
-                    titleBoxGUIStyle.normal.textColor = textColor;
-                    titleBoxGUIStyle.hover.textColor = textColor;
-                    titleBoxGUIStyle.focused.textColor = textColor;
-                    titleBoxGUIStyle.active.textColor = textColor;
-                }
-
-                return titleBoxGUIStyle;
-            }
-        }
 
         private static bool ScriptsGenerated
         {
@@ -155,7 +124,7 @@ namespace UniSharperEditor.Localization
         private void DrawImportSettingsFields()
         {
             const string title = "Import Settings";
-            DrawTitleLabel(title);
+            EditorGUIStyles.DrawTitleLabel(title);
 
             // Translation File Path
             if (!string.IsNullOrEmpty(LocalizationAssetSettings.TranslationFilePath) && !File.Exists(LocalizationAssetSettings.TranslationFilePath))
@@ -268,7 +237,7 @@ namespace UniSharperEditor.Localization
         private void DrawOtherSettingsFields()
         {
             const string title = "Other Settings";
-            DrawTitleLabel(title);
+            EditorGUIStyles.DrawTitleLabel(title);
 
             // Target Locales
             using (new UniEditorGUILayout.FieldScope(LabelWidth))
@@ -314,11 +283,6 @@ namespace UniSharperEditor.Localization
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
-        }
-
-        private static void DrawTitleLabel(string text)
-        {
-            GUILayout.Box(text, BoxGUIStyle, TitleBoxHeight);
         }
     }
 }

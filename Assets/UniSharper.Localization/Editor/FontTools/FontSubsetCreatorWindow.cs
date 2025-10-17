@@ -5,7 +5,7 @@ namespace UniSharperEditor.Localization.FontTools
 {
     internal class FontSubsetCreatorWindow : EditorWindow
     {
-        private static readonly Vector2Int Size = new(850, 460);
+        private static readonly Vector2Int Size = new(850, 160);
 
         private FontSubsetCreator creator;
         
