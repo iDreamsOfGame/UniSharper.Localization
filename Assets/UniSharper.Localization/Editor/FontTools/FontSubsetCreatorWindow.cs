@@ -1,3 +1,6 @@
+// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
+// See LICENSE in the project root for license information.
+
 using UnityEditor;
 using UnityEngine;
 
@@ -5,7 +8,7 @@ namespace UniSharperEditor.Localization.FontTools
 {
     internal class FontSubsetCreatorWindow : EditorWindow
     {
-        private static readonly Vector2Int Size = new(850, 160);
+        private static readonly Vector2Int Size = new(850, 290);
 
         private FontSubsetCreator creator;
         
@@ -23,7 +26,7 @@ namespace UniSharperEditor.Localization.FontTools
         private void OnGUI()
         {
             creator ??= new FontSubsetCreator();
-            creator.DrawEditorGui(this);
+            creator.DrawEditorGui();
             GUIUtility.ExitGUI();
         }
     }

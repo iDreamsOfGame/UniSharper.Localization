@@ -258,7 +258,7 @@ namespace UniSharperEditor.Localization
             EditorGUILayout.Space(2);
             
             // Characters Text File Export Path
-            var label = new GUIContent("Should Export Characters Text File?", "Should export characters text file with all characters in translation text content?");
+            var label = new GUIContent("Export Characters Text File", "Should export characters text file with all characters in translation text content?");
             settings.ShouldExportCharactersTextFile = EditorGUILayout.BeginToggleGroup(label, settings.ShouldExportCharactersTextFile);
             label = new GUIContent("Characters Text File Export Folder Path", "The folder path to store file Characters.txt.");
             var charactersTextFileExportFolderPath = UniEditorGUILayout.FolderField(label,

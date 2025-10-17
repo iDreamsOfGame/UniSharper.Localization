@@ -1,10 +1,12 @@
+// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
+// See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using HarfBuzzSharp;
-using ReSharp.Security.Cryptography;
 using SkiaSharp.FontSubset;
-using UniSharperEditor.Extensions;
 using UnityEditor;
 using UnityEngine;
 using Font = HarfBuzzSharp.Font;
@@ -17,52 +19,27 @@ namespace UniSharperEditor.Localization.FontTools
 
         private const float LabelWidth = 175f;
 
-        private static readonly string EditorPrefsKeySuffix = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), null, false)}.{PlayerSettings.productName}.{typeof(FontSubsetCreator).FullName}";
+        private static readonly string[] CharacterSetDisplayOptions = { "ASCII", "Extended ASCII", "ASCII Lowercase", "ASCII Uppercase", "Numbers + Symbols", "Custom Characters", "Characters from File" };
 
-        private static readonly string SourceFontFilePathEditorPrefsKey = $"{EditorPrefsKeySuffix}.{nameof(SourceFontFilePath)}";
-        
-        private static readonly string FontSubsetFolderPathEditorPrefsKey = $"{EditorPrefsKeySuffix}.{nameof(FontSubsetFolderPath)}";
-        
-        private static readonly string CharactersSetTextFilePathEditorPrefsKey = $"{EditorPrefsKeySuffix}.{nameof(CharactersSetTextFilePath)}";
-        
-        private static string SourceFontFilePath
-        {
-            get => EditorPrefsUtility.GetString(SourceFontFilePathEditorPrefsKey, string.Empty);
-            set
-            {
-                if (string.IsNullOrEmpty(value) || SourceFontFilePath.Equals(value))
-                    return;
-                
-                EditorPrefsUtility.SetString(SourceFontFilePathEditorPrefsKey, value);
-            }
-        }
+        private bool isFirstDrawGui = true;
 
-        private static string FontSubsetFolderPath
+        public void DrawEditorGui()
         {
-            get => EditorPrefsUtility.GetString(FontSubsetFolderPathEditorPrefsKey, string.Empty);
-            set
+            if (isFirstDrawGui)
             {
-                if (string.IsNullOrEmpty(value) || FontSubsetFolderPath.Equals(value))
-                    return;
-                
-                EditorPrefsUtility.SetString(FontSubsetFolderPathEditorPrefsKey, value);
-            }
-        }
+                // Verify settings.
+                if (!string.IsNullOrEmpty(FontSubsetCreatorSettings.SourceFontFilePath) && !File.Exists(FontSubsetCreatorSettings.SourceFontFilePath))
+                    FontSubsetCreatorSettings.SourceFontFilePath = string.Empty;
 
-        private static string CharactersSetTextFilePath
-        {
-            get => EditorPrefsUtility.GetString(CharactersSetTextFilePathEditorPrefsKey, string.Empty);
-            set
-            {
-                if (string.IsNullOrEmpty(value) || CharactersSetTextFilePath.Equals(value))
-                    return;
-                
-                EditorPrefsUtility.SetString(CharactersSetTextFilePathEditorPrefsKey, value);
+                if (!string.IsNullOrEmpty(FontSubsetCreatorSettings.FontSubsetFolderPath) && !Directory.Exists(FontSubsetCreatorSettings.FontSubsetFolderPath))
+                    FontSubsetCreatorSettings.FontSubsetFolderPath = string.Empty;
+
+                if (!string.IsNullOrEmpty(FontSubsetCreatorSettings.CharacterSetFilePath) && !File.Exists(FontSubsetCreatorSettings.CharacterSetFilePath))
+                    FontSubsetCreatorSettings.CharacterSetFilePath = string.Empty;
+
+                isFirstDrawGui = false;
             }
-        }
-        
-        public void DrawEditorGui(EditorWindow window)
-        {
+
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUILayout.Space(Padding);
@@ -74,8 +51,8 @@ namespace UniSharperEditor.Localization.FontTools
 
                     EditorGUILayout.Space(10);
 
-                    // Generate button
-                    DrawGenerateButton();
+                    // Create button
+                    DrawCreateButton();
                 }
                 EditorGUILayout.EndVertical();
 
@@ -84,81 +61,124 @@ namespace UniSharperEditor.Localization.FontTools
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawSettingsFields()
+        private static void DrawSettingsFields()
         {
             const string title = "Settings";
             EditorGUIStyles.DrawTitleLabel(title);
-            
-            SourceFontFilePath = UniEditorGUILayout.FileField(new GUIContent("Source Font File Path", "Where to locate source font file."),
-                SourceFontFilePath,
+
+            FontSubsetCreatorSettings.SourceFontFilePath = UniEditorGUILayout.FileField(new GUIContent("Source Font File Path", "Where to locate source font file."),
+                FontSubsetCreatorSettings.SourceFontFilePath,
                 "Select Source Font File",
                 string.Empty,
                 new[] { "Font Files", "ttf,otf" },
                 LabelWidth);
-            
-            FontSubsetFolderPath = UniEditorGUILayout.FolderField(new GUIContent("Font Subset Folder Path", "Where to store font subset file."),
-                FontSubsetFolderPath,
+
+            FontSubsetCreatorSettings.FontSubsetFolderPath = UniEditorGUILayout.FolderField(new GUIContent("Font Subset Folder Path", "Where to store font subset file."),
+                FontSubsetCreatorSettings.FontSubsetFolderPath,
                 "Font Subset Folder Path",
                 string.Empty,
                 string.Empty,
                 LabelWidth);
+
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
+            {
+                var characterSetTypeBeforeChange = (CharacterSetType)FontSubsetCreatorSettings.CharacterSetTypeInt;
+                FontSubsetCreatorSettings.CharacterSetTypeInt = EditorGUILayout.Popup("Character Set", FontSubsetCreatorSettings.CharacterSetTypeInt, CharacterSetDisplayOptions);
+
+                // Resets character set content when character set type changed.
+                if (characterSetTypeBeforeChange is not CharacterSetType.CustomCharacters && FontSubsetCreatorSettings.CharacterSetType is CharacterSetType.CustomCharacters)
+                    FontSubsetCreatorSettings.CharacterSetCustomContent = string.Empty;
+
+                // Resets character set file path when character set type changed.
+                if (characterSetTypeBeforeChange is not CharacterSetType.CharactersFromFile && FontSubsetCreatorSettings.CharacterSetType is CharacterSetType.CharactersFromFile)
+                    FontSubsetCreatorSettings.CharacterSetFilePath = string.Empty;
+            }
+
+            switch (FontSubsetCreatorSettings.CharacterSetTypeInt)
+            {
+                case (int)CharacterSetType.CustomCharacters:
+                {
+                    using (new UniEditorGUILayout.FieldScope(LabelWidth))
+                    {
+                        FontSubsetCreatorSettings.CharacterSetCustomContent = EditorGUILayout.TextArea(FontSubsetCreatorSettings.CharacterSetCustomContent, GUILayout.Height(90));
+                    }
+
+                    break;
+                }
+                case (int)CharacterSetType.CharactersFromFile:
+                    FontSubsetCreatorSettings.CharacterSetFilePath = UniEditorGUILayout.FileField(new GUIContent("Character Set File Path", "Where to locate the file of character set for font subset."),
+                        FontSubsetCreatorSettings.CharacterSetFilePath,
+                        "Select Character Set File",
+                        string.Empty,
+                        new[] { "Text File", "txt" },
+                        LabelWidth);
+                    break;
+            }
             
-            CharactersSetTextFilePath = UniEditorGUILayout.FileField(new GUIContent("Characters Set Text File Path", "Where to locate the text file of characters set in font subset."),
-                CharactersSetTextFilePath,
-                "Select Characters Set Text File",
-                string.Empty,
-                new[] { "Text File", "txt" },
-                LabelWidth);
+            var label = new GUIContent("Custom Font Subset File Name", "Custom font subset file name or not?");
+            FontSubsetCreatorSettings.CustomFontSubsetFileNameEnabled = EditorGUILayout.BeginToggleGroup(label, FontSubsetCreatorSettings.CustomFontSubsetFileNameEnabled);
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
+            {
+                label = new GUIContent("Font Subset File Name", "The file name for font subset file to be created.");
+                FontSubsetCreatorSettings.FontSubsetFileName = EditorGUILayout.TextField(label, FontSubsetCreatorSettings.FontSubsetFileName);
+            }
+            EditorGUILayout.EndToggleGroup();
         }
 
-        private void DrawGenerateButton()
+        private static void DrawCreateButton()
         {
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Generate Font Subset File", GUILayout.Width(LabelWidth), GUILayout.Height(25)))
-                    GenerateFontSubsetFile();
+                if (GUILayout.Button("Create Font Subset File", GUILayout.Width(LabelWidth), GUILayout.Height(25)))
+                    CreateFontSubsetFile();
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
         }
 
-        private async void GenerateFontSubsetFile()
+        private static async void CreateFontSubsetFile()
         {
             try
             {
-                if (string.IsNullOrEmpty(SourceFontFilePath))
+                if (string.IsNullOrEmpty(FontSubsetCreatorSettings.SourceFontFilePath))
                 {
                     EditorUtility.DisplayDialog("Error", "Please select source font file.", "OK");
                     return;
                 }
-                
-                if (string.IsNullOrEmpty(FontSubsetFolderPath))
+
+                if (string.IsNullOrEmpty(FontSubsetCreatorSettings.FontSubsetFolderPath))
                 {
                     EditorUtility.DisplayDialog("Error", "Please select font subset folder path.", "OK");
                     return;
                 }
-                
-                if (string.IsNullOrEmpty(CharactersSetTextFilePath))
+
+                if (FontSubsetCreatorSettings.CharacterSetType is CharacterSetType.CustomCharacters && string.IsNullOrEmpty(FontSubsetCreatorSettings.CharacterSetCustomContent))
+                {
+                    EditorUtility.DisplayDialog("Error", "No custom content for character set.", "OK");
+                    return;
+                }
+
+                if (FontSubsetCreatorSettings.CharacterSetType is CharacterSetType.CharactersFromFile && string.IsNullOrEmpty(FontSubsetCreatorSettings.CharacterSetFilePath))
                 {
                     EditorUtility.DisplayDialog("Error", "Please select characters set text file.", "OK");
                     return;
                 }
-                
+
                 // Initialize font subset builder.
-                var blob = Blob.FromFile(SourceFontFilePath);
+                var blob = Blob.FromFile(FontSubsetCreatorSettings.SourceFontFilePath);
                 var font = new Font(new Face(blob, 0));
                 var builder = new FontSubsetBuilder();
                 builder.SetFont(font);
 
-                var chars = await File.ReadAllTextAsync(CharactersSetTextFilePath);
+                var chars = await GetCharacterSet();
                 var glyphs = new HashSet<uint>();
                 if (chars.Length == 0)
                 {
-                    EditorUtility.DisplayDialog("Error", "No content in characters set text file!", "OK");
+                    EditorUtility.DisplayDialog("Error", "No character set!", "OK");
                     return;
                 }
-                
+
                 foreach (var ch in chars)
                 {
                     var unicode = (uint)ch;
@@ -178,13 +198,17 @@ namespace UniSharperEditor.Localization.FontTools
                     EditorUtility.DisplayDialog("Error", "No glyph to add in font subset file!", "OK");
                     return;
                 }
-                
+
                 builder.AddGlyphs(glyphs);
 
-                // Generate font subset file.
-                var sourceFontFileName = Path.GetFileNameWithoutExtension(SourceFontFilePath);
-                var sourceFontFileExtension = Path.GetExtension(SourceFontFilePath);
-                var fontSubsetFilePath = Path.Combine(FontSubsetFolderPath, $"{sourceFontFileName}-Subset{sourceFontFileExtension}");
+                // Verifies font subset file extension.
+                var extension = Path.GetExtension(FontSubsetCreatorSettings.SourceFontFilePath);
+                var fontSubsetFileName = FontSubsetCreatorSettings.FontSubsetFileName;
+                if (!fontSubsetFileName.EndsWith(extension))
+                    fontSubsetFileName += extension;
+                    
+                // Creates font subset file.
+                var fontSubsetFilePath = Path.Combine(FontSubsetCreatorSettings.FontSubsetFolderPath, fontSubsetFileName);
                 EditorUtility.DisplayProgressBar("Hold on...", "Generating font subset file...", 0.5f);
                 await File.WriteAllBytesAsync(fontSubsetFilePath, builder.Build());
                 AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
@@ -194,6 +218,39 @@ namespace UniSharperEditor.Localization.FontTools
             catch (Exception e)
             {
                 Debug.LogError(e.ToString());
+            }
+        }
+
+        private static async Task<char[]> GetCharacterSet()
+        {
+            switch (FontSubsetCreatorSettings.CharacterSetType)
+            {
+                default:
+                case CharacterSetType.Ascii:
+                    return PresetCharacterSets.AllAsciiCharacters;
+
+                case CharacterSetType.ExtendedAscii:
+                    return PresetCharacterSets.AllExtendedAsciiCharacters;
+
+                case CharacterSetType.AsciiLowercase:
+                    return PresetCharacterSets.AllAsciiLowercaseCharacters;
+
+                case CharacterSetType.AsciiUppercase:
+                    return PresetCharacterSets.AllAsciiUppercaseCharacters;
+
+                case CharacterSetType.NumbersAndSymbols:
+                    return PresetCharacterSets.AllNumbersAndSymbolsCharacters;
+
+                case CharacterSetType.CustomCharacters:
+                    return !string.IsNullOrEmpty(FontSubsetCreatorSettings.CharacterSetCustomContent)
+                        ? FontSubsetCreatorSettings.CharacterSetCustomContent.ToCharArray()
+                        : Array.Empty<char>();
+
+                case CharacterSetType.CharactersFromFile:
+                {
+                    var content = await File.ReadAllTextAsync(FontSubsetCreatorSettings.CharacterSetFilePath);
+                    return !string.IsNullOrEmpty(content) ? content.ToCharArray() : Array.Empty<char>();
+                }
             }
         }
     }

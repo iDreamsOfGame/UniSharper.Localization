@@ -6,11 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [3.1.0] - 2025-10-17
+
+### Added
+
+- **Font Subset Creator** supports custom font subset file name.
+- **Font Subset Creator** supports different character set type.
+
+
+
 ## [3.0.0] - 2025-10-17
 
 ### Added
 
-- Adds new font tool to generate font subset file.
+- Adds new font tool to create font subset file.
 
 
 
