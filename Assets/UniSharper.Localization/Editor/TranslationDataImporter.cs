@@ -16,7 +16,7 @@ namespace UniSharperEditor.Localization
         private const float Padding = 10;
 
         private const float LabelWidth = 250f;
-        
+
         private const int MaxIntValue = 10;
 
         private static readonly string ScriptsGeneratedPrefKey = $"{typeof(TranslationDataImporter).FullName}.sgpk";
@@ -32,6 +32,8 @@ namespace UniSharperEditor.Localization
         private SerializedObject settingsSerializedObject;
 
         private Vector2 scrollPosition = Vector2.zero;
+
+        private bool showExtraCharactersOptions;
 
         internal TranslationDataImporter(LocalizationAssetSettings settings) => this.settings = settings;
 
@@ -72,7 +74,7 @@ namespace UniSharperEditor.Localization
                 return;
 
             ScriptsGenerated = true;
-            
+
             var result = LocalizationAssetUtility.GenerateScripts(translationDataMap);
             ScriptsGenerated = result;
 
@@ -100,14 +102,19 @@ namespace UniSharperEditor.Localization
                 EditorGUILayout.BeginVertical();
                 {
                     // Import Settings
-                    DrawImportSettingsFields();
+                    DrawImportSettingFields();
 
                     EditorGUILayout.Space(5);
 
                     // Other Settings
-                    DrawOtherSettingsFields();
+                    DrawOtherSettingFields();
 
-                    EditorGUILayout.Space(10);
+                    EditorGUILayout.Space(5);
+
+                    // Characters Text File Export Settings
+                    DrawCharactersTextFileExportSettingFields();
+
+                    EditorGUILayout.Space(Padding);
 
                     // Build Assets Button
                     DrawBuildAssetsButton();
@@ -121,7 +128,7 @@ namespace UniSharperEditor.Localization
             EditorGUILayout.EndScrollView();
         }
 
-        private void DrawImportSettingsFields()
+        private void DrawImportSettingFields()
         {
             const string title = "Import Settings";
             EditorGUIStyles.DrawTitleLabel(title);
@@ -234,7 +241,7 @@ namespace UniSharperEditor.Localization
             SettingsSerializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawOtherSettingsFields()
+        private void DrawOtherSettingFields()
         {
             const string title = "Other Settings";
             EditorGUIStyles.DrawTitleLabel(title);
@@ -254,23 +261,86 @@ namespace UniSharperEditor.Localization
                 var excludedLocalesProperty = SettingsSerializedObject.FindProperty("excludedLocales");
                 EditorGUILayout.PropertyField(excludedLocalesProperty, new GUIContent("Excluded Locales", "The list of Locales that should be excluded in the build."));
             }
-            
-            EditorGUILayout.Space(2);
-            
-            // Characters Text File Export Path
-            var label = new GUIContent("Export Characters Text File", "Should export characters text file with all characters in translation text content?");
-            settings.ShouldExportCharactersTextFile = EditorGUILayout.BeginToggleGroup(label, settings.ShouldExportCharactersTextFile);
-            label = new GUIContent("Characters Text File Export Folder Path", "The folder path to store file Characters.txt.");
-            var charactersTextFileExportFolderPath = UniEditorGUILayout.FolderField(label,
-                settings.CharactersTextFileExportFolderPath,
-                label.text,
-                EditorPath.GetFullPath(settings.CharactersTextFileExportFolderPath),
-                string.Empty,
-                LabelWidth);
-            settings.CharactersTextFileExportFolderPath = !string.IsNullOrEmpty(charactersTextFileExportFolderPath) 
-                ? EditorPath.GetAssetPath(charactersTextFileExportFolderPath)
-                : string.Empty;
+        }
+
+        private void DrawCharactersTextFileExportSettingFields()
+        {
+            const string title = "Characters Text File Export Settings";
+            EditorGUIStyles.DrawTitleLabel(title);
+
+            const float exportToggleLabelWith = 130;
+
+            // Export Characters Text File Toggle
+            var label = new GUIContent("Enabled", "Should export characters text file with all characters in translation text content?");
+            settings.CharactersTextFileExportPreferences.Enabled = EditorGUILayout.BeginToggleGroup(label, settings.CharactersTextFileExportPreferences.Enabled);
+            {
+                // Characters Text File Export Path
+                label = new GUIContent("Export Folder Path", "The folder path to store file Characters.txt.");
+                var charactersTextFileExportFolderPath = UniEditorGUILayout.FolderField(label,
+                    settings.CharactersTextFileExportPreferences.ExportFolderPath,
+                    label.text,
+                    EditorPath.GetFullPath(settings.CharactersTextFileExportPreferences.ExportFolderPath),
+                    string.Empty,
+                    LabelWidth);
+                settings.CharactersTextFileExportPreferences.ExportFolderPath = !string.IsNullOrEmpty(charactersTextFileExportFolderPath)
+                    ? EditorPath.GetAssetPath(charactersTextFileExportFolderPath)
+                    : string.Empty;
+
+                label = new GUIContent("Extra Characters Options", "Options to add extra characters to export.");
+                showExtraCharactersOptions = EditorGUILayout.BeginFoldoutHeaderGroup(showExtraCharactersOptions, label);
+                if (showExtraCharactersOptions)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        // Add ASCII Characters.
+                        using (new UniEditorGUILayout.FieldScope(exportToggleLabelWith))
+                        {
+                            label = new GUIContent("Add ASCII Chars", "Add extra ASCII characters to characters text file.");
+                            settings.CharactersTextFileExportPreferences.IsAsciiCharactersRequired = EditorGUILayout.ToggleLeft(label, settings.CharactersTextFileExportPreferences.IsAsciiCharactersRequired);
+                        }
+
+                        // Add Extended ASCII Characters.
+                        using (new UniEditorGUILayout.FieldScope(exportToggleLabelWith))
+                        {
+                            label = new GUIContent("Add Extended ASCII Chars", "Add extra Extended ASCII characters to characters text file.");
+                            settings.CharactersTextFileExportPreferences.IsExtendedAsciiCharactersRequired = EditorGUILayout.ToggleLeft(label, settings.CharactersTextFileExportPreferences.IsExtendedAsciiCharactersRequired);
+                        }
+
+                        // Add ASCII Lowercase Characters.
+                        using (new UniEditorGUILayout.FieldScope(exportToggleLabelWith))
+                        {
+                            label = new GUIContent("Add ASCII Lowercase Chars", "Add extra ASCII lowercase characters to characters text file.");
+                            settings.CharactersTextFileExportPreferences.IsAsciiLowercaseCharactersRequired = EditorGUILayout.ToggleLeft(label, settings.CharactersTextFileExportPreferences.IsAsciiLowercaseCharactersRequired);
+                        }
+
+                        // Add ASCII Uppercase Characters.
+                        using (new UniEditorGUILayout.FieldScope(exportToggleLabelWith))
+                        {
+                            label = new GUIContent("Add ASCII Uppercase Chars", "Add extra ASCII uppercase characters to characters text file.");
+                            settings.CharactersTextFileExportPreferences.IsAsciiUppercaseCharactersRequired = EditorGUILayout.ToggleLeft(label, settings.CharactersTextFileExportPreferences.IsAsciiUppercaseCharactersRequired);
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        // Add Numbers and Symbols Characters.
+                        using (new UniEditorGUILayout.FieldScope(exportToggleLabelWith))
+                        {
+                            label = new GUIContent("Add Numbers & Symbols Chars", "Add extra numbers and symbols characters to characters text file.");
+                            settings.CharactersTextFileExportPreferences.IsNumbersAndSymbolsCharactersRequired = EditorGUILayout.ToggleLeft(label, settings.CharactersTextFileExportPreferences.IsNumbersAndSymbolsCharactersRequired);
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+
+                EditorGUILayout.EndFoldoutHeaderGroup();
+            }
+
             EditorGUILayout.EndToggleGroup();
+
+            // Save preferences data if data is dirty.
+            settings.SaveOnCharactersTextFileExportPreferencesDirty();
         }
 
         private void DrawBuildAssetsButton()

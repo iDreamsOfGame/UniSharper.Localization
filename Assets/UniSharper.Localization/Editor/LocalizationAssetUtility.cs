@@ -42,7 +42,7 @@ namespace UniSharperEditor.Localization
                 var writer = new BinaryFormatter();
                 writer.Serialize(stream, dataMap);
 
-                if (settings.ShouldExportCharactersTextFile)
+                if (settings.CharactersTextFileExportPreferences.Enabled)
                 {
                     foreach (var ch in dataMap.Values.Select(translationData => translationData.Text.ToCharArray()).SelectMany(chars => chars))
                     {
@@ -53,11 +53,26 @@ namespace UniSharperEditor.Localization
                 AssetDatabase.ImportAsset(assetPath);
             }
 
-            if (settings.ShouldExportCharactersTextFile)
+            if (settings.CharactersTextFileExportPreferences.Enabled)
             {
-                var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersTextFileExportPath);
+                if (settings.CharactersTextFileExportPreferences.IsAsciiCharactersRequired)
+                    charactersSet.UnionWith(PresetCharacterSets.AllAsciiCharacters);
+                
+                if (settings.CharactersTextFileExportPreferences.IsExtendedAsciiCharactersRequired)
+                    charactersSet.UnionWith(PresetCharacterSets.AllExtendedAsciiCharacters);
+                
+                if (settings.CharactersTextFileExportPreferences.IsAsciiLowercaseCharactersRequired)
+                    charactersSet.UnionWith(PresetCharacterSets.AllAsciiLowercaseCharacters);
+                
+                if (settings.CharactersTextFileExportPreferences.IsAsciiUppercaseCharactersRequired)
+                    charactersSet.UnionWith(PresetCharacterSets.AllAsciiUppercaseCharacters);
+                
+                if (settings.CharactersTextFileExportPreferences.IsNumbersAndSymbolsCharactersRequired)
+                    charactersSet.UnionWith(PresetCharacterSets.AllNumbersAndSymbolsCharacters);
+                
+                var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersTextFileExportPreferences.ExportPath);
                 File.WriteAllText(charactersTextFilePath, new string(charactersSet.ToArray()), Encoding.UTF8);
-                AssetDatabase.ImportAsset(settings.CharactersTextFileExportPath);
+                AssetDatabase.ImportAsset(settings.CharactersTextFileExportPreferences.ExportPath);
             }
 
             return true;

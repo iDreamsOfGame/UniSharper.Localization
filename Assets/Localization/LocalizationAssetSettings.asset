@@ -20,7 +20,13 @@ MonoBehaviour:
   translationTextRowStartIndex: 1
   translationTextColumnIndexRange: {x: 2, y: 5}
   styleColumnIndexRange: {x: 6, y: 9}
-  shouldExportCharactersTextFile: 1
-  charactersTextFileExportFolderPath: Assets/Localization
   targetLocales: []
   excludedLocales: []
+  charactersTextFileExportPreferences:
+    enabled: 1
+    exportFolderPath: Assets/Localization
+    isAsciiCharactersRequired: 0
+    isExtendedAsciiCharactersRequired: 0
+    isAsciiLowercaseCharactersRequired: 0
+    isAsciiUppercaseCharactersRequired: 0
+    isNumbersAndSymbolsCharactersRequired: 0

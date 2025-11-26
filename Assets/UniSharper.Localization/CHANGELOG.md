@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [3.2.0] - 2025-11-26
+
+### Added
+
+- **Export Characters Text File** supports adding extra characters.
+
+
+
+### Fixed
+
+- Fixed build errors on platforms **iOS/Android/WebGL**.
+
+
+
 ## [3.1.0] - 2025-10-17
 
 ### Added

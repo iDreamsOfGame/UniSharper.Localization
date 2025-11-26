@@ -34,6 +34,7 @@ MonoBehaviour:
     - com.github.exceldatareader.exceldatareader
     - com.openupm
     - io.github.idreamsofgame.resharp.core
+    - io.github.idreamsofgame.skiaforunity.standalone
     - io.github.idreamsofgame.skiasharp.fontsubset
     - io.github.idreamsofgame.unisharper.core
     - jillejr.newtonsoft.json-for-unity

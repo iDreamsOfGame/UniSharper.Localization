@@ -3,7 +3,7 @@
 
 using System.Linq;
 
-namespace UniSharperEditor.Localization.FontTools
+namespace UniSharperEditor.Localization
 {
     internal static class PresetCharacterSets
     {

@@ -24,8 +24,6 @@ namespace UniSharperEditor.Localization
 
         private const string LocalizationFolderName = "Localization";
 
-        private const string CharactersTextFileName = "Characters.txt";
-
         private static readonly string LocalizationFolder = PlayerPath.GetAssetPath(LocalizationFolderName);
 
         private static readonly string DefaultSettingsAssetPath = $"{LocalizationFolder}/{nameof(LocalizationAssetSettings)}.asset";
@@ -65,16 +63,13 @@ namespace UniSharperEditor.Localization
         private Vector2Int styleColumnIndexRange = Vector2Int.one * 3;
 
         [SerializeField]
-        private bool shouldExportCharactersTextFile;
-
-        [SerializeField]
-        private string charactersTextFileExportFolderPath = string.Empty;
-
-        [SerializeField]
         private string[] targetLocales = Array.Empty<string>();
 
         [SerializeField]
         private string[] excludedLocales = Array.Empty<string>();
+        
+        [SerializeField]
+        private CharactersTextFileExportPreferences charactersTextFileExportPreferences;
 
         internal static string TranslationFilePath
         {
@@ -197,33 +192,7 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        internal bool ShouldExportCharactersTextFile
-        {
-            get => shouldExportCharactersTextFile;
-            set
-            {
-                if (shouldExportCharactersTextFile == value)
-                    return;
-
-                shouldExportCharactersTextFile = value;
-                Save();
-            }
-        }
-        
-        internal string CharactersTextFileExportFolderPath
-        {
-            get => charactersTextFileExportFolderPath;
-            set
-            {
-                if (string.IsNullOrEmpty(value) || charactersTextFileExportFolderPath.Equals(value))
-                    return;
-
-                charactersTextFileExportFolderPath = value;
-                Save();
-            }
-        }
-
-        internal string CharactersTextFileExportPath => Path.Combine(CharactersTextFileExportFolderPath, CharactersTextFileName);
+        internal CharactersTextFileExportPreferences CharactersTextFileExportPreferences => charactersTextFileExportPreferences;
 
         internal static LocalizationAssetSettings Create()
         {
@@ -299,6 +268,15 @@ namespace UniSharperEditor.Localization
                 return !excludedLocales.Contains(localeString);
 
             return true;
+        }
+
+        internal void SaveOnCharactersTextFileExportPreferencesDirty()
+        {
+            if (!CharactersTextFileExportPreferences.IsDirty)
+                return;
+            
+            Save();
+            CharactersTextFileExportPreferences.IsDirty = false;
         }
 
         [UsedImplicitly]

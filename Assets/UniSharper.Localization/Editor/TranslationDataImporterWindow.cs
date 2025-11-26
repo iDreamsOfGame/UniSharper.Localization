@@ -8,7 +8,7 @@ namespace UniSharperEditor.Localization
 {
     internal class TranslationDataImporterWindow : LocalizationEditorWindow
     {
-        private static readonly Vector2Int Size = new(850, 460);
+        private static readonly Vector2Int Size = new(850, 570);
         
         private TranslationDataImporter importer;
 
