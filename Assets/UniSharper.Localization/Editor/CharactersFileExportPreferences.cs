@@ -40,7 +40,7 @@ namespace UniSharperEditor.Localization
         private bool isCustomCharactersRequired;
         
         [SerializeField]
-        private string customCharacters;
+        private string customCharacters = string.Empty;
 
         internal bool IsDirty { get; set; }
 
@@ -155,7 +155,7 @@ namespace UniSharperEditor.Localization
             get => customCharacters;
             set
             {
-                if (customCharacters.Equals(value))
+                if (!string.IsNullOrEmpty(customCharacters) && customCharacters == value)
                     return;
                 
                 customCharacters = value;
