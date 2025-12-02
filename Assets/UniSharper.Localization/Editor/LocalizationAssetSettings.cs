@@ -69,7 +69,7 @@ namespace UniSharperEditor.Localization
         private string[] excludedLocales = Array.Empty<string>();
         
         [SerializeField]
-        private CharactersTextFileExportPreferences charactersTextFileExportPreferences;
+        private CharactersFileExportPreferences charactersFileExportPreferences;
 
         internal static string TranslationFilePath
         {
@@ -192,7 +192,7 @@ namespace UniSharperEditor.Localization
             }
         }
 
-        internal CharactersTextFileExportPreferences CharactersTextFileExportPreferences => charactersTextFileExportPreferences;
+        internal CharactersFileExportPreferences CharactersFileExportPreferences => charactersFileExportPreferences;
 
         internal static LocalizationAssetSettings Create()
         {
@@ -272,11 +272,11 @@ namespace UniSharperEditor.Localization
 
         internal void SaveOnCharactersTextFileExportPreferencesDirty()
         {
-            if (!CharactersTextFileExportPreferences.IsDirty)
+            if (!CharactersFileExportPreferences.IsDirty)
                 return;
             
             Save();
-            CharactersTextFileExportPreferences.IsDirty = false;
+            CharactersFileExportPreferences.IsDirty = false;
         }
 
         [UsedImplicitly]

@@ -22,11 +22,13 @@ MonoBehaviour:
   styleColumnIndexRange: {x: 6, y: 9}
   targetLocales: []
   excludedLocales: []
-  charactersTextFileExportPreferences:
+  charactersFileExportPreferences:
     enabled: 1
-    exportFolderPath: Assets/Localization
+    exportFolderPath: 
     isAsciiCharactersRequired: 0
     isExtendedAsciiCharactersRequired: 0
     isAsciiLowercaseCharactersRequired: 0
     isAsciiUppercaseCharactersRequired: 0
     isNumbersAndSymbolsCharactersRequired: 0
+    isCustomCharactersRequired: 0
+    customCharacters: 

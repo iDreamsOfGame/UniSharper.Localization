@@ -11,7 +11,7 @@ namespace UniSharperEditor.Localization
     /// Class used to get and set the preferences to export characters text file.
     /// </summary>
     [Serializable]
-    public class CharactersTextFileExportPreferences
+    public class CharactersFileExportPreferences
     {
         private const string CharactersTextFileName = "Characters.txt";
         
@@ -35,6 +35,12 @@ namespace UniSharperEditor.Localization
         
         [SerializeField]
         private bool isNumbersAndSymbolsCharactersRequired;
+
+        [SerializeField]
+        private bool isCustomCharactersRequired;
+        
+        [SerializeField]
+        private string customCharacters;
 
         internal bool IsDirty { get; set; }
 
@@ -127,6 +133,32 @@ namespace UniSharperEditor.Localization
                     return;
                 
                 isNumbersAndSymbolsCharactersRequired = value;
+                IsDirty = true;
+            }
+        }
+        
+        internal bool IsCustomCharactersRequired
+        {
+            get => isCustomCharactersRequired;
+            set
+            {
+                if (isCustomCharactersRequired.Equals(value))
+                    return;
+                
+                isCustomCharactersRequired = value;
+                IsDirty = true;
+            }
+        }
+        
+        internal string CustomCharacters
+        {
+            get => customCharacters;
+            set
+            {
+                if (customCharacters.Equals(value))
+                    return;
+                
+                customCharacters = value;
                 IsDirty = true;
             }
         }

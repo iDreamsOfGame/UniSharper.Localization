@@ -42,7 +42,7 @@ namespace UniSharperEditor.Localization
                 var writer = new BinaryFormatter();
                 writer.Serialize(stream, dataMap);
 
-                if (settings.CharactersTextFileExportPreferences.Enabled)
+                if (settings.CharactersFileExportPreferences.Enabled)
                 {
                     foreach (var ch in dataMap.Values.Select(translationData => translationData.Text.ToCharArray()).SelectMany(chars => chars))
                     {
@@ -53,26 +53,29 @@ namespace UniSharperEditor.Localization
                 AssetDatabase.ImportAsset(assetPath);
             }
 
-            if (settings.CharactersTextFileExportPreferences.Enabled)
+            if (settings.CharactersFileExportPreferences.Enabled)
             {
-                if (settings.CharactersTextFileExportPreferences.IsAsciiCharactersRequired)
+                if (settings.CharactersFileExportPreferences.IsAsciiCharactersRequired)
                     charactersSet.UnionWith(PresetCharacterSets.AllAsciiCharacters);
                 
-                if (settings.CharactersTextFileExportPreferences.IsExtendedAsciiCharactersRequired)
+                if (settings.CharactersFileExportPreferences.IsExtendedAsciiCharactersRequired)
                     charactersSet.UnionWith(PresetCharacterSets.AllExtendedAsciiCharacters);
                 
-                if (settings.CharactersTextFileExportPreferences.IsAsciiLowercaseCharactersRequired)
+                if (settings.CharactersFileExportPreferences.IsAsciiLowercaseCharactersRequired)
                     charactersSet.UnionWith(PresetCharacterSets.AllAsciiLowercaseCharacters);
                 
-                if (settings.CharactersTextFileExportPreferences.IsAsciiUppercaseCharactersRequired)
+                if (settings.CharactersFileExportPreferences.IsAsciiUppercaseCharactersRequired)
                     charactersSet.UnionWith(PresetCharacterSets.AllAsciiUppercaseCharacters);
                 
-                if (settings.CharactersTextFileExportPreferences.IsNumbersAndSymbolsCharactersRequired)
+                if (settings.CharactersFileExportPreferences.IsNumbersAndSymbolsCharactersRequired)
                     charactersSet.UnionWith(PresetCharacterSets.AllNumbersAndSymbolsCharacters);
                 
-                var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersTextFileExportPreferences.ExportPath);
+                if (settings.CharactersFileExportPreferences.IsCustomCharactersRequired)
+                    charactersSet.UnionWith(settings.CharactersFileExportPreferences.CustomCharacters.ToCharArray());
+                
+                var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersFileExportPreferences.ExportPath);
                 File.WriteAllText(charactersTextFilePath, new string(charactersSet.ToArray()), Encoding.UTF8);
-                AssetDatabase.ImportAsset(settings.CharactersTextFileExportPreferences.ExportPath);
+                AssetDatabase.ImportAsset(settings.CharactersFileExportPreferences.ExportPath);
             }
 
             return true;
