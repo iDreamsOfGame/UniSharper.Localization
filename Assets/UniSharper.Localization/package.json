@@ -2,7 +2,7 @@
     "name": "io.github.idreamsofgame.unisharper.localization",
     "displayName": "UniSharper.Localization",
     "description": "UniSharper.Localization is a serialization data driven text localization tool for Unity application.",
-    "version": "3.3.0",
+    "version": "3.3.1",
     "unity": "2021.3",
     "author": {
         "name": "iDreamsOfGame",

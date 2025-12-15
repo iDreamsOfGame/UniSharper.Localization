@@ -193,25 +193,32 @@ namespace UniSharperEditor.Localization
         }
 
         internal CharactersFileExportPreferences CharactersFileExportPreferences => charactersFileExportPreferences;
-
+        
         internal static LocalizationAssetSettings Create()
         {
-            LocalizationAssetSettings settings;
+            var settings = CreateInstance<LocalizationAssetSettings>();
+            CreateLocalizationAssetsRootFolder();
+            TryCreateLocalizationAssetsFolder(settings);
+            CreateLocalizationScriptsStoreFolder(settings);
+            AssetDatabase.CreateAsset(settings, DefaultSettingsAssetPath);
+            return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(DefaultSettingsAssetPath);
+        }
 
+        internal static LocalizationAssetSettings Load(bool createOnNotFound = false)
+        {
             if (File.Exists(DefaultSettingsAssetPath))
+                return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(DefaultSettingsAssetPath);
+
+            var guids = AssetDatabase.FindAssets($"t: {nameof(LocalizationAssetSettings)}");
+            if (guids.Length > 0)
             {
-                settings = Load();
-            }
-            else
-            {
-                settings = CreateInstance<LocalizationAssetSettings>();
-                CreateLocalizationAssetsRootFolder();
-                TryCreateLocalizationAssetsFolder(settings);
-                CreateLocalizationScriptsStoreFolder(settings);
-                AssetDatabase.CreateAsset(settings, DefaultSettingsAssetPath);
+                var guid = guids[0];
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(path);
             }
 
-            return settings;
+            // Find nothing, create new and load it.
+            return createOnNotFound ? Create() : null;
         }
 
         internal static void TryCreateLocalizationAssetsFolder(LocalizationAssetSettings settings)
@@ -238,25 +245,6 @@ namespace UniSharperEditor.Localization
 
             Directory.CreateDirectory(settings.LocalizationScriptsStorePath);
             AssetDatabase.ImportAsset(settings.LocalizationScriptsStorePath);
-        }
-
-        internal static LocalizationAssetSettings Load()
-        {
-            if (File.Exists(DefaultSettingsAssetPath))
-                return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(DefaultSettingsAssetPath);
-
-            var guids = AssetDatabase.FindAssets($"t: {nameof(LocalizationAssetSettings)}");
-            if (guids.Length > 0)
-            {
-                var guid = guids[0];
-                var path = AssetDatabase.GUIDToAssetPath(guid);
-                return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(path);
-            }
-
-            // Find nothing, create new and load it.
-            var settings = CreateInstance<LocalizationAssetSettings>();
-            AssetDatabase.CreateAsset(settings, DefaultSettingsAssetPath);
-            return AssetDatabase.LoadAssetAtPath<LocalizationAssetSettings>(DefaultSettingsAssetPath);
         }
 
         internal bool CanBuildLocaleAssets(string localeString)
