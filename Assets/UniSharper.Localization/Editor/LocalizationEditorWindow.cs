@@ -11,16 +11,7 @@ namespace UniSharperEditor.Localization
     {
         private LocalizationAssetSettings settings;
 
-        protected LocalizationAssetSettings Settings
-        {
-            get
-            {
-                if (!settings)
-                    settings = LocalizationAssetSettings.Load();
-
-                return settings;
-            }
-        }
+        protected LocalizationAssetSettings Settings => settings ??= LocalizationAssetSettings.Load();
 
         protected virtual void DrawGUIWithoutSettings()
         {
