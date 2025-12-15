@@ -30,7 +30,7 @@ namespace UniSharperEditor.Localization
 
             charactersSet ??= new HashSet<char>();
 
-            var settings = LocalizationAssetSettings.Load();
+            var settings = LocalizationAssetSettings.Load(true);
             LocalizationAssetSettings.TryCreateLocalizationAssetsFolder(settings);
 
             foreach (var (locale, dataMap) in translationDataMap)
@@ -93,7 +93,7 @@ namespace UniSharperEditor.Localization
 
             try
             {
-                var settings = LocalizationAssetSettings.Load();
+                var settings = LocalizationAssetSettings.Load(true);
                 LocalizationAssetSettings.CreateLocalizationScriptsStoreFolder(settings);
 
                 // Generate Locales.cs
@@ -124,7 +124,7 @@ namespace UniSharperEditor.Localization
 
         internal static Dictionary<Locale, Dictionary<string, TranslationData>> LoadLocalizationAssets()
         {
-            var settings = LocalizationAssetSettings.Load();
+            var settings = LocalizationAssetSettings.Load(true);
 
             if (!settings)
             {
@@ -161,7 +161,7 @@ namespace UniSharperEditor.Localization
 
         internal static Dictionary<string, Dictionary<string, TranslationData>> ParseTranslationDataFile()
         {
-            var settings = LocalizationAssetSettings.Load();
+            var settings = LocalizationAssetSettings.Load(true);
 
             if (!settings)
             {
