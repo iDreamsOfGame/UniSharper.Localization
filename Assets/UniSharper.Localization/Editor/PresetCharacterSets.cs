@@ -2,6 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.Linq;
+using UniSharper;
 using UnityEngine;
 
 namespace UniSharperEditor.Localization
@@ -86,7 +87,8 @@ namespace UniSharperEditor.Localization
                 return textAssets[0].text;
             
             // Search package path.
-            textAssets = UniAssetDatabase.LoadEditorResources<TextAsset>(fileName, PackageInfo.UnityPackageName);
+            const string packagePath = PlayerEnvironment.PackagesFolderName + "/" + PackageInfo.UnityPackageName;
+            textAssets = UniAssetDatabase.LoadEditorResources<TextAsset>(fileName, packagePath);
             return textAssets is { Length: > 0 } ? textAssets[0].text : string.Empty;
         }
     }
