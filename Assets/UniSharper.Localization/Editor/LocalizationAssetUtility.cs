@@ -19,19 +19,19 @@ namespace UniSharperEditor.Localization
 {
     internal static class LocalizationAssetUtility
     {
-        private const string UnityPackageName = "io.github.idreamsofgame.unisharper.localization";
+        private static readonly HashSet<char> charactersSet = new();
 
-        private static HashSet<char> charactersSet = new();
+        private static readonly StringBuilder characterSetStringBuilder = new();
 
         internal static bool BuildLocalizationAssets(Dictionary<string, Dictionary<string, TranslationData>> translationDataMap)
         {
             if (translationDataMap.Count <= 0)
                 return false;
 
-            charactersSet ??= new HashSet<char>();
-
             var settings = LocalizationAssetSettings.Load(true);
             LocalizationAssetSettings.TryCreateLocalizationAssetsFolder(settings);
+
+            ExportCharactersTextFile(settings, translationDataMap);
 
             foreach (var (locale, dataMap) in translationDataMap)
             {
@@ -44,38 +44,13 @@ namespace UniSharperEditor.Localization
 
                 if (settings.CharactersFileExportPreferences.Enabled)
                 {
-                    foreach (var ch in dataMap.Values.Select(translationData => translationData.Text.ToCharArray()).SelectMany(chars => chars))
+                    foreach (var translationData in dataMap.Values)
                     {
-                        charactersSet.Add(ch);
+                        TryAddToCharactersSet(translationData.Text, true);
                     }
                 }
 
                 AssetDatabase.ImportAsset(assetPath);
-            }
-
-            if (settings.CharactersFileExportPreferences.Enabled)
-            {
-                if (settings.CharactersFileExportPreferences.IsAsciiCharactersRequired)
-                    charactersSet.UnionWith(PresetCharacterSets.AllAsciiCharacters);
-                
-                if (settings.CharactersFileExportPreferences.IsExtendedAsciiCharactersRequired)
-                    charactersSet.UnionWith(PresetCharacterSets.AllExtendedAsciiCharacters);
-                
-                if (settings.CharactersFileExportPreferences.IsAsciiLowercaseCharactersRequired)
-                    charactersSet.UnionWith(PresetCharacterSets.AllAsciiLowercaseCharacters);
-                
-                if (settings.CharactersFileExportPreferences.IsAsciiUppercaseCharactersRequired)
-                    charactersSet.UnionWith(PresetCharacterSets.AllAsciiUppercaseCharacters);
-                
-                if (settings.CharactersFileExportPreferences.IsNumbersAndSymbolsCharactersRequired)
-                    charactersSet.UnionWith(PresetCharacterSets.AllNumbersAndSymbolsCharacters);
-                
-                if (settings.CharactersFileExportPreferences.IsCustomCharactersRequired)
-                    charactersSet.UnionWith(settings.CharactersFileExportPreferences.CustomCharacters.ToCharArray());
-                
-                var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersFileExportPreferences.ExportPath);
-                File.WriteAllText(charactersTextFilePath, new string(charactersSet.ToArray()), Encoding.UTF8);
-                AssetDatabase.ImportAsset(settings.CharactersFileExportPreferences.ExportPath);
             }
 
             return true;
@@ -84,10 +59,8 @@ namespace UniSharperEditor.Localization
         internal static bool GenerateScripts(Dictionary<string, Dictionary<string, TranslationData>> source)
         {
             var translationDataMap = new Dictionary<Locale, Dictionary<string, TranslationData>>();
-            foreach (var pair in source)
+            foreach (var (localeString, dataMap) in source)
             {
-                var localeString = pair.Key;
-                var dataMap = pair.Value;
                 translationDataMap.Add(new Locale(localeString), dataMap);
             }
 
@@ -99,7 +72,7 @@ namespace UniSharperEditor.Localization
                 // Generate Locales.cs
                 var scriptLocalesStorePath = EditorPath.GetFullPath(settings.LocalizationScriptsStorePath, "Locales.cs");
                 var scriptLocalesAssetPath = EditorPath.GetAssetPath(scriptLocalesStorePath);
-                var scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewLocalesScriptTemplate.txt", UnityPackageName);
+                var scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewLocalesScriptTemplate.txt", PackageInfo.UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Fields, GenerateFieldsForScriptLocales(translationDataMap));
                 File.WriteAllText(scriptLocalesStorePath, scriptTextContent, new UTF8Encoding(true));
@@ -107,7 +80,7 @@ namespace UniSharperEditor.Localization
                 // Generate TranslationKey.cs
                 var scriptTranslationKeyStorePath = EditorPath.GetFullPath(settings.LocalizationScriptsStorePath, "TranslationKey.cs");
                 var scriptTranslationKeyAssetPath = EditorPath.GetAssetPath(scriptLocalesStorePath);
-                scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewTranslationKeyScriptTemplate.txt", UnityPackageName);
+                scriptTextContent = ScriptTemplate.LoadScriptTemplateFile("NewTranslationKeyScriptTemplate.txt", PackageInfo.UnityPackageName);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Namespace, settings.LocalizationScriptNamespace);
                 scriptTextContent = scriptTextContent.Replace(ScriptTemplate.Placeholders.Constants, GenerateConstantsForScriptTranslationKey(translationDataMap));
                 File.WriteAllText(scriptTranslationKeyStorePath, scriptTextContent, new UTF8Encoding(true));
@@ -360,6 +333,75 @@ namespace UniSharperEditor.Localization
             }
 
             return stringBuilder.ToString();
+        }
+
+        private static void ExportCharactersTextFile(LocalizationAssetSettings settings, Dictionary<string, Dictionary<string, TranslationData>> translationDataMap)
+        {
+            charactersSet?.Clear();
+            characterSetStringBuilder?.Clear();
+            
+            if (settings.CharactersFileExportPreferences.Enabled)
+            {
+                if (settings.CharactersFileExportPreferences.ShouldIncludeAsciiCharacters)
+                    TryAddToCharactersSet(PresetCharacterSets.AsciiCharacters);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeExtendedAsciiCharacters)
+                    TryAddToCharactersSet(PresetCharacterSets.ExtendedAsciiCharacters, true);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeAsciiLowercaseCharacters)
+                    TryAddToCharactersSet(PresetCharacterSets.AsciiLowercaseCharacters, true);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeAsciiUppercaseCharacters)
+                    TryAddToCharactersSet(PresetCharacterSets.AsciiUppercaseCharacters, true);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeNumbersAndSymbolsCharacters)
+                    TryAddToCharactersSet(PresetCharacterSets.NumbersAndSymbolsCharacters, true);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeGeneralStandardChineseCharactersLevel1)
+                    TryAddToCharactersSet(PresetCharacterSets.GeneralStandardChineseCharactersLevel1);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeGeneralStandardChineseCharactersLevel2)
+                    TryAddToCharactersSet(PresetCharacterSets.GeneralStandardChineseCharactersLevel2);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeGeneralStandardChineseCharactersLevel3)
+                    TryAddToCharactersSet(PresetCharacterSets.GeneralStandardChineseCharactersLevel3);
+                
+                if (settings.CharactersFileExportPreferences.ShouldIncludeCustomCharacters)
+                    TryAddToCharactersSet(settings.CharactersFileExportPreferences.CustomCharacters);
+                
+                foreach (var translationData in translationDataMap.Values.SelectMany(dataMap => dataMap.Values))
+                {
+                    TryAddToCharactersSet(translationData.Text, true);
+                }
+                
+                var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersFileExportPreferences.ExportPath);
+                var contents = characterSetStringBuilder?.ToString();
+                if (!string.IsNullOrEmpty(contents))
+                {
+                    File.WriteAllText(charactersTextFilePath, contents, new UTF8Encoding(true));
+                    AssetDatabase.ImportAsset(settings.CharactersFileExportPreferences.ExportPath);
+                }
+            }
+        }
+
+        private static void TryAddToCharactersSet(string content, bool removeDuplicated = false)
+        {
+            if (removeDuplicated)
+            {
+                foreach (var ch in content.Where(ch => charactersSet.Add(ch)))
+                {
+                    characterSetStringBuilder.Append(ch);
+                }
+            }
+            else
+            {
+                foreach (var ch in content)
+                {
+                    charactersSet.Add(ch);
+                }
+                
+                characterSetStringBuilder.Append(content);
+            }
         }
     }
 }

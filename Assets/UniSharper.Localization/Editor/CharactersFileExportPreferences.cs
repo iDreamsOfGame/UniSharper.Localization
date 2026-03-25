@@ -20,24 +20,9 @@ namespace UniSharperEditor.Localization
 
         [SerializeField]
         private string exportFolderPath = string.Empty;
-
-        [SerializeField]
-        private bool isAsciiCharactersRequired;
         
         [SerializeField]
-        private bool isExtendedAsciiCharactersRequired;
-        
-        [SerializeField]
-        private bool isAsciiLowercaseCharactersRequired;
-        
-        [SerializeField]
-        private bool isAsciiUppercaseCharactersRequired;
-        
-        [SerializeField]
-        private bool isNumbersAndSymbolsCharactersRequired;
-
-        [SerializeField]
-        private bool isCustomCharactersRequired;
+        private ExtraCharacterOptions extraCharacterOptions;
         
         [SerializeField]
         private string customCharacters = string.Empty;
@@ -72,83 +57,39 @@ namespace UniSharperEditor.Localization
 
         internal string ExportPath => Path.Combine(ExportFolderPath, CharactersTextFileName);
 
-        internal bool IsAsciiCharactersRequired
+        internal ExtraCharacterOptions ExtraCharacterOptions
         {
-            get => isAsciiCharactersRequired;
+            get => extraCharacterOptions;
             set
             {
-                if (isAsciiCharactersRequired.Equals(value))
+                if (extraCharacterOptions == value)
                     return;
 
-                isAsciiCharactersRequired = value;
-                IsDirty = true;
-            }
-        }
-        
-        internal bool IsExtendedAsciiCharactersRequired
-        {
-            get => isExtendedAsciiCharactersRequired;
-            set
-            {
-                if (isExtendedAsciiCharactersRequired.Equals(value))
-                    return;
-
-                isExtendedAsciiCharactersRequired = value;
+                extraCharacterOptions = value;
                 IsDirty = true;
             }
         }
 
-        internal bool IsAsciiLowercaseCharactersRequired
-        {
-            get => isAsciiLowercaseCharactersRequired;
-            set
-            {
-                if (isAsciiLowercaseCharactersRequired.Equals(value))
-                    return;
-                
-                isAsciiLowercaseCharactersRequired = value;
-                IsDirty = true;
-            }
-        }
+        internal bool ShouldIncludeAsciiCharacters => ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.Ascii);
+
+        internal bool ShouldIncludeExtendedAsciiCharacters => ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.ExtendedAscii);
+
+        internal bool ShouldIncludeAsciiLowercaseCharacters => ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.AsciiLowercase);
+
+        internal bool ShouldIncludeAsciiUppercaseCharacters => ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.AsciiUppercase);
+
+        internal bool ShouldIncludeNumbersAndSymbolsCharacters => ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.NumbersAndSymbols);
+
+        internal bool ShouldIncludeGeneralStandardChineseCharactersLevel1 => 
+            ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.GeneralStandardChineseCharactersLevel1);
+
+        internal bool ShouldIncludeGeneralStandardChineseCharactersLevel2 =>
+            ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.GeneralStandardChineseCharactersLevel2);
+
+        internal bool ShouldIncludeGeneralStandardChineseCharactersLevel3 =>
+            ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.GeneralStandardChineseCharactersLevel3);
         
-        internal bool IsAsciiUppercaseCharactersRequired
-        {
-            get => isAsciiUppercaseCharactersRequired;
-            set
-            {
-                if (isAsciiUppercaseCharactersRequired.Equals(value))
-                    return;
-                
-                isAsciiUppercaseCharactersRequired = value;
-                IsDirty = true;
-            }
-        }
-        
-        internal bool IsNumbersAndSymbolsCharactersRequired
-        {
-            get => isNumbersAndSymbolsCharactersRequired;
-            set
-            {
-                if (isNumbersAndSymbolsCharactersRequired.Equals(value))
-                    return;
-                
-                isNumbersAndSymbolsCharactersRequired = value;
-                IsDirty = true;
-            }
-        }
-        
-        internal bool IsCustomCharactersRequired
-        {
-            get => isCustomCharactersRequired;
-            set
-            {
-                if (isCustomCharactersRequired.Equals(value))
-                    return;
-                
-                isCustomCharactersRequired = value;
-                IsDirty = true;
-            }
-        }
+        internal bool ShouldIncludeCustomCharacters => ExtraCharacterOptions.HasFlag(ExtraCharacterOptions.CustomCharacters);
         
         internal string CustomCharacters
         {

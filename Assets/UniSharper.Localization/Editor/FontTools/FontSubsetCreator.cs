@@ -221,35 +221,35 @@ namespace UniSharperEditor.Localization.FontTools
             }
         }
 
-        private static async Task<char[]> GetCharacterSet()
+        private static async Task<string> GetCharacterSet()
         {
             switch (FontSubsetCreatorSettings.CharacterSetType)
             {
                 default:
                 case CharacterSetType.Ascii:
-                    return PresetCharacterSets.AllAsciiCharacters;
+                    return PresetCharacterSets.AsciiCharacters;
 
                 case CharacterSetType.ExtendedAscii:
-                    return PresetCharacterSets.AllExtendedAsciiCharacters;
+                    return PresetCharacterSets.ExtendedAsciiCharacters;
 
                 case CharacterSetType.AsciiLowercase:
-                    return PresetCharacterSets.AllAsciiLowercaseCharacters;
+                    return PresetCharacterSets.AsciiLowercaseCharacters;
 
                 case CharacterSetType.AsciiUppercase:
-                    return PresetCharacterSets.AllAsciiUppercaseCharacters;
+                    return PresetCharacterSets.AsciiUppercaseCharacters;
 
                 case CharacterSetType.NumbersAndSymbols:
-                    return PresetCharacterSets.AllNumbersAndSymbolsCharacters;
+                    return PresetCharacterSets.NumbersAndSymbolsCharacters;
 
                 case CharacterSetType.CustomCharacters:
                     return !string.IsNullOrEmpty(FontSubsetCreatorSettings.CharacterSetCustomContent)
-                        ? FontSubsetCreatorSettings.CharacterSetCustomContent.ToCharArray()
-                        : Array.Empty<char>();
+                        ? FontSubsetCreatorSettings.CharacterSetCustomContent
+                        : string.Empty;
 
                 case CharacterSetType.CharactersFromFile:
                 {
                     var content = await File.ReadAllTextAsync(FontSubsetCreatorSettings.CharacterSetFilePath);
-                    return !string.IsNullOrEmpty(content) ? content.ToCharArray() : Array.Empty<char>();
+                    return !string.IsNullOrEmpty(content) ? content : string.Empty;
                 }
             }
         }
