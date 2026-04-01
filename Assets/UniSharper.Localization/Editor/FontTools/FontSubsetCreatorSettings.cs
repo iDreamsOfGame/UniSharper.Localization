@@ -9,7 +9,7 @@ namespace UniSharperEditor.Localization.FontTools
 {
     internal static class FontSubsetCreatorSettings
     {
-        private static readonly string EditorPrefsKeySuffix = $"{CryptoUtility.Md5HashEncrypt(Directory.GetCurrentDirectory(), null, false)}"
+        private static readonly string EditorPrefsKeySuffix = $"{Md5CryptoUtility.ComputeHashToHexString(Directory.GetCurrentDirectory())}"
                                                               + $".{typeof(FontSubsetCreatorSettings).FullName}";
 
         private static readonly string SourceFontFilePathEditorPrefsKey = $"{EditorPrefsKeySuffix}.{nameof(SourceFontFilePath)}";
