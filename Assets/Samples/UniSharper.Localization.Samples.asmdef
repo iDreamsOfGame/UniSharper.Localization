@@ -1,9 +1,9 @@
 {
-    "name": "Unity.UniSharper.Localization.Samples",
-    "rootNamespace": "",
+    "name": "UniSharper.Localization.Samples",
+    "rootNamespace": "UniSharper.Localization.Samples",
     "references": [
         "Unity.TextMeshPro",
-        "Unity.UniSharper.Localization"
+        "UniSharper.Localization"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

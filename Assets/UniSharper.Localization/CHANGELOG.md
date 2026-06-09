@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [3.5.0] - 2026-06-09
+
+### Changed
+
+- Removes the prefix "Unity" of assembly definition files.
+
+
+
 ## [3.4.2] - 2026-04-02
 
 ### Changed

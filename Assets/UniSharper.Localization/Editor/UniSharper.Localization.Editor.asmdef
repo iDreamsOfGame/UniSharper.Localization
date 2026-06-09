@@ -1,12 +1,12 @@
 {
-    "name": "Unity.UniSharper.Localization.Editor",
+    "name": "UniSharper.Localization.Editor",
     "rootNamespace": "UniSharperEditor.Localization",
     "references": [
         "SkiaSharp",
         "SkiaSharp.FontSubset",
-        "Unity.UniSharper",
-        "Unity.UniSharper.Editor",
-        "Unity.UniSharper.Localization"
+        "UniSharper",
+        "UniSharper.Editor",
+        "UniSharper.Localization"
     ],
     "includePlatforms": [
         "Editor"
