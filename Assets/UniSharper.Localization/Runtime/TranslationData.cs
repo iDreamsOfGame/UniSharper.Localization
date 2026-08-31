@@ -1,9 +1,10 @@
 // Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
 // See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using MasterMemory;
+using MessagePack;
+
 // ReSharper disable InvertIf
 
 namespace UniSharper.Localization
@@ -11,31 +12,28 @@ namespace UniSharper.Localization
     /// <summary>
     /// Translation data for locale.
     /// </summary>
-    [Serializable]
-    public class TranslationData : ISerializable
+    [MemoryTable("translationData"), MessagePackObject(true)]
+    public record TranslationData
     {
         /// <summary>
         /// Initializes a new instance of the TranslationData class.
         /// </summary>
+        /// <param name="key">The key of translation text. </param>
         /// <param name="text">The translation text. </param>
         /// <param name="font">The font of translation text. </param>
         /// <param name="style">Styling information for text. </param>
-        public TranslationData(string text, Dictionary<string, string> style = null)
+        public TranslationData(string key, string text, Dictionary<string, string> style = null)
         {
+            Key = key;
             Text = text;
             Style = style;
         }
-
+        
         /// <summary>
-        /// Initializes a new instance of the TranslationData class.
+        /// The key of translation text.
         /// </summary>
-        /// <param name="info">The SerializationInfo to populate with data. </param>
-        /// <param name="context">The destination (see StreamingContext) for this serialization. </param>
-        public TranslationData(SerializationInfo info, StreamingContext context)
-        {
-            Text = info.GetString("t");
-            Style = info.GetValue("s", typeof(Dictionary<string, string>)) as Dictionary<string, string>;
-        }
+        [PrimaryKey]
+        public string Key { get; set; }
         
         /// <summary>
         /// The translation text.
@@ -75,17 +73,6 @@ namespace UniSharper.Localization
             }
 
             return Style.TryGetValue(key, out value);
-        }
-
-        /// <summary>
-        /// Populates a SerializationInfo with the data needed to serialize the target object.
-        /// </summary>
-        /// <param name="info">The SerializationInfo to populate with data. </param>
-        /// <param name="context">The destination (see StreamingContext) for this serialization. </param>
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("t", Text);
-            info.AddValue("s", Style);
         }
     }
 }

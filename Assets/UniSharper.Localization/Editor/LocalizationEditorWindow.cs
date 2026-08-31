@@ -13,7 +13,7 @@ namespace UniSharperEditor.Localization
 
         protected LocalizationAssetSettings Settings => settings ??= LocalizationAssetSettings.Load();
 
-        protected virtual void DrawGUIWithoutSettings()
+        protected void DrawGUIWithoutSettings()
         {
             GUILayout.Space(50);
             

@@ -313,7 +313,7 @@ namespace UniSharperEditor.Localization
             settings.SaveOnCharactersTextFileExportPreferencesDirty();
         }
 
-        private void DrawBuildAssetsButton()
+        private static void DrawBuildAssetsButton()
         {
             EditorGUILayout.BeginHorizontal();
             {

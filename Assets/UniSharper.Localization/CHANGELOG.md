@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.0.0] - 2026-08-31
+
+### ⚠️ BREAKING CHANGES
+
+- Use **[MasterMemory](https://github.com/Cysharp/MasterMemory)** to store translation key/value and styles data.
+
+
+
+### Removed
+
+- Removes **LocalizationAssetsViewerWindow**.
+
+
+
 ## [3.5.0] - 2026-06-09
 
 ### Changed

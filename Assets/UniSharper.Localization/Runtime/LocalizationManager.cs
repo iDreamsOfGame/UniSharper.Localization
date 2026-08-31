@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using MasterMemory;
+using MasterMemory.Tables;
 using ReSharp.Extensions;
 using ReSharp.Patterns;
 using UnityEngine;
@@ -24,14 +24,14 @@ namespace UniSharper.Localization
         /// </summary>
         public const string DefaultText = "NoString";
 
-        private readonly Dictionary<Locale, Dictionary<string, TranslationData>> localeTranslationTextsMap;
+        private readonly Dictionary<Locale, TranslationDataTable> localeTranslationTextsMap;
 
         private Locale currentLocale;
 
         [Preserve]
         private LocalizationManager()
         {
-            localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, TranslationData>>();
+            localeTranslationTextsMap = new Dictionary<Locale, TranslationDataTable>();
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace UniSharper.Localization
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
             
-            if (localeTranslationTextsMap.TryGetValue(locale, out var dataMap))
+            if (localeTranslationTextsMap.TryGetValue(locale, out var table))
             {
-                if(dataMap.TryGetValue(key, out var translationData))
+                if(table.TryFindByKey(key, out var translationData))
                     return translationData;
 
                 Debug.LogWarning($"No translation text for key [{key}] of locale [{locale}]!");
@@ -118,10 +118,7 @@ namespace UniSharper.Localization
         /// <param name="data">The localization asset data.</param>
         public void LoadLocalizationAssetData(Locale locale, byte[] data)
         {
-            using var stream = new MemoryStream(data);
-            var reader = new BinaryFormatter();
-            var translationDataMap = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
-            localeTranslationTextsMap.AddUnique(locale, translationDataMap);
+            localeTranslationTextsMap.AddUnique(locale, new MemoryDatabase(data).TranslationDataTable);
         }
 
         private void OnLocaleChanged(LocaleChangedEventArgs e) => LocaleChanged?.Invoke(this, e);

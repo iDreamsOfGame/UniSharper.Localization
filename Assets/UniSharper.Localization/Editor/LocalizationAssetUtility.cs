@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using ExcelDataReader;
+using MasterMemory;
 using ReSharp.Extensions;
 using UniSharper;
 using UniSharper.Extensions;
@@ -19,9 +20,9 @@ namespace UniSharperEditor.Localization
 {
     internal static class LocalizationAssetUtility
     {
-        private static readonly HashSet<char> charactersSet = new();
+        private static readonly HashSet<char> CharactersSet = new();
 
-        private static readonly StringBuilder characterSetStringBuilder = new();
+        private static readonly StringBuilder CharacterSetStringBuilder = new();
 
         internal static bool BuildLocalizationAssets(Dictionary<string, Dictionary<string, TranslationData>> translationDataMap)
         {
@@ -37,10 +38,10 @@ namespace UniSharperEditor.Localization
             {
                 var assetPath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(settings.LocalizationAssetsPath, $"{locale}.bytes"));
                 var assetAbsolutePath = EditorPath.GetFullPath(assetPath);
-
-                using var stream = File.Open(assetAbsolutePath, FileMode.Create);
-                var writer = new BinaryFormatter();
-                writer.Serialize(stream, dataMap);
+                var databaseBuilder = new DatabaseBuilder();
+                databaseBuilder.Append(dataMap.Values);
+                var data = databaseBuilder.Build();
+                File.WriteAllBytes(assetAbsolutePath, data);
 
                 if (settings.CharactersFileExportPreferences.Enabled)
                 {
@@ -221,7 +222,7 @@ namespace UniSharperEditor.Localization
 
                                         if (translationDataMap.ContainsKey(localeString) && !translationDataMap[localeString].ContainsKey(translationKey))
                                         {
-                                            translationDataMap[localeString].Add(translationKey, new TranslationData(translationText));
+                                            translationDataMap[localeString].Add(translationKey, new TranslationData(translationKey, translationText));
                                         }
                                         else
                                         {
@@ -337,8 +338,8 @@ namespace UniSharperEditor.Localization
 
         private static void ExportCharactersTextFile(LocalizationAssetSettings settings, Dictionary<string, Dictionary<string, TranslationData>> translationDataMap)
         {
-            charactersSet?.Clear();
-            characterSetStringBuilder?.Clear();
+            CharactersSet?.Clear();
+            CharacterSetStringBuilder?.Clear();
             
             if (settings.CharactersFileExportPreferences.Enabled)
             {
@@ -375,7 +376,7 @@ namespace UniSharperEditor.Localization
                 }
                 
                 var charactersTextFilePath = EditorPath.GetFullPath(settings.CharactersFileExportPreferences.ExportPath);
-                var contents = characterSetStringBuilder?.ToString();
+                var contents = CharacterSetStringBuilder?.ToString();
                 if (!string.IsNullOrEmpty(contents))
                 {
                     File.WriteAllText(charactersTextFilePath, contents, new UTF8Encoding(true));
@@ -388,19 +389,19 @@ namespace UniSharperEditor.Localization
         {
             if (removeDuplicated)
             {
-                foreach (var ch in content.Where(ch => charactersSet.Add(ch)))
+                foreach (var ch in content.Where(ch => CharactersSet.Add(ch)))
                 {
-                    characterSetStringBuilder.Append(ch);
+                    CharacterSetStringBuilder.Append(ch);
                 }
             }
             else
             {
                 foreach (var ch in content)
                 {
-                    charactersSet.Add(ch);
+                    CharactersSet.Add(ch);
                 }
                 
-                characterSetStringBuilder.Append(content);
+                CharacterSetStringBuilder.Append(content);
             }
         }
     }
