@@ -25,7 +25,7 @@
     },
     "com.unity.nuget.newtonsoft-json": {
       "version": "3.2.2",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.cn"
@@ -94,23 +94,22 @@
       },
       "url": "https://package.openupm.com"
     },
-    "io.github.idreamsofgame.unisharper.core": {
-      "version": "1.29.0",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.nuget.newtonsoft-json": "3.2.2",
-        "io.github.idreamsofgame.resharp.core": "2.0.2",
-        "io.github.idreamsofgame.resharp.security.cryptography": "1.1.0",
-        "jillejr.newtonsoft.json-for-unity.converters": "1.6.3"
-      },
-      "url": "https://package.openupm.com"
-    },
-    "jillejr.newtonsoft.json-for-unity.converters": {
-      "version": "1.6.3",
+    "io.github.idreamsofgame.unilitjson": {
+      "version": "0.19.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
+    "io.github.idreamsofgame.unisharper.core": {
+      "version": "2.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "io.github.idreamsofgame.resharp.core": "2.0.2",
+        "io.github.idreamsofgame.resharp.security.cryptography": "1.1.0",
+        "io.github.idreamsofgame.unilitjson": "0.19.0"
+      },
       "url": "https://package.openupm.com"
     },
     "org.nuget.bouncycastle.cryptography": {

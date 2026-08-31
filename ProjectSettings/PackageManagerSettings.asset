@@ -37,6 +37,7 @@ MonoBehaviour:
     - io.github.idreamsofgame.resharp.security.cryptography
     - io.github.idreamsofgame.skiaforunity.standalone
     - io.github.idreamsofgame.skiasharp.fontsubset
+    - io.github.idreamsofgame.unilitjson
     - io.github.idreamsofgame.unisharper.core
     - jillejr.newtonsoft.json-for-unity
     - org.nuget.bouncycastle.cryptography

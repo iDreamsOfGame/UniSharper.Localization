@@ -148,7 +148,7 @@ namespace UniSharperEditor.Localization
                 LocalizationAssetSettings.TranslationFilePath,
                 "Select Translation Excel File",
                 directory,
-                new[] { "Excel Files", "xlsx,xls" },
+                new[] { "Excel Workbook Files", "xlsx,xls" },
                 LabelWidth);
 
             // Localization Assets Path
