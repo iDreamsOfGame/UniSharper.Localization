@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using MasterMemory;
-using MasterMemory.Tables;
 using ReSharp.Extensions;
 using ReSharp.Patterns;
+using UniSharper.Localization.Tables;
 using UnityEngine;
 using UnityEngine.Scripting;
 

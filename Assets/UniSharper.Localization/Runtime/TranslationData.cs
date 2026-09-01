@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using MasterMemory;
 using MessagePack;
+using UnityEngine.Scripting;
 
 // ReSharper disable InvertIf
 
@@ -23,11 +24,19 @@ namespace UniSharper.Localization
         /// <summary>
         /// Initializes a new instance of the TranslationData class.
         /// </summary>
+        [Preserve]
+        public TranslationData()
+        {
+        }
+        
+        /// <summary>
+        /// Initializes a new instance of the TranslationData class.
+        /// </summary>
         /// <param name="key">The key of translation text. </param>
         /// <param name="text">The translation text. </param>
         /// <param name="font">The font of translation text. </param>
         /// <param name="style">Styling information for text. </param>
-        public TranslationData(string key, string text, Dictionary<string, string> style = null)
+        internal TranslationData(string key, string text, Dictionary<string, string> style = null)
         {
             Key = key;
             Text = text;

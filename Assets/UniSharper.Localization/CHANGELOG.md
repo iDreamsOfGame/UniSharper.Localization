@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.1.1] - 2026-09-01
+
+### Fixed
+
+- Fixed runtime error when use with **IL2CPP**.
+
+
+
 ## [4.1.0] - 2026-09-01
 
 ### Added
