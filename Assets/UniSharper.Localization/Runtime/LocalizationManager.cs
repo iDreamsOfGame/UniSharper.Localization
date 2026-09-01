@@ -118,7 +118,7 @@ namespace UniSharper.Localization
         /// <param name="data">The localization asset data.</param>
         public void LoadLocalizationAssetData(Locale locale, byte[] data)
         {
-            localeTranslationTextsMap.AddUnique(locale, new MemoryDatabase(data).TranslationDataTable);
+            localeTranslationTextsMap.AddUnique(locale, new MemoryDatabase(data, false).TranslationDataTable);
         }
 
         private void OnLocaleChanged(LocaleChangedEventArgs e) => LocaleChanged?.Invoke(this, e);
