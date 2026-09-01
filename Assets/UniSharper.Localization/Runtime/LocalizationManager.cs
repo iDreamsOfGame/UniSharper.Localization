@@ -17,13 +17,8 @@ namespace UniSharper.Localization
     /// Implements the <see cref="LocalizationManager"/>
     /// </summary>
     /// <seealso cref="LocalizationManager"/>
-    public sealed class LocalizationManager : Singleton<LocalizationManager>
+    public sealed partial class LocalizationManager : Singleton<LocalizationManager>
     {
-        /// <summary>
-        /// The default translation text.
-        /// </summary>
-        public const string DefaultText = "NoString";
-
         private readonly Dictionary<Locale, TranslationDataTable> localeTranslationTextsMap;
 
         private Locale currentLocale;
@@ -32,6 +27,7 @@ namespace UniSharper.Localization
         private LocalizationManager()
         {
             localeTranslationTextsMap = new Dictionary<Locale, TranslationDataTable>();
+            currentLocale = Locale.English;
         }
 
         /// <summary>
@@ -101,7 +97,12 @@ namespace UniSharper.Localization
         /// <param name="key">The key of translation text.</param>
         /// <returns>The translation text.</returns>
         /// <exception cref="ArgumentNullException">locale or key</exception>
-        public string GetTranslationText(Locale locale, string key) => GetTranslationData(locale, key)?.Text ?? DefaultText;
+        public string GetTranslationText(Locale locale, string key)
+        {
+            var translationData = GetTranslationData(locale, key);
+            var text = translationData?.Text;
+            return !string.IsNullOrEmpty(text) ? text : TranslationData.DefaultText;
+        }
 
         /// <summary>
         /// Gets the translation text for current locale.
@@ -109,7 +110,7 @@ namespace UniSharper.Localization
         /// <param name="key">The key of translation text.</param>
         /// <returns>The translation text.</returns>
         /// <exception cref="ArgumentNullException">locale or key</exception>
-        public string GetTranslationText(string key) => CurrentLocale != null ? GetTranslationText(CurrentLocale, key) : DefaultText;
+        public string GetTranslationText(string key) => GetTranslationText(CurrentLocale, key);
 
         /// <summary>
         /// Loads the localization asset data.

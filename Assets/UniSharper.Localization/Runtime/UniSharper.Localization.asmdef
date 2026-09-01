@@ -1,7 +1,9 @@
 {
     "name": "UniSharper.Localization",
     "rootNamespace": "UniSharper.Localization",
-    "references": [],
+    "references": [
+        "ZString"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

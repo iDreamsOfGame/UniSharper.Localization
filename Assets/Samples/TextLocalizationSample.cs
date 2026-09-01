@@ -67,10 +67,10 @@ namespace UniSharper.Localization.Samples
             UpdateText(text1, LocalizationManager.Instance.GetTranslationData(TranslationKey.Hello));
             UpdateText(text2, LocalizationManager.Instance.GetTranslationData(TranslationKey.Thanks));
             UpdateText(text3, LocalizationManager.Instance.GetTranslationData(TranslationKey.GoodBye));
-            UpdateText(text4, LocalizationManager.Instance.GetTranslationData(TranslationKey.LoveYou));
+            UpdateText(text4, LocalizationManager.Instance.GetTranslationData(TranslationKey.LoveYou), "Julia");
         }
 
-        private void UpdateText(Text textField, TranslationData translationData)
+        private static void UpdateText(Text textField, TranslationData translationData, string name = null)
         {
             if (translationData == null)
                 return;
@@ -79,7 +79,7 @@ namespace UniSharper.Localization.Samples
             if (!string.IsNullOrEmpty(fontSizeString) && int.TryParse(fontSizeString, out var fontSize))
                 textField.fontSize = fontSize;
 
-            textField.text = translationData.Text;
+            textField.text = !string.IsNullOrEmpty(name) ? translationData.GetFormattedText(name) : translationData.Text;
         }
     }
 }

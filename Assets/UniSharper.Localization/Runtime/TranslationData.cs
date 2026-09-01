@@ -13,8 +13,13 @@ namespace UniSharper.Localization
     /// Translation data for locale.
     /// </summary>
     [MemoryTable("translationData"), MessagePackObject(true)]
-    public record TranslationData
+    public partial record TranslationData
     {
+        /// <summary>
+        /// The default translation text.
+        /// </summary>
+        public const string DefaultText = "No String";
+        
         /// <summary>
         /// Initializes a new instance of the TranslationData class.
         /// </summary>

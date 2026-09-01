@@ -118,10 +118,10 @@ namespace UniSharper.Localization.Samples
             UpdateText(text1, text1TranslationData);
             UpdateText(text2, text2TranslationData);
             UpdateText(text3, text3TranslationData);
-            UpdateText(text4, text4TranslationData);
+            UpdateText(text4, text4TranslationData, "Julia");
         }
 
-        private void UpdateText(TextMeshProUGUI textField, TranslationData translationData)
+        private void UpdateText(TextMeshProUGUI textField, TranslationData translationData, string name = null)
         {
             if (translationData == null)
                 return;
@@ -160,7 +160,7 @@ namespace UniSharper.Localization.Samples
                 }
             }
 
-            textField.text = translationData.Text;
+            textField.text = !string.IsNullOrEmpty(name) ? translationData.GetFormattedText(name) : translationData.Text;
         }
 
         private TMP_FontAsset GetFontAsset(string font)

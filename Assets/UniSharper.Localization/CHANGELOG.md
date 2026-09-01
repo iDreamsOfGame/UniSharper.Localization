@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.1.0] - 2026-09-01
+
+### Added
+
+- Adds dependency **[ZString](https://github.com/Cysharp/ZString)** to handle formatted string with high performance.
+- Adds methods **TranslationData.GetFormattedText** to get formatted text by **ZString**.
+- Adds methods **LocalizationManager.GetFormattedTranslationText** to get formatted translation text.
+
+
+
 ## [4.0.0] - 2026-08-31
 
 ### ⚠️ BREAKING CHANGES

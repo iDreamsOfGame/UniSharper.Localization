@@ -28,7 +28,8 @@
     "com.unity.modules.unitywebrequestaudio": "1.0.0",
     "com.unity.modules.unitywebrequesttexture": "1.0.0",
     "com.unity.modules.unitywebrequestwww": "1.0.0",
-    "org.nuget.microsoft.net.stringtools": "1.0.0"
+    "org.nuget.microsoft.net.stringtools": "1.0.0",
+    "com.cysharp.zstring": "2.6.0"
   },
   "scopedRegistries": [
     {
@@ -36,6 +37,7 @@
       "url": "https://package.openupm.com",
       "scopes": [
         "com.ammariqais.skiaforunity",
+        "com.cysharp.zstring",
         "com.github.exceldatareader.exceldatareader",
         "com.openupm",
         "io.github.idreamsofgame.resharp.core",

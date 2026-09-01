@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.cysharp.zstring": {
+      "version": "2.6.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.github.exceldatareader.exceldatareader": {
       "version": "3.6.0",
       "depth": 0,

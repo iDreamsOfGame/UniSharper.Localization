@@ -218,7 +218,7 @@ namespace UniSharperEditor.Localization
 
                                         var translationText = rows[i][columnIndex].ToString();
                                         if (string.IsNullOrEmpty(translationText))
-                                            translationText = LocalizationManager.DefaultText;
+                                            translationText = TranslationData.DefaultText;
 
                                         if (translationDataMap.ContainsKey(localeString) && !translationDataMap[localeString].ContainsKey(translationKey))
                                         {
