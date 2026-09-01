@@ -14,7 +14,7 @@ namespace UniSharper.Localization
     /// Translation data for locale.
     /// </summary>
     [MemoryTable("translationData"), MessagePackObject(true)]
-    public partial record TranslationData
+    public partial class TranslationData
     {
         /// <summary>
         /// The default translation text.

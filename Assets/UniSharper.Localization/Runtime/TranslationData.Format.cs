@@ -3,7 +3,7 @@ using Cysharp.Text;
 
 namespace UniSharper.Localization
 {
-    public partial record TranslationData
+    public partial class TranslationData
     {
         /// <summary>
         /// Gets the formatted text by replacing one or more format items in a string with the string representation of a specified object.
