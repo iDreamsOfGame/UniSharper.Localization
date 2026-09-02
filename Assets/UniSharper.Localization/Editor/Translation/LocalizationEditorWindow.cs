@@ -5,7 +5,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniSharperEditor.Localization
+namespace UniSharperEditor.Localization.Translation
 {
     internal abstract class LocalizationEditorWindow : EditorWindow
     {

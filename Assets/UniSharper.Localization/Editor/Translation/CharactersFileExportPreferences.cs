@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace UniSharperEditor.Localization
+namespace UniSharperEditor.Localization.Translation
 {
     /// <summary>
     /// Class used to get and set the preferences to export characters text file.

@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.2.0] - 2026-09-02
+
+### ⚠️ BREAKING CHANGES
+
+- Since **[MasterMemory](https://github.com/Cysharp/MasterMemory)** is not compatible with Unity IL2CPP, so replace it with **[MemoryPack](https://github.com/Cysharp/MemoryPack)**.
+
+
+
+### Added
+
+- Restores **LocalizationAssetsViewerWindow**, and rename to **TranslationDataViewerWindow**.
+
+
+
 ## [4.1.3] - 2026-09-01
 
 ### Fixed

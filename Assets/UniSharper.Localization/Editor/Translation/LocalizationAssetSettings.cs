@@ -12,7 +12,7 @@ using UniSharperEditor.Extensions;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniSharperEditor.Localization
+namespace UniSharperEditor.Localization.Translation
 {
     /// <summary>
     /// Class used to get and set the localization settings object. Implements the <see cref="SettingsScriptableObject{T}"/>
@@ -62,6 +62,9 @@ namespace UniSharperEditor.Localization
         [ReadOnlyField]
         [SerializeField]
         private Vector2Int styleColumnIndexRange = Vector2Int.one * 3;
+
+        [SerializeField]
+        private bool useBrotliCompression;
 
         [SerializeField]
         private string[] targetLocales = Array.Empty<string>();
@@ -189,6 +192,19 @@ namespace UniSharperEditor.Localization
                     return;
 
                 styleColumnIndexRange = value;
+                Save();
+            }
+        }
+        
+        internal bool UseBrotliCompression
+        {
+            get => useBrotliCompression;
+            set
+            {
+                if (useBrotliCompression.Equals(value))
+                    return;
+
+                useBrotliCompression = value;
                 Save();
             }
         }

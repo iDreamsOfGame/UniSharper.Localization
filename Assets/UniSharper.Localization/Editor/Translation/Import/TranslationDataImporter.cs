@@ -9,7 +9,7 @@ using UnityEngine;
 
 // ReSharper disable ConvertIfStatementToNullCoalescingExpression
 
-namespace UniSharperEditor.Localization
+namespace UniSharperEditor.Localization.Translation.Import
 {
     internal class TranslationDataImporter
     {
@@ -249,6 +249,15 @@ namespace UniSharperEditor.Localization
         {
             const string title = "Other Settings";
             EditorGUIStyles.DrawTitleLabel(title);
+
+            // Use Brotli Compression
+            using (new UniEditorGUILayout.FieldScope(LabelWidth))
+            {
+                var label = new GUIContent("Use Brotli Compression", "Should use Brotli compression for localization assets?");
+                settings.UseBrotliCompression = EditorGUILayout.Toggle(label, settings.UseBrotliCompression);
+            }
+            
+            EditorGUILayout.Space(2);
 
             // Target Locales
             using (new UniEditorGUILayout.FieldScope(LabelWidth))

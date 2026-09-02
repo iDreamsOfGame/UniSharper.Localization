@@ -4,15 +4,15 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace UniSharperEditor.Localization
+namespace UniSharperEditor.Localization.Translation.Import
 {
     internal class TranslationDataImporterWindow : LocalizationEditorWindow
     {
-        private static readonly Vector2Int Size = new(850, 540);
+        private static readonly Vector2Int Size = new(850, 560);
         
         private TranslationDataImporter importer;
 
-        [MenuItem("UniSharper/Localization Management/Import Translation Data...", false, 1)]
+        [MenuItem("UniSharper/Localization Management/Translation/Import Data...", false, 1)]
         internal static void ShowWindow()
         {
             const string title = "Translation Data Importer";

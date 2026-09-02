@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using ExcelDataReader;
-using MasterMemory;
 using ReSharp.Extensions;
 using UniSharper;
 using UniSharper.Extensions;
@@ -16,7 +14,7 @@ using UniSharper.Localization;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniSharperEditor.Localization
+namespace UniSharperEditor.Localization.Translation
 {
     internal static class LocalizationAssetUtility
     {
@@ -38,9 +36,7 @@ namespace UniSharperEditor.Localization
             {
                 var assetPath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(settings.LocalizationAssetsPath, $"{locale}.bytes"));
                 var assetAbsolutePath = EditorPath.GetFullPath(assetPath);
-                var databaseBuilder = new DatabaseBuilder();
-                databaseBuilder.Append(dataMap.Values);
-                var data = databaseBuilder.Build();
+                var data = TranslationDataMapSerializer.Serialize(dataMap, settings.UseBrotliCompression);
                 File.WriteAllBytes(assetAbsolutePath, data);
 
                 if (settings.CharactersFileExportPreferences.Enabled)
@@ -124,10 +120,9 @@ namespace UniSharperEditor.Localization
             {
                 var localeString = Path.GetFileNameWithoutExtension(file);
                 var locale = new Locale(localeString);
-                using var stream = File.OpenRead(file);
-                var reader = new BinaryFormatter();
-                var translationTexts = reader.Deserialize(stream) as Dictionary<string, TranslationData>;
-                translationDataMap.AddUnique(locale, translationTexts);
+                var data = File.ReadAllBytes(file);
+                var map = TranslationDataMapSerializer.Deserialize(data, false);
+                translationDataMap.AddUnique(locale, map);
             }
 
             return translationDataMap;
@@ -222,7 +217,7 @@ namespace UniSharperEditor.Localization
 
                                         if (translationDataMap.ContainsKey(localeString) && !translationDataMap[localeString].ContainsKey(translationKey))
                                         {
-                                            translationDataMap[localeString].Add(translationKey, new TranslationData(translationKey, translationText));
+                                            translationDataMap[localeString].Add(translationKey, new TranslationData(translationText));
                                         }
                                         else
                                         {

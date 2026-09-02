@@ -2,8 +2,7 @@
 // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using MasterMemory;
-using MessagePack;
+using MemoryPack;
 using UnityEngine.Scripting;
 
 // ReSharper disable InvertIf
@@ -13,7 +12,7 @@ namespace UniSharper.Localization
     /// <summary>
     /// Translation data for locale.
     /// </summary>
-    [MemoryTable("translationData"), MessagePackObject(true)]
+    [MemoryPackable]
     public partial class TranslationData
     {
         /// <summary>
@@ -32,22 +31,15 @@ namespace UniSharper.Localization
         /// <summary>
         /// Initializes a new instance of the TranslationData class.
         /// </summary>
-        /// <param name="key">The key of translation text. </param>
         /// <param name="text">The translation text. </param>
         /// <param name="font">The font of translation text. </param>
         /// <param name="style">Styling information for text. </param>
-        internal TranslationData(string key, string text, Dictionary<string, string> style = null)
+        [MemoryPackConstructor]
+        internal TranslationData(string text, Dictionary<string, string> style = null)
         {
-            Key = key;
             Text = text;
             Style = style;
         }
-        
-        /// <summary>
-        /// The key of translation text.
-        /// </summary>
-        [PrimaryKey]
-        public string Key { get; set; }
         
         /// <summary>
         /// The translation text.

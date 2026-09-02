@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using ReSharp.Extensions;
 using ReSharp.Patterns;
-using UniSharper.Localization.Tables;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -18,14 +17,14 @@ namespace UniSharper.Localization
     /// <seealso cref="LocalizationManager"/>
     public sealed partial class LocalizationManager : Singleton<LocalizationManager>
     {
-        private readonly Dictionary<Locale, TranslationDataTable> localeTranslationTextsMap;
+        private readonly Dictionary<Locale, Dictionary<string, TranslationData>> localeTranslationTextsMap;
 
         private Locale currentLocale;
 
         [Preserve]
         private LocalizationManager()
         {
-            localeTranslationTextsMap = new Dictionary<Locale, TranslationDataTable>();
+            localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, TranslationData>>();
             currentLocale = Locale.English;
         }
 
@@ -66,9 +65,9 @@ namespace UniSharper.Localization
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key));
             
-            if (localeTranslationTextsMap.TryGetValue(locale, out var table))
+            if (localeTranslationTextsMap.TryGetValue(locale, out var map))
             {
-                if(table.TryFindByKey(key, out var translationData))
+                if (map.TryGetValue(key, out var translationData))
                     return translationData;
 
                 Debug.LogWarning($"No translation text for key [{key}] of locale [{locale}]!");
@@ -116,9 +115,11 @@ namespace UniSharper.Localization
         /// </summary>
         /// <param name="locale">The locale.</param>
         /// <param name="data">The localization asset data.</param>
-        public void LoadLocalizationAssetData(Locale locale, byte[] data)
+        /// <param name="useInternStringPool">if set to <c>true</c> [use intern string pool].</param>
+        public void LoadLocalizationAssetData(Locale locale, byte[] data, bool useInternStringPool = true)
         {
-            localeTranslationTextsMap.AddUnique(locale, new MemoryDatabase(data, false).TranslationDataTable);
+            var map = TranslationDataMapSerializer.Deserialize(data, useInternStringPool);
+            localeTranslationTextsMap.AddUnique(locale, map);
         }
 
         private void OnLocaleChanged(LocaleChangedEventArgs e) => LocaleChanged?.Invoke(this, e);
