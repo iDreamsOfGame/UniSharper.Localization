@@ -2,7 +2,6 @@
 // See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using ReSharp.Extensions;
 
 namespace UniSharper.Localization
 {
@@ -14,7 +13,6 @@ namespace UniSharper.Localization
         public bool UseInternStringPool { get; set; }
 
         public TranslationDataMap()
-            :base(StringReferenceEqualityComparer.Instance)
         {
         }
 
