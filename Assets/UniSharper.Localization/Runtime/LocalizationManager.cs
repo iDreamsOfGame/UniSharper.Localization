@@ -67,8 +67,7 @@ namespace UniSharper.Localization
             
             if (localeTranslationTextsMap.TryGetValue(locale, out var map))
             {
-                var lookupKey = map.UseInternStringPool ? string.IsInterned(key) ?? key : key;
-                if (map.TryGetValue(lookupKey, out var translationData))
+                if (map.TryGetValue(key, out var translationData))
                     return translationData;
 
                 Debug.LogWarning($"No translation text for key [{key}] of locale [{locale}]!");

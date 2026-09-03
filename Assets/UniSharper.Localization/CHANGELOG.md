@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.2.4] - 2026-09-03
+
+### Changed
+
+- Improves the performance of method **LocalizationManager.GetTranslationData**.
+
+
+
 ## [4.2.3] - 2026-09-03
 
 ### Changed
