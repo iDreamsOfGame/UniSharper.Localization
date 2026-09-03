@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ReSharp.Extensions;
 using ReSharp.Patterns;
 using UnityEngine;
@@ -57,6 +58,7 @@ namespace UniSharper.Localization
         /// <param name="key">The key of translation data. </param>
         /// <returns>The translation data. </returns>
         /// <exception cref="ArgumentNullException">locale or key</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TranslationData GetTranslationData(Locale locale, string key)
         {
             if (locale == null)
@@ -86,6 +88,7 @@ namespace UniSharper.Localization
         /// <param name="key">The key of translation data. </param>
         /// <returns>The translation data. </returns>
         /// <exception cref="ArgumentNullException">locale or key</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TranslationData GetTranslationData(string key) => CurrentLocale != null ? GetTranslationData(CurrentLocale, key) : null;
 
         /// <summary>
@@ -95,6 +98,7 @@ namespace UniSharper.Localization
         /// <param name="key">The key of translation text.</param>
         /// <returns>The translation text.</returns>
         /// <exception cref="ArgumentNullException">locale or key</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetTranslationText(Locale locale, string key)
         {
             var translationData = GetTranslationData(locale, key);
@@ -108,6 +112,7 @@ namespace UniSharper.Localization
         /// <param name="key">The key of translation text.</param>
         /// <returns>The translation text.</returns>
         /// <exception cref="ArgumentNullException">locale or key</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetTranslationText(string key) => GetTranslationText(CurrentLocale, key);
 
         /// <summary>
