@@ -40,7 +40,7 @@ namespace UniSharper.Localization
         }
 #endif
 
-        internal static Dictionary<string, TranslationData> Deserialize(byte[] data, bool useInternStringPool = true)
+        internal static TranslationDataMap Deserialize(byte[] data, bool useInternStringPool = true)
         {
             Dictionary<string, TranslationData> map;
             ReadOnlySpan<byte> span = data;
@@ -57,16 +57,23 @@ namespace UniSharper.Localization
                 // No compression
                 map = MemoryPackSerializer.Deserialize<Dictionary<string, TranslationData>>(span[1..]);
             }
-            
-            if (useInternStringPool)
-                map = ProcessWithInternStringPool(map);
-            
-            return map;
+
+            return useInternStringPool ? ProcessWithInternStringPool(map) : new TranslationDataMap(map);
         }
         
-        private static Dictionary<string, TranslationData> ProcessWithInternStringPool(Dictionary<string, TranslationData> source)
+        private static TranslationDataMap ProcessWithInternStringPool(Dictionary<string, TranslationData> source)
         {
-            return source;
+            var map = new TranslationDataMap();
+
+            foreach (var (key, translationData) in source)
+            {
+                var internedKey = string.IsInterned(key) ?? string.Intern(key);
+                var internedText = string.IsInterned(translationData.Text) ?? string.Intern(translationData.Text);
+                translationData.Text = internedText;
+                map[internedKey] = translationData;
+            }
+            
+            return map;
         }
     }
 }

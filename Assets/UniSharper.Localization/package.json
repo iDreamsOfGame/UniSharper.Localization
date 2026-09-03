@@ -2,7 +2,7 @@
     "name": "io.github.idreamsofgame.unisharper.localization",
     "displayName": "UniSharper.Localization",
     "description": "UniSharper.Localization is a serialization data driven text localization tool for Unity application.",
-    "version": "4.2.0",
+    "version": "4.2.1",
     "unity": "2021.3",
     "author": {
         "name": "iDreamsOfGame",
@@ -11,11 +11,11 @@
     "license": "MIT",
     "dependencies": {
         "com.cysharp.zstring": "2.6.0",
-        "com.cysharp.memorypack.core": "1.21.4",
-        "com.cysharp.memorypack.generator": "1.21.4",
+        "com.cysharp.memorypack.core": "1.21.401",
+        "com.cysharp.memorypack.generator": "1.21.401",
         "com.github.exceldatareader.exceldatareader": "3.6.0",
         "io.github.idreamsofgame.skiasharp.fontsubset": "1.1.3",
-        "io.github.idreamsofgame.unisharper.core": "2.0.1"
+        "io.github.idreamsofgame.unisharper.core": "2.0.2"
     },
     "publishConfig": {
         "registry": "https://package.openupm.com"

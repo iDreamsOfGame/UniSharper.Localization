@@ -17,14 +17,14 @@ namespace UniSharper.Localization
     /// <seealso cref="LocalizationManager"/>
     public sealed partial class LocalizationManager : Singleton<LocalizationManager>
     {
-        private readonly Dictionary<Locale, Dictionary<string, TranslationData>> localeTranslationTextsMap;
+        private readonly Dictionary<Locale, TranslationDataMap> localeTranslationTextsMap;
 
         private Locale currentLocale;
 
         [Preserve]
         private LocalizationManager()
         {
-            localeTranslationTextsMap = new Dictionary<Locale, Dictionary<string, TranslationData>>();
+            localeTranslationTextsMap = new Dictionary<Locale, TranslationDataMap>();
             currentLocale = Locale.English;
         }
 
@@ -67,7 +67,8 @@ namespace UniSharper.Localization
             
             if (localeTranslationTextsMap.TryGetValue(locale, out var map))
             {
-                if (map.TryGetValue(key, out var translationData))
+                var lookupKey = map.UseInternStringPool ? string.IsInterned(key) ?? key : key;
+                if (map.TryGetValue(lookupKey, out var translationData))
                     return translationData;
 
                 Debug.LogWarning($"No translation text for key [{key}] of locale [{locale}]!");
