@@ -2,7 +2,7 @@
     "name": "io.github.idreamsofgame.unisharper.localization",
     "displayName": "UniSharper.Localization",
     "description": "UniSharper.Localization is a serialization data driven text localization tool for Unity application.",
-    "version": "4.2.6",
+    "version": "4.2.7",
     "unity": "2022.3",
     "author": {
         "name": "iDreamsOfGame",
@@ -14,7 +14,7 @@
         "com.cysharp.memorypack.core": "1.21.401",
         "com.cysharp.memorypack.generator": "1.21.401",
         "com.github.exceldatareader.exceldatareader": "3.6.0",
-        "io.github.idreamsofgame.skiasharp.fontsubset": "1.1.4",
+        "io.github.idreamsofgame.skiasharp.fontsubset": "1.1.5",
         "io.github.idreamsofgame.unisharper.core": "2.0.10"
     },
     "publishConfig": {
